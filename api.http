@@ -1,0 +1,44 @@
+### Sample HTTP requests for Investment Spring Boot API
+### A .http file is a plain text file where you can write and save HTTP requests (GET, POST, PUT, DELETE, etc.). With the REST Client extension in VS Code, you can:
+### It's a convenient way to test and document your API endpoints without leaving VS Code or using external tools like Postman.
+## This is to reduce my mistakes
+
+
+# Get all clients
+GET http://localhost:8080/api/clients
+Accept: application/json
+
+###
+# Get a client by ID
+GET http://localhost:8080/api/clients/{{clientId}}
+Accept: application/json
+
+###
+# Create a new client
+POST http://localhost:8080/api/clients
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "surname": "Doe",
+  "dob": "1990-01-01",
+  "email": "john.doe@example.com",
+  "postCode": "AB12 3CD"
+}
+
+###
+# Update a client
+PUT http://localhost:8080/api/clients/{{clientId}}
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "surname": "Smith",
+  "dob": "1991-02-02",
+  "email": "jane.smith@example.com",
+  "postCode": "XY99 9ZZ"
+}
+
+###
+# Delete a client
+DELETE http://localhost:8080/api/clients/{{clientId}}
