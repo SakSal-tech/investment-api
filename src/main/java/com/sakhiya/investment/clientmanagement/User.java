@@ -1,12 +1,13 @@
 package com.sakhiya.investment.clientmanagement;
 
 import java.util.UUID;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 // remember to add dependency spring-boot-starter-validation to the POM file
@@ -22,9 +23,20 @@ import org.springframework.security.crypto.password.PasswordEncoder; //An interf
 @Entity
 @Table(name = "user")
 public class User {// for normalisation and scalability reasons I moved user details to its table insted of fields in client tabls
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.UUID)
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userId;
+    @Column(name = "userId", columnDefinition = "CHAR(36)")
+        private String userId;  
+
+
+    // moved this to generateId
+    //private String userId = UUID.randomUUID().toString();  // store UUID as String
+    //generates a proper 36-char string that maps to CHAR(36) in MySQL. 
+    //I had issues with the way UUID is stored and the way is presented by postman problem how with JPA and Hibernate was mapping it 
+
+    
     private String username;
     private String passwordHash;
      @NotBlank
@@ -33,7 +45,15 @@ public class User {// for normalisation and scalability reasons I moved user det
     private Boolean isActive;
     private String resetToken;
 
-    public void setUserId(UUID userId) {
+    @PrePersist
+    public void generateId() {
+         if (this.userId == null) {
+            this.userId = UUID.randomUUID().toString();
+    }
+    }
+
+    public void setUserId(String userId) {
+    
         this.userId = userId;
     }
 
@@ -41,8 +61,9 @@ public class User {// for normalisation and scalability reasons I moved user det
     @OneToOne // one client has one user acount
    @JoinColumn(name = "client_id", columnDefinition = "CHAR(36)") // joining clientId which is PK in Client table here as FK
     private Client client;
-
-        public User(UUID userId, String username, String passwordHash, String email, Client client) {
+        // no args constructor for mock tests and JPA(Java Persistence API)
+        public User(){}
+        public User(String userId, String username, String passwordHash, String email, Client client) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -84,7 +105,7 @@ public class User {// for normalisation and scalability reasons I moved user det
         this.resetToken = resetToken;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 

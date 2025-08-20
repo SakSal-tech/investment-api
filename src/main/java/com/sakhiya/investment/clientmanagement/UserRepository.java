@@ -3,22 +3,21 @@ package com.sakhiya.investment.clientmanagement;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.repository.ListCrudRepository;
 
-public interface UserRepository extends ListCrudRepository<User, UUID> {
-
-    // find all users
-
-    List<User> findAllUsers();
-
+/*This is an interface that extends ListCrudRepository<User, UUID>.
+Spring Data JPA automatically provides the implementation at runtime.
+It allows you to perform CRUD operations on the User table without writing SQL.
+ */
+public interface UserRepository extends ListCrudRepository<User, String> {
     // Find a client by username, username or username/email (from User class). This
     // will be linked and used in service class
     Optional<User> findByUsername(String Username);
 
     Optional<User> findByEmail(String email);
 
+    // choice of the user could be found 
     Optional<User> findByUsernameOrEmail(String username, String email);
 
     // Security / Validation Queries

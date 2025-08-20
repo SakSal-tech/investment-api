@@ -5,16 +5,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/*This is a REST controller, annotated with @RestController.
+It handles HTTP requests and responses.
+It is injected with UserService.
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
 	private final UserService userService;
-
+	// controller uses Service class
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
-
 	// Get all users
 	@GetMapping
 	public List<User> getAllUsers() {
@@ -26,7 +29,6 @@ public class UserController {
 	public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
 		try {
         // ResponseEntity controls the HTTP status and body returned to the client.
-
 			
         return ResponseEntity.ok(userService.getUserByUserName(username));
 		} catch (NoSuchElementException e) {
@@ -34,7 +36,6 @@ public class UserController {
             	return ResponseEntity.notFound().build();
 		}
 	}
-
 	// Get user by email
 	@GetMapping("/email/{email}")
 	public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
@@ -47,8 +48,10 @@ public class UserController {
 
 		// Get user by username or email
 		@GetMapping("/search")
+		//means that the parameter is optional. The user can provide either username, email, both, or neither.
 		public ResponseEntity<User> getUserByUsernameOrEmail(@RequestParam(required = false) String username,
 															@RequestParam(required = false) String email) {
+			//If both username and email are either null or empty, the method immediately returns a 400 Bad Request response
 			if ((username == null || username.isEmpty()) && (email == null || email.isEmpty())) {
 				return ResponseEntity.badRequest().body(null);
 			}
@@ -66,10 +69,14 @@ public class UserController {
 
 	// User login
 	@PostMapping("/login")
+	// <?> because on success it rerurns User objec but on failure after 3 attempts it returns
+	//ResponseEntity.status(403).body(resetJson) (a Map with reset instructions).
 	public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
 		int maxAttempts = 3;
+		// looping through 3 max attempts
 		for (int attempt = 1; attempt <= maxAttempts; attempt++) {
 			try {
+				// call the login method in service class
 				User user = userService.userLogin(username, password);
 				return ResponseEntity.ok(user); // login successful
 			} catch (NoSuchElementException e) {

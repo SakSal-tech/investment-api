@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/*This is a service class, annotated with @Service.
+It contains business logic and uses UserRepository to interact with the database.
+It is injected with UserRepository (via constructor but could use @Autowired if there were more constructors). */
+
 //Indicates that an annotated class is a Service class 
 @Service
 public class UserService {
@@ -112,6 +116,16 @@ public class UserService {
         user.setPasswordHash(encoder.encode(newPassword));
         userRepository.save(user);
         return user;
+    }
+
+    public Boolean validatePassword(String password){
+
+
+        if(!(password.length() >= 8 && password.length() <= 15){
+            return false;
+        }
+        return true;
+
     }
 
     /**
