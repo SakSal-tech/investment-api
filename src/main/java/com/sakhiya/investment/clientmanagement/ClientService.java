@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 // ClientService is a business logic layer 
 //it uses the repository to perform higher-level operations (like validation, exceptions, rules).
@@ -26,7 +25,7 @@ public class ClientService {
         return clients;
     }
 
-        public Client getClient(UUID clientID) throws NoSuchElementException{
+        public Client getClient(String clientID) throws NoSuchElementException{
         // I had an error with int type. the id should be UUID type not int
         return clientRepository.findById(clientID)
             //orElseThrow Optional<T> is a container object in java.util that may or may not hold a non-null value
@@ -54,6 +53,7 @@ public class ClientService {
     }
 
     public List<Client> getClientsByDates(LocalDate startDate, LocalDate endDate) {
+        // Validating if dates are null and if the end date is before start
         if (startDate == null || endDate == null) {
             throw new IllegalArgumentException("Start date and end date must not be null");
         }
@@ -116,7 +116,7 @@ public class ClientService {
     // that may or may not contain a non-null value (in this case, a Client).
     // .orElseThrow is a concise way to handle the case where the client might not
     // exist.
-    public Client updateClient(UUID clientId, Client updatedClient) throws NoSuchElementException {
+    public Client updateClient(String clientId, Client updatedClient) throws NoSuchElementException {
         Client currentClient = clientRepository.findByClientId(clientId)
                 .orElseThrow(() -> new NoSuchElementException("Client with this id:" + clientId + " is not found"));
         // update database fiel(ds with new values: This is the new version of the Client —
@@ -131,7 +131,7 @@ public class ClientService {
         return clientRepository.save(currentClient);
     }
 
-    public void deleteByClient(UUID clientId) {
+    public void deleteByClient(String clientId) {
         // existsById is lighter query than isPresent() as it checks only if client id
         // exists rather than checking the whole record.
         if (clientRepository.existsById(clientId)) {

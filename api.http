@@ -42,3 +42,51 @@ Content-Type: application/json
 ###
 # Delete a client
 DELETE http://localhost:8080/api/clients/{{clientId}}
+
+###
+# Get all users
+GET http://localhost:8080/api/users
+Accept: application/json
+
+###
+# Get user by ID
+GET http://localhost:8080/api/users/{{userId}}
+Accept: application/json
+
+###
+# Create a new user
+POST http://localhost:8080/api/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "newuser",
+  "passwordHash": "password123",
+  "email": "newuser@example.com",
+  "isActive": true,
+  "client": {
+    "clientId": "{{clientId}}"
+  }
+}
+
+###
+# Update user by ID
+PUT http://localhost:8080/api/users/{{userId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userId": "{{userId}}",
+  "username": "updateduser",
+  "passwordHash": "newpassword",
+  "email": "updateduser@example.com",
+  "isActive": true,
+  "client": {
+    "clientId": "{{clientId}}"
+  }
+}
+
+###
+# Delete user by ID
+DELETE http://localhost:8080/api/users/{{userId}}
+Accept: application/json

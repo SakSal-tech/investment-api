@@ -3,20 +3,18 @@ package com.sakhiya.investment.clientmanagement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 
-public interface ClientRepository extends ListCrudRepository<Client, UUID> {
+public interface ClientRepository extends ListCrudRepository<Client, String> {
     // List<Client> findAllClients(); // Removed redundant method, use findAll() from ListCrudRepository
   // Search Queries
     //Had to change to optional due to error in the ClientService update method The error occurs because 
     //calling orElseThrow directly on a Client object, but orElseThrow is a method of Optional, not Client. 
-    Optional<Client> findByClientId(UUID clientId);
-
+  Optional<Client> findByClientId(String clientId);
     // Find a client by username (from User class)
     // Optional means in case this returns null and surname does not exists
     Optional<Client> findOneBySurname(String surname);
@@ -25,7 +23,7 @@ public interface ClientRepository extends ListCrudRepository<Client, UUID> {
   List<Client> findByPostCodeStartingWith(String postArea);
 
     // Delete a client by ID
-    void deleteByClientId(UUID clientId);
+    void deleteByClientId(String clientId);
 
     // Search clients by partial email match (e.g., contains “gmail”)
     List<Client> findByEmailContaining(String emailServer);

@@ -1,36 +1,22 @@
 package com.sakhiya.investment.clientmanagement;
 
-import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "client")
-
-/**
- * Represents a client in the investment management system.
- * Stores personal and contact information for each client.
- */
 public class Client {
-    /**
-     * The unique identifier for the client (primary key).
-     */
-    // both client_id fields are CHAR(36), to prevent mismatch.
-    @Id
-    @Column(columnDefinition = "CHAR(36)")
-    private UUID clientId = UUID.randomUUID(); // generated in Java
-    
-    // JPA requires a public or protected no-args constructor
 
-    public Client() {
-    }
+    @Id
+    @Column(name = "client_id", columnDefinition = "CHAR(36)")
+    private String clientId = UUID.randomUUID().toString();  // store UUID as String
+    //generates a proper 36-char string that maps to CHAR(36) in MySQL. 
+    //I had issues with the way UUID is stored and the way is presented by postman problem how with JPA and Hibernate was mapping it 
 
     @NotNull
     private String firstName;
@@ -38,9 +24,6 @@ public class Client {
     @NotNull
     private String surname;
 
-    /**
-     * The date of birth of the client.
-     */
     @NotNull
     private LocalDate dob;
 
@@ -55,95 +38,44 @@ public class Client {
     @NotNull
     private String email;
 
-    /**
-     * Indicates if the client is currently active.
-     */
     private boolean active;
 
-    /**
-     * The national insurance number of the client.
-     */
     private String nationalInsuranceNumber;
 
-    public String getFirstName() {
-        return firstName;
-    }
+    // JPA requires a public or protected no-args constructor
+    public Client() {}
 
-    public String getSurname() {
-        return surname;
-    }
+    // getters and setters
+    public String getClientId() { return clientId; }
+    public void setClientId(UUID clientId) { this.clientId = clientId.toString(); }
 
-    public LocalDate getDob() {
-        return dob;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getAddress() {
-        return address;
-    }
+    public String getSurname() { return surname; }
+    public void setSurname(String surname) { this.surname = surname; }
 
-    public String getPostCode() {
-        return postCode;
-    }
+    public LocalDate getDob() { return dob; }
+    public void setDob(LocalDate dob) { this.dob = dob; }
 
-    public String getTelephone() {
-        return telephone;
-    }
+    public LocalDate getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
-    public boolean getActive() {
-        return active;
-    }
+    public String getPostCode() { return postCode; }
+    public void setPostCode(String postCode) { this.postCode = postCode; }
 
-    public String getNationalInsuranceNumber() {
-        return nationalInsuranceNumber;
-    }
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
+    public boolean getActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setPostCode(String postCode) {
-        this.postCode = postCode;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public void setNationalInsuranceNumber(String nationalInsuranceNumber) {
-        this.nationalInsuranceNumber = nationalInsuranceNumber;
-    }
-
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
-    this.createdAt = createdAt;
-}
-
-
+    public String getNationalInsuranceNumber() { return nationalInsuranceNumber; }
+    public void setNationalInsuranceNumber(String nationalInsuranceNumber) { this.nationalInsuranceNumber = nationalInsuranceNumber; }
 }

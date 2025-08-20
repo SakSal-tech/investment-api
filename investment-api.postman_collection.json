@@ -92,6 +92,217 @@
           "path": ["api", "clients", ":clientId"]
         }
       }
+    },
+    {
+      "name": "Get All Users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        }
+      }
+    },
+    {
+      "name": "Get User By Username",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/:username",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", ":username"]
+        }
+      }
+    },
+    {
+      "name": "Get User By Email",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/email/:email",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "email", ":email"]
+        }
+      }
+    },
+    {
+      "name": "Search User By Username or Email",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/search?username=:username&email=:email",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "search"],
+          "query": [
+            {"key": "username", "value": ":username"},
+            {"key": "email", "value": ":email"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Active Users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/active",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "active"]
+        }
+      }
+    },
+    {
+      "name": "User Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/x-www-form-urlencoded"}
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "username", "value": "", "type": "text"},
+            {"key": "password", "value": "", "type": "text"}
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "login"]
+        }
+      }
+    },
+    {
+      "name": "Generate Password Reset Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/x-www-form-urlencoded"}
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "username", "value": "", "type": "text"}
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/reset-token",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "reset-token"]
+        }
+      }
+    },
+    {
+      "name": "Find User By Reset Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/reset-token/:token",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "reset-token", ":token"]
+        }
+      }
+    },
+    {
+      "name": "Reset User Password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/x-www-form-urlencoded"}
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "username", "value": "", "type": "text"},
+            {"key": "newPassword", "value": "", "type": "text"},
+            {"key": "resetToken", "value": "", "type": "text"}
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/reset-password",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "reset-password"]
+        }
+      }
+    },
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"\",\n  \"email\": \"\",\n  \"rawPassword\": \"\",\n  \"isActive\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        }
+      }
+    },
+    {
+      "name": "Update User",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"\",\n  \"rawPassword\": \"\",\n  \"isActive\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/:username",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", ":username"]
+        }
+      }
+    },
+    {
+      "name": "Delete User",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/:username",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", ":username"]
+        }
+      }
     }
   ]
 }

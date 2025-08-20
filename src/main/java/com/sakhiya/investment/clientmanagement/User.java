@@ -33,6 +33,11 @@ public class User {// for normalisation and scalability reasons I moved user det
     private Boolean isActive;
     private String resetToken;
 
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+
     @OneToOne // one client has one user acount
    @JoinColumn(name = "client_id", columnDefinition = "CHAR(36)") // joining clientId which is PK in Client table here as FK
     private Client client;
@@ -68,12 +73,18 @@ public class User {// for normalisation and scalability reasons I moved user det
     public String getResetToken() {
         return resetToken;
     }
+    
+    public void generateResetToken() {
+        // automatically generate a password reset token
+        this.resetToken = UUID.randomUUID().toString();
+    }
 
     public void setResetToken(String resetToken) {
+        // automatically generate a password reset token
         this.resetToken = resetToken;
     }
 
-        public UUID getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
@@ -101,6 +112,18 @@ public class User {// for normalisation and scalability reasons I moved user det
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
+
+    // In your User.java class
+
+private String rawPassword; // Not persisted, only used for registration/update
+
+public String getRawPassword() {
+    return rawPassword;
+}
+
+public void setRawPassword(String rawPassword) {
+    this.rawPassword = rawPassword;
+}
 
 
 

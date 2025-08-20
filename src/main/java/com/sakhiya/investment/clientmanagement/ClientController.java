@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -48,7 +47,7 @@ public class ClientController {
                     MediaType.APPLICATION_JSON_VALUE
             })
 
-    public Client getClient(@PathVariable("clientId") UUID clientId) {
+    public Client getClient(@PathVariable("clientId") String clientId) {
         // I could declare the parameter clientID as UUID or convert the parameter to
         // UUID as the method
         // UUID uuid = UUID.fromString(clientId) ;
@@ -134,7 +133,7 @@ public class ClientController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE
     })
-    public Client updateClient(@PathVariable("clientId") UUID clientId, @RequestBody Client updatedclient) {
+    public Client updateClient(@PathVariable("clientId") String clientId, @RequestBody Client updatedclient) {
 
         return clientService.updateClient(clientId, updatedclient);
     }
@@ -142,7 +141,7 @@ public class ClientController {
     
 
     @DeleteMapping(path = "/{clientId}")
-    public ResponseEntity<Void> deleteClient(@PathVariable("clientId") UUID clientId) {
+    public ResponseEntity<Void> deleteClient(@PathVariable("clientId") String clientId) {
         clientService.deleteByClient(clientId);
         return ResponseEntity.noContent().build();
     }
