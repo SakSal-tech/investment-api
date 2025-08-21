@@ -15,11 +15,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;// BCrypt is a secure, industry-standard hashing algorithm that Includes a salt automatically (protects against rainbow table attacks). 
-//Is computationally slow enough to make brute force attacks harder deliberately
-import org.springframework.security.crypto.password.PasswordEncoder; //An interface that defines the contract for encoding (hashing) passwords and verifying them. Allows swapping out different password hashing algorithms without changing your code logic
-
-
 @Entity
 @Table(name = "user")
 public class User {// for normalisation and scalability reasons I moved user details to its table insted of fields in client tabls
@@ -76,11 +71,16 @@ public class User {// for normalisation and scalability reasons I moved user det
         this.username = username;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    /*public void setPasswordHash(String passwordHash) {
         // password cannot be stored just as plain String. it has to be encrypted.
         PasswordEncoder encoder = new BCryptPasswordEncoder(); // BCryptPasswordEncoder is a class that implements the PasswordEncoder interface using the BCrypt hashing algorithm.
         this.passwordHash = encoder.encode(passwordHash); // hash password before saving
-    }
+    }*/
+
+    public void setPasswordHash(String passwordHash) {
+    this.passwordHash = passwordHash; // just assign, no encoding here
+}
+
 
     public void setEmail(String email) {
         this.email = email;
