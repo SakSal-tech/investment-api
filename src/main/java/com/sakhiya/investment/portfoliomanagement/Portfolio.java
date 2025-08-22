@@ -1,12 +1,12 @@
+
 package com.sakhiya.investment.portfoliomanagement;
 
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.OneToMany;
@@ -20,42 +20,63 @@ import org.springframework.data.annotation.CreatedDate;//Marks a field in entity
 import org.springframework.data.annotation.LastModifiedDate;//Every time the entity is updated through the repository, Spring Data updates this field automatically.
 import jakarta.persistence.EntityListeners; //The listener class that implements the logic for auditing. It hooks into the entity lifecycle events and automatically sets the annotated fields (createdAt, updatedAt) with timestamps
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;//handles populating the fields.
-import  jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.InheritanceType;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 
-
-@Entity 
+@Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "portfolio")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)//All subclasses are stored in one database table. Tells JPA how to map a class hierarchy (parent + subclasses) to database tables
-@DiscriminatorColumn(name = "portfolio_type", discriminatorType = DiscriminatorType.STRING) //distinguish. Adds a special column to the table to indicate which subclass a row represents "EQUITY", "BOND", "MIXED".
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // All subclasses are stored in one database table. Tells JPA how
+                                                      // to map a class hierarchy (parent + subclasses) to database
+                                                      // tables
+@DiscriminatorColumn(name = "portfolio_type", discriminatorType = DiscriminatorType.STRING) // distinguish. Adds a
+                                                                                            // special column to the
+                                                                                            // table to indicate which
+                                                                                            // subclass a row represents
+                                                                                            // "EQUITY", "BOND",
+                                                                                            // "MIXED".
 
 public class Portfolio {
 
     // auto generate primary key
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID portfolioId;        // primary key
-    private String portfolioName;    // optional descriptive name
-    private UUID clientId;          // foreign key to Client entity
+    @Column(name = "portfolioId", columnDefinition = "CHAR(36)")
+    private String portfolioId = UUID.randomUUID().toString(); // store UUID as String
+    // generates a proper 36-char string that maps to CHAR(36) in MySQL.
+    // I had issues with the way UUID is stored and the way is presented by postman
+    // problem how with JPA and Hibernate was mapping it
+
+    private String portfolioName; // optional descriptive name
+    private String clientId; // foreign key to Client entity
     @CreatedDate
     private LocalDate createdAt; // creation timestamp
     @LastModifiedDate
     private LocalDate updatedAt; // last update timestamp
     private String investmentGoal; // Growth, Income, Capital Preservation
-    private Double riskLevel; // 1-5 scale
-    
-    private BigDecimal totalValue;   // optional, can be computed
+    private Integer riskLevel; // 1-5 scale
 
-    @OneToMany(mappedBy = "portfolio")// one portfolio could have many assets
+    private BigDecimal totalValue; // optional, can be computed
+    // Aggregated numeric total of all VaR (Value at Risk) calculations across all
+    // assets in this portfolio.
+    // Useful for quick reporting, dashboards, and historical tracking without
+    // recalculating every time.
+    private Double totalVaR;
+
+    // Aggregated numeric total of all Stress Test calculations across all assets in
+    // this portfolio.
+    // Provides an overall view of portfolio exposure under various stress
+    // scenarios.
+    private Double totalStressTest;
+
+    @OneToMany(mappedBy = "portfolio") // one portfolio could have many assets
     private List<Asset> assets;// List of all assets associated to this portfolio
 
+    public Portfolio() {
+    }
 
-
-
-    public Portfolio(String portfolioName, UUID clientId, LocalDate createdAt, LocalDate updatedAt,
-            String investmentGoal, Double riskLevel, BigDecimal totalValue, List<Asset> assets) {
+    public Portfolio(String portfolioName, String clientId, LocalDate createdAt, LocalDate updatedAt,
+            String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets) {
         this.portfolioName = portfolioName;
         this.clientId = clientId;
         this.createdAt = createdAt;
@@ -66,11 +87,9 @@ public class Portfolio {
         this.assets = assets;
     }
 
-
-    public UUID getPortfolioId() {
+    public String getPortfolioId() {
         return portfolioId;
     }
-
 
     public String getPortfolioName() {
         return portfolioName;
@@ -80,11 +99,11 @@ public class Portfolio {
         this.portfolioName = portfolioName;
     }
 
-    public UUID getClientId() {
+    public String getClientId() {
         return clientId;
     }
 
-    public void setClientId(UUID clienttId) {
+    public void setClientId(String clienttId) {
         this.clientId = clienttId;
     }
 
@@ -94,7 +113,7 @@ public class Portfolio {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = LocalDate.now();// date portfolio created which is current date
-;
+        ;
     }
 
     public LocalDate getUpdatedAt() {
@@ -117,101 +136,48 @@ public class Portfolio {
         return investmentGoal;
     }
 
-
     public void setInvestmentGoal(String investmentGoal) {
         this.investmentGoal = investmentGoal;
     }
 
-
-    public Double getRiskLevel() {
+    public Integer getRiskLevel() {
         return riskLevel;
     }
 
-
-    public void setRiskLevel(Double riskLevel) {
+    public void setRiskLevel(Integer riskLevel) {
         this.riskLevel = riskLevel;
     }
-
 
     public List<Asset> getAssets() {
         return assets;
     }
 
-
     public void setAssets(List<Asset> assets) {
         this.assets = assets;
     }
 
+    public void setPortfolioId(String portfolioId) {
+        this.portfolioId = portfolioId;
+    }
 
+    // Getter for total VaR
+    public Double getTotalVaR() {
+        return totalVaR;
+    }
 
+    // Setter for total VaR
+    public void setTotalVaR(Double totalVaR) {
+        this.totalVaR = totalVaR;
+    }
 
+    // Getter for total Stress Test
+    public Double getTotalStressTest() {
+        return totalStressTest;
+    }
 
-
-
-
-
-
+    // Setter for total Stress Test
+    public void setTotalStressTest(Double totalStressTest) {
+        this.totalStressTest = totalStressTest;
+    }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

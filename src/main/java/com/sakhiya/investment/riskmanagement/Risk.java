@@ -1,43 +1,150 @@
 package com.sakhiya.investment.riskmanagement;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.util.UUID;
+
 
 @Entity
 @Table(name = "risk")
+public class Risk
+{
 
-public class Risk {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id; // Unique identifier for the risk
 
-    private String type; // e.g., "VaR", "StressTest", "CreditRisk"
-    private String description; // Details about the risk
-    private Double value; // Calculated risk value (e.g., VaR amount)
+    private String type; // "VaR", "StressTest", etc. Used to distinguish risk type
+    private String description; // Short description of the risk
+    private Double value; // Main numeric outcome for aggregation/reporting
+    private LocalDate calculationDate; // When the risk was calculated
+    private Double confidenceLevel; // Relevant for VaR (e.g., 95% or 99%)
+    private String timeHorizon; // Relevant for VaR (e.g., "1 day", "10 days")
+    private String scenario; // Relevant for StressTest
+    private String currency; // Currency of the value
+    //intended to store complex results, like:Full VaR calculations with multiple confidence intervals, Stress Test scenarios and Historical or detailed analytics in JSON format
+    @Lob //Stands for: Large Object. Tells JPA that this field may contain a large amount of data, which wouldn’t fit in a standard column like VARCHAR(255).
+    private String detailsJson; // Store full detailed calculation results (JSON for analytics/export)
 
     @ManyToOne
     @JoinColumn(name = "asset_id")
     private com.sakhiya.investment.portfoliomanagement.asset.Asset asset; // The asset this risk is associated with
 
     // Constructors
-    public Risk() {}
+    public Risk() { }
 
-    public Risk(String type, String description, Double value, com.sakhiya.investment.portfoliomanagement.asset.Asset asset) {
+    public Risk(String type, String description, Double value,
+                com.sakhiya.investment.portfoliomanagement.asset.Asset asset)
+    {
         this.type = type;
         this.description = description;
         this.value = value;
         this.asset = asset;
     }
 
-    // Getters and setters
-    public UUID getId() { return id; }
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public Double getValue() { return value; }
-    public void setValue(Double value) { this.value = value; }
-    // alternative to importing the class
-    public com.sakhiya.investment.portfoliomanagement.asset.Asset getAsset() { return asset; }
-    public void setAsset(com.sakhiya.investment.portfoliomanagement.asset.Asset asset) { this.asset = asset; }
+    // Getters and Setters
+    public UUID getId()
+    {
+        return id;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    public Double getValue()
+    {
+        return value;
+    }
+
+    public void setValue(Double value)
+    {
+        this.value = value;
+    }
+
+    public LocalDate getCalculationDate()
+    {
+        return calculationDate;
+    }
+
+    public void setCalculationDate(LocalDate calculationDate)
+    {
+        this.calculationDate = calculationDate;
+    }
+
+    public Double getConfidenceLevel()
+    {
+        return confidenceLevel;
+    }
+
+    public void setConfidenceLevel(Double confidenceLevel)
+    {
+        this.confidenceLevel = confidenceLevel;
+    }
+
+    public String getTimeHorizon()
+    {
+        return timeHorizon;
+    }
+
+    public void setTimeHorizon(String timeHorizon)
+    {
+        this.timeHorizon = timeHorizon;
+    }
+
+    public String getScenario()
+    {
+        return scenario;
+    }
+
+    public void setScenario(String scenario)
+    {
+        this.scenario = scenario;
+    }
+
+    public String getCurrency()
+    {
+        return currency;
+    }
+
+    public void setCurrency(String currency)
+    {
+        this.currency = currency;
+    }
+
+    public String getDetailsJson()
+    {
+        return detailsJson;
+    }
+
+    public void setDetailsJson(String detailsJson)
+    {
+        this.detailsJson = detailsJson;
+    }
+
+    public com.sakhiya.investment.portfoliomanagement.asset.Asset getAsset()
+    {
+        return asset;
+    }
+
+    public void setAsset(com.sakhiya.investment.portfoliomanagement.asset.Asset asset)
+    {
+        this.asset = asset;
+    }
 }

@@ -4,26 +4,30 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 
 public class SustainablePortfolio extends Portfolio {
 
+    // JPA requires a public no-arg constructor
+    public SustainablePortfolio() {
+        super();
+    }
+
     
     private Map<String, Integer> esgScores;      // ESG scores per holding
     private List<String> themeFocus;             // Themes like 'climate', 'human rights'
     private Map<String, String> impactTargets;   // Expected social/environmental impact
-    private double overallEsgScore;              // Cached overall ESG score
+    private Integer overallEsgScore;              // Cached overall ESG score
     private List<String> excludedSectors;        // Industries to avoid (e.g., tobacco, fossil fuels)
     private List<String> preferredSectors;       // Preferred sectors for sustainable investment
     private LocalDate lastUpdated;               // For reporting and tracking updates
     private String complianceStatus;             // Compliance with regulations or standards (e.g., UNPRI, SFDR)
 
-    public SustainablePortfolio(String portfolioName, UUID clientId, LocalDate createdAt,
-            LocalDate updatedAt, String investmentGoal, Double riskLevel, BigDecimal totalValue, List<Asset> assets,
+    public SustainablePortfolio(String portfolioName, String clientId, LocalDate createdAt,
+            LocalDate updatedAt, String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets,
             Map<String, Integer> esgScores, List<String> themeFocus, Map<String, String> impactTargets,
-            double overallEsgScore, List<String> excludedSectors, List<String> preferredSectors, LocalDate lastUpdated,
+            Integer overallEsgScore, List<String> excludedSectors, List<String> preferredSectors, LocalDate lastUpdated,
             String complianceStatus) {
         super(portfolioName, clientId, createdAt, updatedAt, investmentGoal, riskLevel, totalValue, assets);
         this.esgScores = esgScores;
@@ -48,7 +52,7 @@ public class SustainablePortfolio extends Portfolio {
         this.impactTargets = impactTargets;
     }
 
-    public void setOverallEsgScore(double overallEsgScore) {
+    public void setOverallEsgScore(Integer overallEsgScore) {
         this.overallEsgScore = overallEsgScore;
     }
 
@@ -80,7 +84,7 @@ public class SustainablePortfolio extends Portfolio {
         return impactTargets;
     }
 
-    public double getOverallEsgScore() {
+    public Integer getOverallEsgScore() {
         return overallEsgScore;
     }
 
