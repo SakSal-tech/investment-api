@@ -90,3 +90,146 @@ Accept: application/json
 # Delete user by ID
 DELETE http://localhost:8080/api/users/{{userId}}
 Accept: application/json
+
+
+# Portfolio Endpoints
+### Get all portfolios
+GET http://localhost:8080/api/portfolios
+
+### Get portfolio by ID
+GET http://localhost:8080/api/portfolios/{{portfolioId}}
+
+### Create a new portfolio
+POST http://localhost:8080/api/portfolios
+Content-Type: application/json
+
+{
+  "name": "Sample Portfolio",
+  "description": "A test portfolio"
+}
+
+### Update a portfolio
+PUT http://localhost:8080/api/portfolios/{{portfolioId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Portfolio",
+  "description": "Updated description"
+}
+
+### Delete a portfolio
+DELETE http://localhost:8080/api/portfolios/{{portfolioId}}
+
+# Sustainable Portfolio Endpoints
+### Get all sustainable portfolios
+GET http://localhost:8080/api/sustainable-portfolios
+
+### Get sustainable portfolio by ID
+GET http://localhost:8080/api/sustainable-portfolios/{{id}}
+
+### Create a new sustainable portfolio
+POST http://localhost:8080/api/sustainable-portfolios
+Content-Type: application/json
+
+{
+  "name": "Green Portfolio",
+  "complianceStatus": "Compliant",
+  "themeFocus": ["Renewable Energy"],
+  "excludedSectors": ["Tobacco"],
+  "overallEsgScore": 85
+}
+
+### Update a sustainable portfolio
+PUT http://localhost:8080/api/sustainable-portfolios/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Updated Green Portfolio",
+  "complianceStatus": "Non-Compliant",
+  "themeFocus": ["Water Conservation"],
+  "excludedSectors": ["Coal"],
+  "overallEsgScore": 70
+}
+
+### Delete a sustainable portfolio
+DELETE http://localhost:8080/api/sustainable-portfolios/{{id}}
+
+### Find by compliance status
+GET http://localhost:8080/api/sustainable-portfolios/compliance/{{status}}
+
+### Find by theme focus
+GET http://localhost:8080/api/sustainable-portfolios/theme/{{theme}}
+
+### Find by excluded sector
+GET http://localhost:8080/api/sustainable-portfolios/excluded-sector/{{sector}}
+
+### Find by ESG score (greater than or equal)
+GET http://localhost:8080/api/sustainable-portfolios/esg-score/{{score}}
+
+# Risk Endpoints
+### Get all risks
+GET http://localhost:8080/api/risks
+
+### Get risk by ID
+GET http://localhost:8080/api/risks/{{id}}
+
+### Create a new risk
+POST http://localhost:8080/api/risks
+Content-Type: application/json
+
+{
+  "type": "VaR",
+  "assetId": "asset123",
+  "calculationDate": "2024-01-01",
+  "value": 10000.0,
+  "confidenceLevel": 0.95,
+  "scenario": "Market Crash",
+  "currency": "USD"
+}
+
+### Update a risk
+PUT http://localhost:8080/api/risks/{{id}}
+Content-Type: application/json
+
+{
+  "type": "VaR",
+  "assetId": "asset123",
+  "calculationDate": "2024-01-01",
+  "value": 12000.0,
+  "confidenceLevel": 0.99,
+  "scenario": "Interest Rate Shock",
+  "currency": "EUR"
+}
+
+### Delete a risk
+DELETE http://localhost:8080/api/risks/{{id}}
+
+### Find risks by type
+GET http://localhost:8080/api/risks/type/{{type}}
+
+### Find risks by asset ID
+GET http://localhost:8080/api/risks/asset/{{assetId}}
+
+### Find risks by calculation date
+GET http://localhost:8080/api/risks/date/{{date}}
+
+### Find risks by value (greater than or equal)
+GET http://localhost:8080/api/risks/value/{{value}}
+
+### Find risks by confidence level
+GET http://localhost:8080/api/risks/confidence/{{confidenceLevel}}
+
+### Find risks by scenario
+GET http://localhost:8080/api/risks/scenario/{{scenario}}
+
+### Find risks by currency
+GET http://localhost:8080/api/risks/currency/{{currency}}
+
+### Calculate VaR (Value at Risk)
+POST http://localhost:8080/api/risks/var?assetId={{assetId}}&confidenceLevel={{confidenceLevel}}&timeHorizonDays={{days}}
+Accept: application/json
+
+### Calculate a stress test
+POST http://localhost:8080/api/risks/stress-test?assetId={{assetId}}&scenario={{scenario}}
+Accept: application/json
+

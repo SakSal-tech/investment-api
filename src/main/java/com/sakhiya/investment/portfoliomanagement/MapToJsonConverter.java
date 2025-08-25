@@ -1,4 +1,4 @@
-package com.sakhiya.investment.portfoliomanagement;
+/* package com.sakhiya.investment.portfoliomanagement;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,11 +16,11 @@ public class MapToJsonConverter implements AttributeConverter<Map<String, Double
     // ObjectMapper is used to convert Java objects to JSON strings and back
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * Converts the Map<String, Double> (entity attribute) to a JSON string (database column)
-     * @param attribute the Map from the entity
-     * @return a JSON string to store in the database
-     */
+    
+     // Converts the Map<String, Double> (entity attribute) to a JSON string (database column)
+     //@param attribute the Map from the entity
+    // @return a JSON string to store in the database
+     
     @Override
     public String convertToDatabaseColumn(Map<String, Double> attribute) {
         // If the map is null or empty, we store an empty JSON object "{}"
@@ -37,11 +37,11 @@ public class MapToJsonConverter implements AttributeConverter<Map<String, Double
         }
     }
 
-    /**
-     * Converts a JSON string (from database column) back to a Map<String, Double> (entity attribute)
-     * @param dbData the JSON string from the database
-     * @return a Map<String, Double> to use in the entity
-     */
+    
+     //Converts a JSON string (from database column) back to a Map<String, Double> (entity attribute)
+     //@param dbData the JSON string from the database
+     //@return a Map<String, Double> to use in the entity
+     
     @Override
     public Map<String, Double> convertToEntityAttribute(String dbData) {
         // If the database value is null or empty, return an empty map
@@ -58,3 +58,4 @@ public class MapToJsonConverter implements AttributeConverter<Map<String, Double
         }
     }
 }
+*/

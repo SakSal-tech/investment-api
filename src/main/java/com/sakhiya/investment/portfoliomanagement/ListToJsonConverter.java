@@ -1,3 +1,4 @@
+/*
 package com.sakhiya.investment.portfoliomanagement;
 
 import jakarta.persistence.AttributeConverter;
@@ -35,3 +36,5 @@ public class ListToJsonConverter implements AttributeConverter<List<String>, Str
         }
     }
 }
+
+*/

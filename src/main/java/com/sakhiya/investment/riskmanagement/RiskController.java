@@ -1,19 +1,58 @@
+
 package com.sakhiya.investment.riskmanagement;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.time.LocalDate;
+import com.sakhiya.investment.portfoliomanagement.asset.Asset;
+import com.sakhiya.investment.portfoliomanagement.asset.AssetService;
 
 @RestController
 @RequestMapping("/api/risks")
 public class RiskController {
 
     private final RiskService riskService;
+    private final AssetService assetService;
 
-    public RiskController(RiskService riskService) {
+    public RiskController(RiskService riskService, AssetService assetService) {
         this.riskService = riskService;
+        this.assetService = assetService;
+    }
+    /**
+     * Calculate and persist a VaR (Value at Risk) for a given asset.
+     * @param assetId The ID of the asset
+     * @param confidenceLevel The confidence level (e.g., 0.95 or 0.99)
+     * @param timeHorizonDays The time horizon in days
+     * @return The persisted Risk object representing the VaR result
+     */
+    @PostMapping("/var")
+    public ResponseEntity<Risk> calculateVaR(
+        @RequestParam String assetId,
+        @RequestParam double confidenceLevel,
+        @RequestParam int timeHorizonDays) {
+    Asset asset = assetService.getAssetById(assetId)
+        .orElseThrow(() -> new NoSuchElementException("Asset with id " + assetId + " not found"));
+    Risk risk = riskService.calculateVaR(asset, confidenceLevel, timeHorizonDays);
+    return ResponseEntity.ok(risk);
+    }
+
+    /**
+     * Calculate and persist a Stress Test risk for a given asset and scenario.
+     * @param assetId The ID of the asset to stress test
+     * @param scenario The stress scenario to apply
+     * @return The persisted Risk object representing the stress test result
+     */
+    @PostMapping("/stress-test")
+    public ResponseEntity<Risk> calculateStressTest(
+        @RequestParam String assetId,
+        @RequestParam String scenario) {
+    Asset asset = assetService.getAssetById(assetId)
+        .orElseThrow(() -> new NoSuchElementException("Asset with id " + assetId + " not found"));
+    Risk risk = riskService.stressTestCalculator(asset, scenario);
+    return ResponseEntity.ok(risk);
     }
 
     // Get all risks
@@ -107,6 +146,21 @@ public class RiskController {
     public List<Risk> getRisksByCurrency(@PathVariable String currency) {
         return riskService.getByCurrency(currency);
     }
+
+
+        /**
+     * Calculate and persist a Stress Test risk for a given asset and scenario.
+     * - Accepts assetId and scenario as request parameters.
+     * - In a real application, you would fetch the Asset from the DB or service layer.
+     * - This is a stub: you must implement asset lookup and pass the Asset object to the service.
+     * - Example scenarios: "Market Crash", "Interest Rate Shock", etc.
+     *
+     * @param assetId The ID of the asset to stress test (String)
+     * @param scenario The stress scenario to apply (String)
+     * @return The persisted Risk object representing the stress test result
+     * @throws UnsupportedOperationException until asset lookup is implemented
+     */
+
 
     
     

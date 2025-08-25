@@ -1,110 +1,136 @@
-    // Find by excluded sector
 package com.sakhiya.investment.portfoliomanagement;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Optional;
 
+import java.util.List;
+
+/**
+ * REST Controller for SustainablePortfolio.
+ * Delegates business logic to SustainablePortfolioService.
+ */
 @RestController
 @RequestMapping("/api/sustainable-portfolios")
 public class SustainablePortfolioController {
 
-    private final SustainablePortfolioRepository sustainablePortfolioRepository;
+    private final SustainablePortfolioService service;
 
-    public SustainablePortfolioController(SustainablePortfolioRepository sustainablePortfolioRepository) {
-        this.sustainablePortfolioRepository = sustainablePortfolioRepository;
+    public SustainablePortfolioController(SustainablePortfolioService service) {
+        this.service = service;
     }
 
-    // Get all sustainable portfolios
+    /**
+     * GET /api/sustainable-portfolios
+     * Fetch all portfolios.
+     */
     @GetMapping
     public List<SustainablePortfolio> getAllSustainablePortfolios() {
-        return sustainablePortfolioRepository.findAll();
+        return service.getAllPortfolios();
     }
 
-    // Get sustainable portfolio by ID
+    /**
+     * GET /api/sustainable-portfolios/{id}
+     * Fetch a portfolio by ID.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<SustainablePortfolio> getSustainablePortfolioById(@PathVariable String id) {
-        Optional<SustainablePortfolio> portfolio = sustainablePortfolioRepository.findById(id);
-        return portfolio.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Create new sustainable portfolio
-    @PostMapping
-    public SustainablePortfolio createSustainablePortfolio(@RequestBody SustainablePortfolio portfolio) {
-        return sustainablePortfolioRepository.save(portfolio);
-    }
-
-    // Update sustainable portfolio
-    @PutMapping("/{id}")
-    public ResponseEntity<SustainablePortfolio> updateSustainablePortfolio(@PathVariable String id, @RequestBody SustainablePortfolio updatedPortfolio) {
-        return sustainablePortfolioRepository.findById(id)
-                .map(existingPortfolio -> {
-                    updatedPortfolio.setPortfolioId(id);
-                    SustainablePortfolio saved = sustainablePortfolioRepository.save(updatedPortfolio);
-                    return ResponseEntity.ok(saved);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Delete sustainable portfolio
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSustainablePortfolio(@PathVariable String id) {
-        if (sustainablePortfolioRepository.existsById(id)) {
-            sustainablePortfolioRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
+        try {
+            return ResponseEntity.ok(service.getPortfolioById(id));
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // Find by compliance status
+    /**
+     * POST /api/sustainable-portfolios
+     * Create a new portfolio.
+     */
+    @PostMapping
+    public ResponseEntity<SustainablePortfolio> createSustainablePortfolio(@RequestBody SustainablePortfolio portfolio) {
+        try {
+            SustainablePortfolio created = service.createPortfolio(portfolio);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build(); // validation failed
+        }
+    }
+
+    /**
+     * PUT /api/sustainable-portfolios/{id}
+     * Update an existing portfolio.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<SustainablePortfolio> updateSustainablePortfolio(
+            @PathVariable String id,
+            @RequestBody SustainablePortfolio updatedPortfolio) {
+
+        try {
+            return ResponseEntity.ok(service.updatePortfolio(id, updatedPortfolio));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * DELETE /api/sustainable-portfolios/{id}
+     * Delete a portfolio by ID.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSustainablePortfolio(@PathVariable String id) {
+        try {
+            service.deletePortfolio(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * GET /api/sustainable-portfolios/compliance/{status}
+     * Find portfolios by compliance status (simple String field – works with JPA).
+     */
     @GetMapping("/compliance/{status}")
     public List<SustainablePortfolio> getByComplianceStatus(@PathVariable String status) {
-        return sustainablePortfolioRepository.findByComplianceStatus(status);
+        return service.getAllPortfolios()
+                .stream()
+                .filter(p -> status.equalsIgnoreCase(p.getComplianceStatus()))
+                .toList();
     }
 
-    // Find by theme focus
+    /**
+     * GET /api/sustainable-portfolios/theme/{theme}
+     * (In-memory filter, since JPA cannot query inside List<String>)
+     */
     @GetMapping("/theme/{theme}")
     public List<SustainablePortfolio> getByThemeFocus(@PathVariable String theme) {
-        // return sustainablePortfolioRepository.findByThemeFocusContaining(theme); // COMMENTED OUT: JPA cannot query elements within a List<String> field using 'Containing' for collections
-        return java.util.Collections.emptyList();
+        return service.getAllPortfolios()
+                .stream()
+                .filter(p -> p.getThemeFocus() != null && p.getThemeFocus().contains(theme))
+                .toList();
     }
-    // @GetMapping("/excluded-sector/{sector}")
-    // public List<SustainablePortfolio> getByExcludedSector(@PathVariable String sector) {
-    //     return sustainablePortfolioRepository.findByExcludedSectorsContaining(sector);
-    // }
 
-    // Find by preferred sector
-    // @GetMapping("/preferred-sector/{sector}")
-    // public List<SustainablePortfolio> getByPreferredSector(@PathVariable String sector) {
-    //     return sustainablePortfolioRepository.findByPreferredSectorsContaining(sector);
-    // }
+    /**
+     * GET /api/sustainable-portfolios/excluded-sector/{sector}
+     * (In-memory filter, since excludedSectors is stored as JSON in DB)
+     */
+    @GetMapping("/excluded-sector/{sector}")
+    public List<SustainablePortfolio> getByExcludedSector(@PathVariable String sector) {
+        return service.getAllPortfolios()
+                .stream()
+                .filter(p -> p.getExcludedSectors() != null && p.getExcludedSectors().contains(sector))
+                .toList();
+    }
 
-    // Find by ESG score greater than or equal to a value
+    /**
+     * GET /api/sustainable-portfolios/esg-score/{score}
+     * Query by numeric ESG score (simple DB-supported field).
+     */
     @GetMapping("/esg-score/{score}")
     public List<SustainablePortfolio> getByEsgScore(@PathVariable int score) {
-        return sustainablePortfolioRepository.findByOverallEsgScoreGreaterThanEqual(score);
+        return service.getAllPortfolios()
+                .stream()
+                .filter(p -> p.getOverallEsgScore() >= score)
+                .toList();
     }
-
-    // Find by last updated after a certain date (format: yyyy-MM-dd)
-    // @GetMapping("/last-updated-after/{date}")
-    // public List<SustainablePortfolio> getByLastUpdatedAfter(@PathVariable String date) {
-    //     java.time.LocalDate parsedDate = java.time.LocalDate.parse(date);
-    //     return sustainablePortfolioRepository.findByLastUpdatedAfter(parsedDate);
-    // }
-
-    // Find by impact target key
-    // @GetMapping("/impact-target/{key}")
-    // public List<SustainablePortfolio> getByImpactTargetKey(@PathVariable String key) {
-    //     return sustainablePortfolioRepository.findByImpactTargetsKey(key);
-    // }
-
-    // Find by ESG score key
-    // @GetMapping("/esg-score-key/{key}")
-    // public List<SustainablePortfolio> getByEsgScoreKey(@PathVariable String key) {
-    //     return sustainablePortfolioRepository.findByEsgScoresKey(key);
-    // }
-
 }

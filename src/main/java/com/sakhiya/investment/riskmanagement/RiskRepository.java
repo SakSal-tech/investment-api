@@ -1,3 +1,4 @@
+   
 package com.sakhiya.investment.riskmanagement;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,5 +31,15 @@ public interface RiskRepository extends JpaRepository<Risk, String> {
     List<Risk> findByCurrency(String currency);
 
     // Find the first Risk with type "VaR" from a list
+    //useful when finding the latest or primary VaR for an asset.
     Optional<Risk> findFirstByAsset_AssetIdAndType(String assetId, String type);
+
+     /**
+     * Find all Risk records of type "StressTest" for a given scenario.
+     * Useful for reporting, analytics, or regulatory stress test queries.
+     * @param type Should be "StressTest" to filter only stress test risks
+     * @param scenario The scenario name (e.g., "Market Crash")
+     * @return List of Risk objects matching the type and scenario
+     */
+    List<Risk> findByTypeAndScenario(String type, String scenario);
 }
