@@ -3,10 +3,11 @@ package com.sakhiya.investment.portfoliomanagement.asset;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.UUID;
 
+// CHANGED: Now uses UUID as the ID type for Asset
 @Repository
-public interface AssetRepository extends JpaRepository<Asset, UUID> {
+public interface AssetRepository extends JpaRepository<Asset, String> {
+ 
     // Find assets by name
     List<Asset> findByName(String name);
 

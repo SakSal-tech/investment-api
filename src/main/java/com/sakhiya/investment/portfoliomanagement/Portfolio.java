@@ -1,4 +1,3 @@
-
 package com.sakhiya.investment.portfoliomanagement;
 
 import java.util.List;
@@ -12,69 +11,64 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
-// I need these libraries to make the created date and updated date automaticlly update whenever any changes happens in any fields  in this table
-import org.springframework.data.annotation.CreatedDate;//Marks a field in entity to be automatically set with the creation timestamp when the entity is first saved.
-import org.springframework.data.annotation.LastModifiedDate;//Every time the entity is updated through the repository, Spring Data updates this field automatically.
-import jakarta.persistence.EntityListeners; //The listener class that implements the logic for auditing. It hooks into the entity lifecycle events and automatically sets the annotated fields (createdAt, updatedAt) with timestamps
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;//handles populating the fields.
+// Libraries to make createdAt and updatedAt automatically updated whenever any changes happen in this table
+import org.springframework.data.annotation.CreatedDate; // Marks a field to be automatically set when entity is first saved
+import org.springframework.data.annotation.LastModifiedDate; // Updated automatically on any entity update
+import jakarta.persistence.EntityListeners; // Hooks into entity lifecycle events for auditing
+import org.springframework.data.jpa.domain.support.AuditingEntityListener; // Handles populating auditing fields
+
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.InheritanceType;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class) // Enables automatic population of @CreatedDate and @LastModifiedDate
 @Table(name = "portfolio")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // All subclasses are stored in one database table. Tells JPA how
-                                                      // to map a class hierarchy (parent + subclasses) to database
-                                                      // tables
-@DiscriminatorColumn(name = "portfolio_type", discriminatorType = DiscriminatorType.STRING) // distinguish. Adds a
-                                                                                            // special column to the
-                                                                                            // table to indicate which
-                                                                                            // subclass a row represents
-                                                                                            // "EQUITY", "BOND",
-                                                                                            // "MIXED".
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // All subclasses stored in one table
+@DiscriminatorColumn(name = "portfolio_type", discriminatorType = DiscriminatorType.STRING) 
+// Adds a column to indicate which subclass a row represents: "EQUITY", "BOND", "MIXED"
 
 public class Portfolio {
 
-    // auto generate primary key
+    // Auto-generate primary key as UUID stored in CHAR(36) in DB
     @Id
     @Column(name = "portfolioId", columnDefinition = "CHAR(36)")
-    private String portfolioId = UUID.randomUUID().toString(); // store UUID as String
-    // generates a proper 36-char string that maps to CHAR(36) in MySQL.
-    // I had issues with the way UUID is stored and the way is presented by postman
-    // problem how with JPA and Hibernate was mapping it
+    private String portfolioId = UUID.randomUUID().toString(); 
+    // Generates a 36-char string that maps to CHAR(36) in MySQL
+    // Fixes issues with JPA/Hibernate UUID mapping and Postman display
 
-    private String portfolioName; // optional descriptive name
-    private String clientId; // foreign key to Client entity
+    private String portfolioName; // Optional descriptive name
+    private String clientId; // Foreign key to Client entity
+
     @CreatedDate
-    private LocalDate createdAt; // creation timestamp
+    private LocalDate createdAt; // Creation date, auto-set on first save
+
     @LastModifiedDate
-    private LocalDate updatedAt; // last update timestamp
+    private LocalDate updatedAt; // Auto-updated whenever entity is updated
+
     private String investmentGoal; // Growth, Income, Capital Preservation
     private Integer riskLevel; // 1-5 scale
 
-    private BigDecimal totalValue; // optional, can be computed
-    // Aggregated numeric total of all VaR (Value at Risk) calculations across all
-    // assets in this portfolio.
-    // Useful for quick reporting, dashboards, and historical tracking without
-    // recalculating every time.
+    private BigDecimal totalValue; // Optional, can be computed
+
+    // Aggregated numeric total of all VaR calculations across all assets
+    // Useful for quick reporting, dashboards, historical tracking without recalculating every time
     private Double totalVaR;
 
-    // Aggregated numeric total of all Stress Test calculations across all assets in
-    // this portfolio.
-    // Provides an overall view of portfolio exposure under various stress
-    // scenarios.
+    // Aggregated numeric total of all Stress Test calculations across all assets
+    // Provides an overall view of portfolio exposure under stress scenarios
     private Double totalStressTest;
 
-    @OneToMany(mappedBy = "portfolio") // one portfolio could have many assets
-    private List<Asset> assets;// List of all assets associated to this portfolio
+    @OneToMany(mappedBy = "portfolio") // One portfolio can have many assets
+    private List<Asset> assets; // List of all assets associated with this portfolio
 
+    // Default no-arg constructor required by JPA
     public Portfolio() {
     }
 
+    // Constructor with all fields
     public Portfolio(String portfolioName, String clientId, LocalDate createdAt, LocalDate updatedAt,
             String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets) {
         this.portfolioName = portfolioName;
@@ -87,10 +81,16 @@ public class Portfolio {
         this.assets = assets;
     }
 
+    // Getter/setter for portfolioId
     public String getPortfolioId() {
         return portfolioId;
     }
 
+    public void setPortfolioId(String portfolioId) {
+        this.portfolioId = portfolioId;
+    }
+
+    // Getter/setter for portfolioName
     public String getPortfolioName() {
         return portfolioName;
     }
@@ -99,6 +99,7 @@ public class Portfolio {
         this.portfolioName = portfolioName;
     }
 
+    // Getter/setter for clientId
     public String getClientId() {
         return clientId;
     }
@@ -107,23 +108,27 @@ public class Portfolio {
         this.clientId = clienttId;
     }
 
+    // Getter/setter for createdAt
     public LocalDate getCreatedAt() {
         return this.createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = LocalDate.now();// date portfolio created which is current date
-        ;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt != null ? createdAt : LocalDate.now(); 
+        // Defaults to current date if null
     }
 
+    // Getter/setter for updatedAt
     public LocalDate getUpdatedAt() {
         return this.updatedAt;
     }
 
     public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = LocalDate.now();// initially same as date created unless it is updated.
+        this.updatedAt = updatedAt != null ? updatedAt : LocalDate.now(); 
+        // Defaults to current date if null
     }
 
+    // Getter/setter for totalValue
     public BigDecimal getTotalValue() {
         return totalValue;
     }
@@ -132,6 +137,7 @@ public class Portfolio {
         this.totalValue = totalValue;
     }
 
+    // Getter/setter for investmentGoal
     public String getInvestmentGoal() {
         return investmentGoal;
     }
@@ -140,6 +146,7 @@ public class Portfolio {
         this.investmentGoal = investmentGoal;
     }
 
+    // Getter/setter for riskLevel
     public Integer getRiskLevel() {
         return riskLevel;
     }
@@ -148,6 +155,7 @@ public class Portfolio {
         this.riskLevel = riskLevel;
     }
 
+    // Getter/setter for assets
     public List<Asset> getAssets() {
         return assets;
     }
@@ -156,28 +164,21 @@ public class Portfolio {
         this.assets = assets;
     }
 
-    public void setPortfolioId(String portfolioId) {
-        this.portfolioId = portfolioId;
-    }
-
-    // Getter for total VaR
+    // Getter/setter for totalVaR
     public Double getTotalVaR() {
         return totalVaR;
     }
 
-    // Setter for total VaR
     public void setTotalVaR(Double totalVaR) {
         this.totalVaR = totalVaR;
     }
 
-    // Getter for total Stress Test
+    // Getter/setter for totalStressTest
     public Double getTotalStressTest() {
         return totalStressTest;
     }
 
-    // Setter for total Stress Test
     public void setTotalStressTest(Double totalStressTest) {
         this.totalStressTest = totalStressTest;
     }
-
 }

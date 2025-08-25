@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import com.sakhiya.investment.util.Validations;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +35,8 @@ public class UserServiceIntegrationTest {
     @DisplayName("checks email is valid and returns false if not")
     void testEmailIsValid() {
         String invalidEmail = "abcd@hotmail"; 
-        boolean isValid = userService.isValidEmail(invalidEmail);
+    // moved email validations to the shared validations class
+    boolean isValid = Validations.isValidEmail(invalidEmail);
         assertFalse(isValid);
     }
     @Autowired

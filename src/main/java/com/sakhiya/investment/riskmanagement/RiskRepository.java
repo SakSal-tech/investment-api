@@ -4,15 +4,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @Repository
-public interface RiskRepository extends JpaRepository<Risk, UUID> {
+public interface RiskRepository extends JpaRepository<Risk, String> {
     // Find by type
     List<Risk> findByType(String type);
 
-    // Find by asset ID
-    List<Risk> findByAsset_AssetId(UUID assetId);
+    // Find by asset ID. returns a list of multiple Risk records associated with a single asset
+    List<Risk> findByAsset_AssetId(String assetId);
 
     // Find by calculation date
     List<Risk> findByCalculationDate(LocalDate calculationDate);
@@ -28,4 +28,7 @@ public interface RiskRepository extends JpaRepository<Risk, UUID> {
 
     // Find by currency
     List<Risk> findByCurrency(String currency);
+
+    // Find the first Risk with type "VaR" from a list
+    Optional<Risk> findFirstByAsset_AssetIdAndType(String assetId, String type);
 }

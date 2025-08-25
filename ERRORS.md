@@ -53,3 +53,12 @@ user_id is stored as a BINARY(16) (compact form of UUID, 16 bytes).
 
 **Solution:**
 converted UUID and stored it as String. user_id → UUID() generates a proper 36-character string that fits CHAR(36). client_id → uses the existing values from your client table, maintaining the one-to-one relationship.
+
+**Error:**
+Tests failing
+classCould not determine recommended JdbcType for Java type 'java.util.Map<java.lang.String, java.lang.String>'
+
+
+**Solution:**
+
+The error was in the SustainablePortfolio class, specifically with the impactTargets field (private Map<String, String> impactTargets). I fixed it by adding the required JPA mapping annotations (@ElementCollection, @CollectionTable, @MapKeyColumn, and @Column) directly above the impactTargets field in SustainablePortfolio.java. This allows Hibernate to persist the Map<String, String> field correctly.

@@ -3,16 +3,18 @@ package com.sakhiya.investment.riskmanagement;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
-
-
 @Entity
 @Table(name = "risk")
 public class Risk
+
 {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id; // Unique identifier for the risk
+    @Column(name = "risk_id", columnDefinition = "CHAR(36)")
+    private String riskId = UUID.randomUUID().toString();  // store UUID as String
+    //generates a proper 36-char string that maps to CHAR(36) in MySQL. 
+    //I had issues with the way UUID is stored and the way is presented by postman problem how with JPA and Hibernate was mapping it 
+
 
     private String type; // "VaR", "StressTest", etc. Used to distinguish risk type
     private String description; // Short description of the risk
@@ -43,9 +45,9 @@ public class Risk
     }
 
     // Getters and Setters
-    public UUID getId()
+    public String getId()
     {
-        return id;
+        return riskId;
     }
 
     public String getType()
@@ -147,4 +149,6 @@ public class Risk
     {
         this.asset = asset;
     }
+
+
 }

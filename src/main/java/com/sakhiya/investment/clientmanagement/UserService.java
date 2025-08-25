@@ -1,6 +1,8 @@
 package com.sakhiya.investment.clientmanagement;
 
 import org.springframework.stereotype.Service;
+// importing the Validations class to use isValidEmail method.
+import com.sakhiya.investment.util.Validations;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
@@ -173,20 +175,7 @@ public class UserService {
 
     }
 
-    public  boolean isValidEmail(String email) {
-        if (email == null)
-            return false;
-        // ^[A-Za-z0-9+_.-]+ → one or more letters, digits, +, _, ., or - (the local
-        // part before the @)
-        // @ → literal @
-        // [A-Za-z0-9.-]+ → one or more letters, digits, . or - (the domain name)
-        // \\. → a literal dot (escaped in Java as \\.)
-        // [A-Za-z]{2,}$ → at least 2 letters (the top-level domain, e.g. com, org, uk)
-
-        boolean isValidEmail = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$").matcher(email)
-                .find();
-        return isValidEmail;
-    }
+    // Use Validations.isValidEmail(email) from com.sakhiya.investment.util.Validations for email validation.
 
     /**
      * 
@@ -200,6 +189,10 @@ public class UserService {
         }
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already exists");
+        }
+        // Validate email format
+        if (!Validations.isValidEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format");
         }
         // Hash the raw password before saving
         if (user.getRawPassword() == null || user.getRawPassword().isBlank()) {
@@ -220,6 +213,9 @@ public class UserService {
         // Update email if provided and different
         String newEmail = updatedUser.getEmail();
         if (newEmail != null && !newEmail.equals(existingUser.getEmail())) {
+            if (!Validations.isValidEmail(newEmail)) {
+                throw new IllegalArgumentException("Invalid email format");
+            }
             existingUser.setEmail(newEmail);
         }
         // Update password if provided

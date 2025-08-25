@@ -1,113 +1,154 @@
+
 package com.sakhiya.investment.portfoliomanagement;
 
-import java.math.BigDecimal;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 
+// JPA entity representing a sustainable investment portfolio
+@Entity
 public class SustainablePortfolio extends Portfolio {
 
-    // JPA requires a public no-arg constructor
-    public SustainablePortfolio() {
-        super();
-    }
+    // Primary key for the portfolio
+    @Id
+    private String portfolioId;
 
-    
-    private Map<String, Integer> esgScores;      // ESG scores per holding
-    private List<String> themeFocus;             // Themes like 'climate', 'human rights'
-    private Map<String, String> impactTargets;   // Expected social/environmental impact
-    private Integer overallEsgScore;              // Cached overall ESG score
-    private List<String> excludedSectors;        // Industries to avoid (e.g., tobacco, fossil fuels)
-    private List<String> preferredSectors;       // Preferred sectors for sustainable investment
-    private LocalDate lastUpdated;               // For reporting and tracking updates
-    private String complianceStatus;             // Compliance with regulations or standards (e.g., UNPRI, SFDR)
+    // Name of the portfolio
+    @Column(name = "portfolio_name")
+    private String portfolioName;
 
-    public SustainablePortfolio(String portfolioName, String clientId, LocalDate createdAt,
-            LocalDate updatedAt, String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets,
-            Map<String, Integer> esgScores, List<String> themeFocus, Map<String, String> impactTargets,
-            Integer overallEsgScore, List<String> excludedSectors, List<String> preferredSectors, LocalDate lastUpdated,
-            String complianceStatus) {
-        super(portfolioName, clientId, createdAt, updatedAt, investmentGoal, riskLevel, totalValue, assets);
-        this.esgScores = esgScores;
-        this.themeFocus = themeFocus;
-        this.impactTargets = impactTargets;
-        this.overallEsgScore = overallEsgScore;
-        this.excludedSectors = excludedSectors;
-        this.preferredSectors = preferredSectors;
-        this.lastUpdated = lastUpdated;
-        this.complianceStatus = complianceStatus;
-    }
+    // ID of the client who owns this portfolio
+    @Column(name = "client_id")
+    private String clientId;
 
-    public void setEsgScores(Map<String, Integer> esgScores) {
-        this.esgScores = esgScores;
-    }
+    // Portfolio creation timestamp
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 
-    public void setThemeFocus(List<String> themeFocus) {
-        this.themeFocus = themeFocus;
-    }
+    // Portfolio last updated timestamp
+    @Column(name = "updated_at")
+    private LocalDate updatedAt;
 
-    public void setImpactTargets(Map<String, String> impactTargets) {
-        this.impactTargets = impactTargets;
-    }
+    // Added lastUpdated field for compatibility with PortfolioService and SustainablePortfolioService
+    @Column(name = "last_updated")
+    private String lastUpdated;
+    // Getter and setter for lastUpdated (added for compatibility)
+    public String getLastUpdated() { return lastUpdated; }
+    public void setLastUpdated(String lastUpdated) { this.lastUpdated = lastUpdated; }
 
-    public void setOverallEsgScore(Integer overallEsgScore) {
-        this.overallEsgScore = overallEsgScore;
-    }
+    // ESG (Environmental, Social, Governance) scores stored as JSON in the DB
+    @Column(name = "esg_scores")
+    @Convert(converter = MapToJsonConverter.class)
+    private Map<String, Double> esgScores = new HashMap<>();
 
-    public void setExcludedSectors(List<String> excludedSectors) {
-        this.excludedSectors = excludedSectors;
-    }
+    // Impact targets stored as JSON in the DB
+    @Column(name = "impact_targets")
+    @Convert(converter = MapToJsonConverter.class)
+    private Map<String, Double> impactTargets = new HashMap<>();
 
-    public void setPreferredSectors(List<String> preferredSectors) {
-        this.preferredSectors = preferredSectors;
-    }
+    // Themes the portfolio focuses on, stored as JSON array
+    @Column(name = "theme_focus")
+    @Convert(converter = ListToJsonConverter.class)
+    private List<String> themeFocus = new ArrayList<>();
 
-    public void setLastUpdated(LocalDate lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
+    // Sectors excluded from investment, stored as JSON array
+    @Column(name = "excluded_sectors")
+    @Convert(converter = ListToJsonConverter.class)
+    private List<String> excludedSectors = new ArrayList<>();
 
-    public void setComplianceStatus(String complianceStatus) {
-        this.complianceStatus = complianceStatus;
-    }
+    // Preferred sectors for investment, stored as JSON array
+    @Column(name = "preferred_sectors")
+    @Convert(converter = ListToJsonConverter.class)
+    private List<String> preferredSectors = new ArrayList<>();
 
-    public Map<String, Integer> getEsgScores() {
-        return esgScores;
-    }
+    // Investment goal of the portfolio (e.g., growth, income)
+    @Column(name = "investment_goal")
+    private String investmentGoal;
 
-    public List<String> getThemeFocus() {
-        return themeFocus;
-    }
+    // Risk level of the portfolio (e.g., low, medium, high)
+    @Column(name = "risk_level")
+    private Integer riskLevel;
 
-    public Map<String, String> getImpactTargets() {
-        return impactTargets;
-    }
+    // Total value of the portfolio
+    @Column(name = "total_value")
+    private java.math.BigDecimal totalValue;
 
-    public Integer getOverallEsgScore() {
-        return overallEsgScore;
-    }
+    // Overall ESG score for the portfolio
+    @Column(name = "overall_esg_score")
+    private Double overallEsgScore;
 
-    public List<String> getExcludedSectors() {
-        return excludedSectors;
-    }
+    // Compliance status (e.g., compliant, non-compliant)
+    @Column(name = "compliance_status")
+    private String complianceStatus;
 
-    public List<String> getPreferredSectors() {
-        return preferredSectors;
-    }
+    // List of assets in the portfolio
+    @OneToMany
+    private List<Asset> assets = new ArrayList<>();
 
-    public LocalDate getLastUpdated() {
-        return lastUpdated;
-    }
+    // --------------------- Getters and Setters ---------------------
 
-    public String getComplianceStatus() {
-        return complianceStatus;
-    }
+    public String getPortfolioId() { return portfolioId; }
+    public void setPortfolioId(String portfolioId) { this.portfolioId = portfolioId; }
 
-    
-    
+    public String getPortfolioName() { return portfolioName; }
+    public void setPortfolioName(String portfolioName) { this.portfolioName = portfolioName; }
 
+    public String getClientId() { return clientId; }
+    public void setClientId(String clientId) { this.clientId = clientId; }
+   
+    @Override
+    public LocalDate getCreatedAt() { return createdAt; }
+    @Override
+    public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
+    @Override
+    public LocalDate getUpdatedAt() { return updatedAt; }
+    @Override
+    public void setUpdatedAt(LocalDate updatedAt) { this.updatedAt = updatedAt; }
 
+    public Map<String, Double> getEsgScores() { return esgScores; }
+    public void setEsgScores(Map<String, Double> esgScores) { this.esgScores = esgScores; }
 
+    public Map<String, Double> getImpactTargets() { return impactTargets; }
+    public void setImpactTargets(Map<String, Double> impactTargets) { this.impactTargets = impactTargets; }
 
+    public List<String> getThemeFocus() { return themeFocus; }
+    public void setThemeFocus(List<String> themeFocus) { this.themeFocus = themeFocus; }
+
+    public List<String> getExcludedSectors() { return excludedSectors; }
+    public void setExcludedSectors(List<String> excludedSectors) { this.excludedSectors = excludedSectors; }
+
+    public List<String> getPreferredSectors() { return preferredSectors; }
+    public void setPreferredSectors(List<String> preferredSectors) { this.preferredSectors = preferredSectors; }
+
+    public String getInvestmentGoal() { return investmentGoal; }
+    public void setInvestmentGoal(String investmentGoal) { this.investmentGoal = investmentGoal; }
+
+    @Override
+    public Integer getRiskLevel() { return riskLevel; }
+    @Override
+    public void setRiskLevel(Integer riskLevel) { this.riskLevel = riskLevel; }
+
+    @Override
+    public java.math.BigDecimal getTotalValue() { return totalValue; }
+    @Override
+    public void setTotalValue(java.math.BigDecimal totalValue) { this.totalValue = totalValue; }
+
+    public Double getOverallEsgScore() { return overallEsgScore; }
+    public void setOverallEsgScore(Double overallEsgScore) { this.overallEsgScore = overallEsgScore; }
+
+    public String getComplianceStatus() { return complianceStatus; }
+    public void setComplianceStatus(String complianceStatus) { this.complianceStatus = complianceStatus; }
+
+    public List<Asset> getAssets() { return assets; }
+    public void setAssets(List<Asset> assets) { this.assets = assets; }
 }

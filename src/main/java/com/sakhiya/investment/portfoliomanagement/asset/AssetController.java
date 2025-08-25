@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/assets")
@@ -24,7 +23,7 @@ public class AssetController {
 
     // Get asset by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Asset> getAssetById(@PathVariable UUID id) {
+    public ResponseEntity<Asset> getAssetById(@PathVariable String id) {
         Optional<Asset> asset = assetRepository.findById(id);
         return asset.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -38,7 +37,7 @@ public class AssetController {
 
     // Update asset
     @PutMapping("/{id}")
-    public ResponseEntity<Asset> updateAsset(@PathVariable UUID id, @RequestBody Asset updatedAsset) {
+    public ResponseEntity<Asset> updateAsset(@PathVariable String id, @RequestBody Asset updatedAsset) {
         return assetRepository.findById(id)
                 .map(existingAsset -> {
                     Asset saved = assetRepository.save(updatedAsset);
@@ -49,7 +48,7 @@ public class AssetController {
 
     // Delete asset
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAsset(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteAsset(@PathVariable String id) {
         if (assetRepository.existsById(id)) {
             assetRepository.deleteById(id);
             return ResponseEntity.noContent().build();

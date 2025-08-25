@@ -3,103 +3,111 @@ package com.sakhiya.investment.riskmanagement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.NoSuchElementException;
 import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/risks")
 public class RiskController {
 
-    private final RiskRepository riskRepository;
+    private final RiskService riskService;
 
-    public RiskController(RiskRepository riskRepository) {
-        this.riskRepository = riskRepository;
+    public RiskController(RiskService riskService) {
+        this.riskService = riskService;
     }
 
     // Get all risks
     @GetMapping
     public List<Risk> getAllRisks() {
-        return riskRepository.findAll();
+        return riskService.getAllRisks();
     }
 
     // Get risk by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Risk> getRiskById(@PathVariable UUID id) {
-        Optional<Risk> risk = riskRepository.findById(id);
-        return risk.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Risk> getRiskById(@PathVariable String id) {
+        Risk risk = riskService.getRiskById(id);
+        return ResponseEntity.ok(risk);
     }
-
-    // Create new risk
+    // Create risk
     @PostMapping
     public Risk createRisk(@RequestBody Risk risk) {
-        return riskRepository.save(risk);
+        return riskService.createRisk(risk);
     }
 
     // Update risk
+    /**
+     * Updates an existing Risk by its ID.
+     * @param id The ID of the risk to update (from the URL path)
+     * @param updatedRisk The new risk data (from the request body)
+     * @return 200 OK with updated risk if successful, 404 Not Found if not
+     * @throws NoSuchElementException if the risk with the given ID is not found
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<Risk> updateRisk(@PathVariable UUID id, @RequestBody Risk updatedRisk) {
-        return riskRepository.findById(id)
-                .map(existingRisk -> {
-                    // ID is auto-generated and should not be changed
-                    Risk saved = riskRepository.save(updatedRisk);
-                    return ResponseEntity.ok(saved);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Delete risk
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRisk(@PathVariable UUID id) {
-        if (riskRepository.existsById(id)) {
-            riskRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
+    public ResponseEntity<Risk> updateRisk(@PathVariable String id, @RequestBody Risk updatedRisk) {
+        try {
+            Risk risk = riskService.updateRisk(id, updatedRisk);
+            return ResponseEntity.ok(risk);
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
+    // Delete risk
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRisk(@PathVariable String id) {
+        try {
+            riskService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+
+
     // Find by type
     @GetMapping("/type/{type}")
     public List<Risk> getRisksByType(@PathVariable String type) {
-        return riskRepository.findByType(type);
+        return riskService.getByType(type);
     }
 
     // Find by asset ID
     @GetMapping("/asset/{assetId}")
-    public List<Risk> getRisksByAssetId(@PathVariable UUID assetId) {
-        return riskRepository.findByAsset_AssetId(assetId);
+    public List<Risk> getRisksByAssetId(@PathVariable String assetId) {
+        return riskService.getByAssetId(assetId);
     }
 
     // Find by calculation date
     @GetMapping("/date/{date}")
     public List<Risk> getRisksByCalculationDate(@PathVariable String date) {
         LocalDate parsedDate = LocalDate.parse(date);
-        return riskRepository.findByCalculationDate(parsedDate);
+        return riskService.getByCalculationDate(parsedDate);
     }
 
     // Find by value greater than or equal to
     @GetMapping("/value/{value}")
-    public List<Risk> getRisksByValue(@PathVariable Double value) {
-        return riskRepository.findByValueGreaterThanEqual(value);
+    public List<Risk> getRisksByValue(@PathVariable double value) {
+        return riskService.getByValueGreaterThanEqual(value);
     }
 
     // Find by confidence level
     @GetMapping("/confidence/{confidenceLevel}")
-    public List<Risk> getRisksByConfidenceLevel(@PathVariable Double confidenceLevel) {
-        return riskRepository.findByConfidenceLevel(confidenceLevel);
+    public List<Risk> getRisksByConfidenceLevel(@PathVariable double confidenceLevel) {
+        return riskService.getByConfidenceLevel(confidenceLevel);
     }
 
     // Find by scenario
     @GetMapping("/scenario/{scenario}")
     public List<Risk> getRisksByScenario(@PathVariable String scenario) {
-        return riskRepository.findByScenario(scenario);
+        return riskService.getByScenario(scenario);
     }
 
     // Find by currency
     @GetMapping("/currency/{currency}")
     public List<Risk> getRisksByCurrency(@PathVariable String currency) {
-        return riskRepository.findByCurrency(currency);
+        return riskService.getByCurrency(currency);
     }
+
+    
+    
 }

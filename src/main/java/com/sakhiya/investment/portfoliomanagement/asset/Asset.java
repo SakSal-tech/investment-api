@@ -1,9 +1,8 @@
 package com.sakhiya.investment.portfoliomanagement.asset;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -19,9 +18,13 @@ import com.sakhiya.investment.riskmanagement.Risk;
 
 @Entity
 public class Asset {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID assetId;
+    @Column(name = "asset_Id", columnDefinition = "CHAR(36)")
+    private String assetId = UUID.randomUUID().toString();  // store UUID as String
+    //generates a proper 36-char string that maps to CHAR(36) in MySQL. 
+    //I had issues with the way UUID is stored and the way is presented by postman problem how with JPA and Hibernate was mapping it 
+
 
 	private String name;
 	private Double value;
@@ -51,7 +54,7 @@ public class Asset {
 		this.portfolio = portfolio;
 	}
 
-	public UUID getAssetId() {
+	public String getAssetId() {
 		return assetId;
 	}
 

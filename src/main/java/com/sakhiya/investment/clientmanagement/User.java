@@ -1,7 +1,6 @@
 package com.sakhiya.investment.clientmanagement;
 
 import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,21 +8,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-
-// remember to add dependency spring-boot-starter-validation to the POM file
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 
-
 @Entity
 @Table(name = "user")
-public class User {// for normalisation and scalability reasons I moved user details to its table insted of fields in client tabls
+public class User {
     //@Id
     //@GeneratedValue(strategy = GenerationType.UUID)
-    
     @Id
     @Column(name = "userId", columnDefinition = "CHAR(36)")
-        private String userId;  
+    private String userId;
 
 
     // moved this to generateId
@@ -34,7 +29,7 @@ public class User {// for normalisation and scalability reasons I moved user det
     
     private String username;
     private String passwordHash;
-     @NotBlank
+    @NotBlank
     @Email
     private String email;
     private Boolean isActive;
@@ -42,23 +37,23 @@ public class User {// for normalisation and scalability reasons I moved user det
 
     @PrePersist
     public void generateId() {
-         if (this.userId == null) {
+        if (this.userId == null) {
             this.userId = UUID.randomUUID().toString();
-    }
+        }
     }
 
     public void setUserId(String userId) {
-    
         this.userId = userId;
     }
 
 
     @OneToOne // one client has one user acount
-   @JoinColumn(name = "client_id", columnDefinition = "CHAR(36)") // joining clientId which is PK in Client table here as FK
+    @JoinColumn(name = "client_id", columnDefinition = "CHAR(36)") // joining clientId which is PK in Client table here as FK
     private Client client;
-        // no args constructor for mock tests and JPA(Java Persistence API)
-        public User(){}
-        public User(String userId, String username, String passwordHash, String email, Client client) {
+
+    // no args constructor for mock tests and JPA(Java Persistence API)
+    public User() {}
+    public User(String userId, String username, String passwordHash, String email, Client client) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -71,15 +66,9 @@ public class User {// for normalisation and scalability reasons I moved user det
         this.username = username;
     }
 
-    /*public void setPasswordHash(String passwordHash) {
-        // password cannot be stored just as plain String. it has to be encrypted.
-        PasswordEncoder encoder = new BCryptPasswordEncoder(); // BCryptPasswordEncoder is a class that implements the PasswordEncoder interface using the BCrypt hashing algorithm.
-        this.passwordHash = encoder.encode(passwordHash); // hash password before saving
-    }*/
-
     public void setPasswordHash(String passwordHash) {
-    this.passwordHash = passwordHash; // just assign, no encoding here
-}
+        this.passwordHash = passwordHash; // just assign, no encoding here
+    }
 
 
     public void setEmail(String email) {
@@ -94,14 +83,13 @@ public class User {// for normalisation and scalability reasons I moved user det
     public String getResetToken() {
         return resetToken;
     }
-    
+
     public void generateResetToken() {
         // automatically generate a password reset token
         this.resetToken = UUID.randomUUID().toString();
     }
 
     public void setResetToken(String resetToken) {
-        // automatically generate a password reset token
         this.resetToken = resetToken;
     }
 
@@ -125,27 +113,22 @@ public class User {// for normalisation and scalability reasons I moved user det
         return client;
     }
 
-        public Boolean getIsActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
-
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
 
-    // In your User.java class
+    // Not persisted, only used for registration/update
+    private String rawPassword;
 
-private String rawPassword; // Not persisted, only used for registration/update
+    public String getRawPassword() {
+        return rawPassword;
+    }
 
-public String getRawPassword() {
-    return rawPassword;
-}
-
-public void setRawPassword(String rawPassword) {
-    this.rawPassword = rawPassword;
-}
-
-
-
+    public void setRawPassword(String rawPassword) {
+        this.rawPassword = rawPassword;
+    }
 }

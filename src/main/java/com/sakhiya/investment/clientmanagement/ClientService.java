@@ -4,6 +4,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import com.sakhiya.investment.util.Validations;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -90,25 +91,28 @@ public class ClientService {
     public Client createClient(Client client) throws IllegalArgumentException, OptimisticLockingFailureException {
         if (client.getFirstName() == null || client.getFirstName().isBlank()) {
             throw new IllegalArgumentException("First Name cannot be null");
-
         }
         if (client.getSurname() == null || client.getSurname().isBlank()) {
             throw new IllegalArgumentException("Surname cannot be null");
-
         }
         if (client.getEmail() == null || client.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email cannot be null or blank");
-
+        }
+        if (!Validations.isValidEmail(client.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        if (client.getDob() != null && !Validations.isValidDate(client.getDob().toString())) {
+            throw new IllegalArgumentException("Invalid date of birth format, expected yyyy-MM-dd");
+        }
+        if (client.getCreatedAt() != null && !Validations.isValidDate(client.getCreatedAt().toString())) {
+            throw new IllegalArgumentException("Invalid createdAt date format, expected yyyy-MM-dd");
         }
         if (client.getAddress() == null || client.getAddress().isBlank()) {
             throw new IllegalArgumentException("Address cannot be null or blank");
-
         }
         if (client.getPostCode() == null || client.getPostCode().isBlank()) {
             throw new IllegalArgumentException("Postcode cannot be null or blank");
-
         }
-
         return clientRepository.save(client);
     }
 
@@ -117,11 +121,33 @@ public class ClientService {
     // .orElseThrow is a concise way to handle the case where the client might not
     // exist.
     public Client updateClient(String clientId, Client updatedClient) throws NoSuchElementException {
+        if (updatedClient.getFirstName() == null || updatedClient.getFirstName().isBlank()) {
+            throw new IllegalArgumentException("First Name cannot be null");
+        }
+        if (updatedClient.getSurname() == null || updatedClient.getSurname().isBlank()) {
+            throw new IllegalArgumentException("Surname cannot be null");
+        }
+        if (updatedClient.getEmail() == null || updatedClient.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email cannot be null or blank");
+        }
+        if (!Validations.isValidEmail(updatedClient.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        if (updatedClient.getDob() != null && !Validations.isValidDate(updatedClient.getDob().toString())) {
+            throw new IllegalArgumentException("Invalid date of birth format, expected yyyy-MM-dd");
+        }
+        if (updatedClient.getCreatedAt() != null && !Validations.isValidDate(updatedClient.getCreatedAt().toString())) {
+            throw new IllegalArgumentException("Invalid createdAt date format, expected yyyy-MM-dd");
+        }
+        if (updatedClient.getAddress() == null || updatedClient.getAddress().isBlank()) {
+            throw new IllegalArgumentException("Address cannot be null or blank");
+        }
+        if (updatedClient.getPostCode() == null || updatedClient.getPostCode().isBlank()) {
+            throw new IllegalArgumentException("Postcode cannot be null or blank");
+        }
         Client currentClient = clientRepository.findByClientId(clientId)
                 .orElseThrow(() -> new NoSuchElementException("Client with this id:" + clientId + " is not found"));
-        // update database fiel(ds with new values: This is the new version of the Client —
-        // usually passed in via the request body from the client (e.g. via JSON in a
-        // PUT request).
+        // update database fields with new values
         currentClient.setFirstName(updatedClient.getFirstName());
         currentClient.setSurname(updatedClient.getSurname());
         currentClient.setEmail(updatedClient.getEmail());

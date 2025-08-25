@@ -1,14 +1,16 @@
 package com.sakhiya.investment.portfoliomanagement;
 
-
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 import com.sakhiya.investment.riskmanagement.Risk;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Service class to handle operations related to Portfolio,
@@ -27,7 +29,7 @@ public class PortfolioService {
 
     /**
      * Recalculate and store total VaR and StressTest values for a portfolio.
-     * This method loops through all assets and their risks and updates the portfolio totals.
+     * Also ensures any collections in SustainablePortfolio are initialized before saving.
      *
      * @param portfolio the portfolio to update
      */
@@ -35,22 +37,17 @@ public class PortfolioService {
     public void updatePortfolioRiskTotals(Portfolio portfolio) {
         if (portfolio == null) return; // safety check
 
-        double totalVaR = 0.0;        // accumulator for VaR
-        double totalStress = 0.0;     // accumulator for StressTest
+        double totalVaR = 0.0;
+        double totalStress = 0.0;
 
-        // Loop through all assets in the portfolio
         if (portfolio.getAssets() != null) {
             for (Asset asset : portfolio.getAssets()) {
                 if (asset.getRisks() != null) {
-                    // Loop through all risks of the asset
                     for (Risk risk : asset.getRisks()) {
                         if (risk.getValue() != null) {
-                            // Sum VaR risks
                             if ("VaR".equalsIgnoreCase(risk.getType())) {
                                 totalVaR += risk.getValue();
-                            }
-                            // Sum StressTest risks
-                            else if ("StressTest".equalsIgnoreCase(risk.getType())) {
+                            } else if ("StressTest".equalsIgnoreCase(risk.getType())) {
                                 totalStress += risk.getValue();
                             }
                         }
@@ -59,25 +56,27 @@ public class PortfolioService {
             }
         }
 
-        // Store totals in the portfolio entity
         portfolio.setTotalVaR(totalVaR);
         portfolio.setTotalStressTest(totalStress);
 
-        // Persist the updated portfolio
+        // pattern matching for instanceof.If portfolio is an instance of SustainablePortfolio
+        // For SustainablePortfolio, ensure Map/List fields are initialized before save
+        if (portfolio instanceof SustainablePortfolio sustainable) {
+            if (sustainable.getEsgScores() == null) sustainable.setEsgScores(new java.util.HashMap<>());
+            if (sustainable.getImpactTargets() == null) sustainable.setImpactTargets(new java.util.HashMap<>());
+            if (sustainable.getThemeFocus() == null) sustainable.setThemeFocus(new ArrayList<>());
+            if (sustainable.getExcludedSectors() == null) sustainable.setExcludedSectors(new ArrayList<>());
+            if (sustainable.getPreferredSectors() == null) sustainable.setPreferredSectors(new ArrayList<>());
+        }
+        // This prevents JPA from throwing errors when persisting null collections
+
         portfolioRepository.save(portfolio);
     }
 
-    /**
-     * Calculate total VaR dynamically without storing in the database.
-     *
-     * @param portfolio the portfolio to calculate
-     * @return total VaR value
-     */
     public double calculateTotalVaR(Portfolio portfolio) {
         if (portfolio == null || portfolio.getAssets() == null) return 0.0;
 
         double totalVaR = 0.0;
-
         for (Asset asset : portfolio.getAssets()) {
             if (asset.getRisks() == null) continue;
             for (Risk risk : asset.getRisks()) {
@@ -86,21 +85,13 @@ public class PortfolioService {
                 }
             }
         }
-
         return totalVaR;
     }
 
-    /**
-     * Calculate total StressTest dynamically without storing in the database.
-     *
-     * @param portfolio the portfolio to calculate
-     * @return total StressTest value
-     */
     public double calculateTotalStressTest(Portfolio portfolio) {
         if (portfolio == null || portfolio.getAssets() == null) return 0.0;
 
         double totalStress = 0.0;
-
         for (Asset asset : portfolio.getAssets()) {
             if (asset.getRisks() == null) continue;
             for (Risk risk : asset.getRisks()) {
@@ -109,19 +100,11 @@ public class PortfolioService {
                 }
             }
         }
-
         return totalStress;
     }
 
-    /**
-     * Retrieve all risks in a portfolio (VaR, StressTest, others)
-     *
-     * @param portfolio the portfolio
-     * @return list of all risks
-     */
     public List<Risk> getAllPortfolioRisks(Portfolio portfolio) {
         List<Risk> allRisks = new ArrayList<>();
-
         if (portfolio == null || portfolio.getAssets() == null) return allRisks;
 
         for (Asset asset : portfolio.getAssets()) {
@@ -129,9 +112,67 @@ public class PortfolioService {
                 allRisks.addAll(asset.getRisks());
             }
         }
-
         return allRisks;
     }
 
-    // You can add other portfolio-related methods here later
+    public List<Portfolio> getAllClients() {
+        return portfolioRepository.findAll();
+    }
+
+    public Portfolio getPortfolio(String portfolioId) throws NoSuchElementException {
+        // The id is a String (UUID) not int
+        return portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Portfolio with this id: " + portfolioId + " is not found"));
+    }
+
+    public List<Portfolio> getClientsByEmailServer(String clientId) {
+        if (clientId == null || clientId.isBlank()) {
+            throw new IllegalArgumentException("clientId must not be null or blank");
+        }
+        return portfolioRepository.findByClientId(clientId);
+    }
+
+    public List<Portfolio> getPortfoliosdByInvestmentGoal(String investmentGoal) {
+        if (investmentGoal == null || investmentGoal.isBlank()) {
+            throw new IllegalArgumentException("investmentGoal must not be null or blank");
+        }
+        return portfolioRepository.findByInvestmentGoal(investmentGoal);
+    }
+
+    public List<Portfolio> getPortfoliosByRiskLevel(Integer riskLevel) {
+        if (riskLevel == null) {
+            throw new IllegalArgumentException("riskLevel must not be null");
+        }
+        return portfolioRepository.findByRiskLevel(riskLevel);
+    }
+
+    public List<Portfolio> getPortifolisByCreatedAtAfter(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("date must not be null");
+        }
+        return portfolioRepository.findByCreatedAtAfter(date);
+    }
+
+    public List<Portfolio> findPortfoliosByTotalValueGreaterThan(BigDecimal value) {
+        if (value == null) {
+            throw new IllegalArgumentException("value must not be null");
+        }
+        return portfolioRepository.findByTotalValueGreaterThan(value);
+    }
+
+    public List<Portfolio> findPortfoliosByTotalVaRGreaterThan(Double totalVaR) {
+        if (totalVaR == null) {
+            throw new IllegalArgumentException("totalVaR must not be null");
+        }
+        return portfolioRepository.findByTotalVaRGreaterThan(totalVaR);
+    }
+
+    public List<Portfolio> findPortfoliosByTotalStressTestGreaterThan(Double totalStressTest) {
+        if (totalStressTest == null) {
+            throw new IllegalArgumentException("totalStressTest must not be null");
+        }
+        return portfolioRepository.findByTotalStressTestGreaterThan(totalStressTest);
+    }
+
 }
