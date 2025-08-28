@@ -1,6 +1,7 @@
 package com.sakhiya.investment.portfoliomanagement;
 
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
+import com.sakhiya.investment.portfoliomanagement.asset.AssetService;
 import com.sakhiya.investment.riskmanagement.Risk;
 
 import org.springframework.stereotype.Service;
@@ -29,56 +30,75 @@ public class PortfolioService {
 
     /**
      * Recalculate and store total VaR and StressTest values for a portfolio.
-     * Also ensures any collections in SustainablePortfolio are initialized before saving.
-     *
+     * Also ensures any collections in SustainablePortfolio are initialized before
+     * saving.
+     * 
      * @param portfolio the portfolio to update
      */
-    @Transactional
-    public void updatePortfolioRiskTotals(Portfolio portfolio) {
-        if (portfolio == null) return; // safety check
+    @Transactional // Marks the method as transactional: all database changes succeed or fail
+                   // together
+    public void updatePortfolioRiskTotals(Portfolio portfolio, AssetService assetService) {
+        if (portfolio == null)
+            return; // Safety check: exit if portfolio is null
 
-        double totalVaR = 0.0;
-        double totalStress = 0.0;
+        double totalVaR = 0.0; // Initialise total Value at Risk (VaR)
+        double totalStress = 0.0; // Initialise total Stress Test risk
 
-        if (portfolio.getAssets() != null) {
-            for (Asset asset : portfolio.getAssets()) {
-                if (asset.getRisks() != null) {
-                    for (Risk risk : asset.getRisks()) {
-                        if (risk.getValue() != null) {
-                            if ("VaR".equalsIgnoreCase(risk.getType())) {
-                                totalVaR += risk.getValue();
-                            } else if ("StressTest".equalsIgnoreCase(risk.getType())) {
-                                totalStress += risk.getValue();
-                            }
-                        }
-                    }
-                }
+        if (portfolio.getAssets() != null) { // Check if portfolio has assets
+            for (Asset asset : portfolio.getAssets()) { // Loop through each asset
+                // Refactored: removed the old nested loops that summed VaR/StressTest for each asset
+                // Removed lines:
+                // for (Risk risk : asset.getRisks()) {
+                // if (risk.getValue() != null) {
+                // if ("VaR".equalsIgnoreCase(risk.getType())) {
+                // totalVaR += risk.getValue();
+                // } else if ("StressTest".equalsIgnoreCase(risk.getType())) {
+                // totalStress += risk.getValue();
+                // }
+                // }
+                // }
+                //Reason for removal:
+                // 1. Logic for summing risks already exists in
+                // AssetService.getTotalRiskValueByType().
+                // 2. Avoids duplicate code DRY (Don't Repeat Yourself) principle.
+                // 3. Makes PortfolioService simpler and more readable KISS principle.
+                // New code delegates calculation to AssetService:
+                totalVaR += assetService.getTotalRiskValueByType(asset.getAssetId(), "VaR"); // DRY
+                totalStress += assetService.getTotalRiskValueByType(asset.getAssetId(), "StressTest"); // DRY
             }
         }
 
-        portfolio.setTotalVaR(totalVaR);
-        portfolio.setTotalStressTest(totalStress);
+        portfolio.setTotalVaR(totalVaR); // Save calculated totalVaR to the portfolio
+        portfolio.setTotalStressTest(totalStress); // Save calculated totalStress to the portfolio
 
-        // pattern matching for instanceof.If portfolio is an instance of SustainablePortfolio
-        // For SustainablePortfolio, ensure Map/List fields are initialized before save
+        // Pattern matching for instanceof. If portfolio is a SustainablePortfolio:
         if (portfolio instanceof SustainablePortfolio sustainable) {
-            if (sustainable.getEsgScores() == null) sustainable.setEsgScores(new java.util.HashMap<>());
-            if (sustainable.getImpactTargets() == null) sustainable.setImpactTargets(new java.util.HashMap<>());
-            if (sustainable.getThemeFocus() == null) sustainable.setThemeFocus(new ArrayList<>());
-            if (sustainable.getExcludedSectors() == null) sustainable.setExcludedSectors(new ArrayList<>());
-            if (sustainable.getPreferredSectors() == null) sustainable.setPreferredSectors(new ArrayList<>());
+            // Ensure all Map/List fields are initializsd before save to prevent JPA errors
+            //// KISS: simple initialisation
+            if (sustainable.getEsgScores() == null)
+                sustainable.setEsgScores(new java.util.HashMap<>()); 
+            if (sustainable.getImpactTargets() == null)
+                sustainable.setImpactTargets(new java.util.HashMap<>()); 
+            if (sustainable.getThemeFocus() == null)
+                sustainable.setThemeFocus(new ArrayList<>()); 
+            if (sustainable.getExcludedSectors() == null)
+                sustainable.setExcludedSectors(new ArrayList<>()); 
+            if (sustainable.getPreferredSectors() == null)
+                sustainable.setPreferredSectors(new ArrayList<>()); 
         }
-        // This prevents JPA from throwing errors when persisting null collections
 
-        portfolioRepository.save(portfolio);
+        portfolioRepository.save(portfolio); // Persist the portfolio with updated totals and initialized fields
+
     }
 
     public double calculateTotalVaR(Portfolio portfolio) {
-        if (portfolio == null || portfolio.getAssets() == null) return 0.0;
+        if (portfolio == null || portfolio.getAssets() == null)
+            return 0.0;
 
         double totalVaR = 0.0;
         for (Asset asset : portfolio.getAssets()) {
-            if (asset.getRisks() == null) continue;
+            if (asset.getRisks() == null)
+                continue;
             for (Risk risk : asset.getRisks()) {
                 if ("VaR".equalsIgnoreCase(risk.getType()) && risk.getValue() != null) {
                     totalVaR += risk.getValue();
@@ -89,11 +109,13 @@ public class PortfolioService {
     }
 
     public double calculateTotalStressTest(Portfolio portfolio) {
-        if (portfolio == null || portfolio.getAssets() == null) return 0.0;
+        if (portfolio == null || portfolio.getAssets() == null)
+            return 0.0;
 
         double totalStress = 0.0;
         for (Asset asset : portfolio.getAssets()) {
-            if (asset.getRisks() == null) continue;
+            if (asset.getRisks() == null)
+                continue;
             for (Risk risk : asset.getRisks()) {
                 if ("StressTest".equalsIgnoreCase(risk.getType()) && risk.getValue() != null) {
                     totalStress += risk.getValue();
@@ -105,7 +127,8 @@ public class PortfolioService {
 
     public List<Risk> getAllPortfolioRisks(Portfolio portfolio) {
         List<Risk> allRisks = new ArrayList<>();
-        if (portfolio == null || portfolio.getAssets() == null) return allRisks;
+        if (portfolio == null || portfolio.getAssets() == null)
+            return allRisks;
 
         for (Asset asset : portfolio.getAssets()) {
             if (asset.getRisks() != null) {

@@ -18,12 +18,7 @@ public class RiskService {
         this.riskRepository = riskRepository;
     }
 
-    // -------------------- CRUD methods --------------------
-
-    /**
-     * Fetch all Risk records from the database.
-     * Useful for dashboards or batch processing.
-     */
+    //Fetch all Risk records from the database.
     public List<Risk> getAllRisks() {
         return riskRepository.findAll();
     }
@@ -142,13 +137,9 @@ public class RiskService {
     // -------------------- VaR Calculation --------------------
 
     /**
-     * Calculate VaR (Value at Risk) for a given asset, persist (save) it as a Risk
-     * object in the database.
-     * VaR estimates the maximum expected loss at a given confidence level and time
-     * horizon.
-     * <p>
-     * Note: This method saves the calculated Risk entity to the repository and
-     * returns the persisted object.
+     * Calculate VaR (Value at Risk) for a given asset, persist (save) it as a Risk object in the database.
+     * VaR estimates the maximum expected loss at a given confidence level and time  horizon.
+     * This method saves the calculated Risk entity to the repository and returns the persisted object.
      */
     public Risk calculateVaR(Asset asset, double confidenceLevel, int timeHorizonDays) {
         double varValue = varCalculator(asset, confidenceLevel, timeHorizonDays);
@@ -218,7 +209,7 @@ public class RiskService {
     List<Double> prices = priceRepository.findPricesByAsset(asset.getAssetId());
     List<Double> returns = new ArrayList<>();
     for (int i = 1; i < prices.size(); i++) {
-        //prices.get(i) = today’s closing price. yesterday’s closing price prices.get(i-1). Take away yesterday's 
+        //prices.get(i) = toda's closing price. yesterday's closing price prices.get(i-1). Take away yesterday's 
         //returns.add(...) → add this daily return to the list of all daily returns
         returns.add((prices.get(i) - prices.get(i-1)) / prices.get(i-1));
     }
@@ -260,7 +251,7 @@ public class RiskService {
         double mean = calculateMean(returns);
         double sumSquares = 0;
         for (double r : returns) {
-            //pow squares each deviation power of 2. Square it so that negatives don’t cancel positives e.g.  +0.05 and -0.05 would average to zero, which hides risk
+            //pow squares each deviation power of 2. Square it so that negatives don't cancel positives e.g.  +0.05 and -0.05 would average to zero, which hides risk
             sumSquares += Math.pow(r - mean, 2);// For each return:(r - mean) = How far is the return from the average?
         }
         //find variance which is the average of the squared deviations from the mean. Variance shows how volatile an asset
@@ -288,7 +279,7 @@ public class RiskService {
 
     /**
      * Uses probability & historical volatilitysuch as Historical events. Analysts look at past crises:
-     * 2008 financial crash: many assets dropped ~30–40% in days. 2020 COVID shock: S&P 500 fell ~35% in a month.
+     * 2008 financial crash: many assets dropped ~30-40% in days. 2020 COVID shock: S&P 500 fell ~35% in a month.
      * Stress Tests ask:“What if a really extreme scenario happens, regardless of probability?”
      * Calculate and persist a Stress Test risk for a given asset and scenario.
      * - Applies a scenario-based shock to the asset value (e.g., market crash,

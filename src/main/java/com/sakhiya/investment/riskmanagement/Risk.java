@@ -1,5 +1,6 @@
 package com.sakhiya.investment.riskmanagement;
 
+import com.sakhiya.investment.portfoliomanagement.asset.Asset;// need to use asset to link risks to assets
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -25,12 +26,12 @@ public class Risk
     private String scenario; // Relevant for StressTest
     private String currency; // Currency of the value
     //intended to store complex results, like:Full VaR calculations with multiple confidence intervals, Stress Test scenarios and Historical or detailed analytics in JSON format
-    @Lob //Stands for: Large Object. Tells JPA that this field may contain a large amount of data, which wouldn’t fit in a standard column like VARCHAR(255).
+    @Lob //Stands for: Large Object. Tells JPA that this field may contain a large amount of data, which wouldn't fit in a standard column like VARCHAR(255).
     private String detailsJson; // Store full detailed calculation results (JSON for analytics/export)
 
     @ManyToOne
     @JoinColumn(name = "asset_id")
-    private com.sakhiya.investment.portfoliomanagement.asset.Asset asset; // The asset this risk is associated with
+    private Asset asset; // The asset this risk is associated with
 
     // Constructors
     public Risk() { }

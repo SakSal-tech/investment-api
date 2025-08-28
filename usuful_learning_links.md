@@ -3,7 +3,7 @@
 
 A  list of resources, videos, articles, and documentation that helped me learn and build this project.
 
-## Java & Spring Boot
+# Java & Spring Boot
 - [Spring Data JPA Reference](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
 - [Baeldung: Spring Boot Guide](https://www.baeldung.com/spring-boot)
 
@@ -16,7 +16,9 @@ A  list of resources, videos, articles, and documentation that helped me learn a
 - [Stack Overflow: JPA UUID to CHAR(36)](https://stackoverflow.com/questions/40230202/jpa-hibernate-uuid-to-char36)
 - [Hibernate User Guide: UUID mapping](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#basic-uuid)
 
+# how to write postman collection json file 
 
+https://www.youtube.com/watch?v=XM6kh_jnUSY
 
 # Spring Security Configuration (SecurityConfig.java)
 - [YouTube: Spring Security Full Course](https://www.youtube.com/watch?v=sm-8qfMWEV8)
@@ -84,3 +86,6 @@ A  list of resources, videos, articles, and documentation that helped me learn a
 - [Stack Overflow: Which VaR method is easier?](https://quant.stackexchange.com/questions/11036/monte-carlo-var-vs-variance-covariance-var)
 
 
+# Understanding .Stream methods .filter and .ig
+
+https://www.geeksforgeeks.org/java/stream-filter-java-examples/

@@ -20,6 +20,124 @@
       }
     },
     {
+    
+        {
+          "name": "Get All Assets",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets"] } }
+        },
+        {
+          "name": "Get Asset By ID",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/:id", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", ":id"] } }
+        },
+        {
+          "name": "Create Asset",
+          "request": { "method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Asset Name\",\n  \"value\": 1000.0\n}" }, "url": { "raw": "http://localhost:8080/api/assets", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets"] } }
+        },
+        {
+          "name": "Update Asset",
+          "request": { "method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Asset\",\n  \"value\": 2000.0\n}" }, "url": { "raw": "http://localhost:8080/api/assets/:id", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", ":id"] } }
+        },
+        {
+          "name": "Delete Asset",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:8080/api/assets/:id", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", ":id"] } }
+        },
+        {
+          "name": "Find Assets By Name",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/name/:name", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "name", ":name"] } }
+        },
+        {
+          "name": "Find Assets By Value >=",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/value/:value", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "value", ":value"] } }
+        },
+        {
+          "name": "Find Assets By Portfolio ID",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/portfolio/:portfolioId", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "portfolio", ":portfolioId"] } }
+        },
+        {
+          "name": "Find Assets By Value <=",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/value/max/:value", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "value", "max", ":value"] } }
+        },
+        {
+          "name": "Find Assets By Value Between",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/value/between/:min/:max", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "value", "between", ":min", ":max"] } }
+        },
+        {
+          "name": "Find Assets By Name Contains",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/name/contains/:substring", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "name", "contains", ":substring"] } }
+        },
+        {
+          "name": "Find Assets By Exact Value",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/value/exact/:value", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "value", "exact", ":value"] } }
+        },
+        {
+          "name": "Count Assets By Portfolio ID",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/portfolio/:portfolioId/count", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "portfolio", ":portfolioId", "count"] } }
+        },
+        {
+          "name": "Find Assets By Risk Type",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/risk-type/:type", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "risk-type", ":type"] } }
+        },
+        {
+          "name": "Find Assets With Risks",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/with-risks", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "with-risks"] } }
+        },
+        {
+          "name": "Find Assets Without Risks",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/without-risks", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "without-risks"] } }
+        },
+        {
+          "name": "Get Total Risk Value By Type For Asset",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/assets/:assetId/risk-total/:riskType", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", ":assetId", "risk-total", ":riskType"] } }
+        },
+    
+    
+        {
+          "name": "Get Clients By Email Server",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/clients/search/email?emailServer=:emailServer", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "clients", "search", "email"], "query": [{"key": "emailServer", "value": ":emailServer"}] } }
+        },
+        {
+          "name": "Get Clients By Postcode",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/clients/search/postcode?postcode=:postcode", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "clients", "search", "postcode"], "query": [{"key": "postcode", "value": ":postcode"}] } }
+        },
+        {
+          "name": "Get Clients By Registration Dates",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/clients/search/dates?startDate=:startDate&endDate=:endDate", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "clients", "search", "dates"], "query": [{"key": "startDate", "value": ":startDate"}, {"key": "endDate", "value": ":endDate"}] } }
+        },
+        {
+          "name": "Get Clients By Active Status",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/clients/search/active?isActive=:isActive", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "clients", "search", "active"], "query": [{"key": "isActive", "value": ":isActive"}] } }
+        },
+        {
+          "name": "Get Total Client Count",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/clients/count", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "clients", "count"] } }
+        },
+        {
+          "name": "Get Active Client Count",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/clients/count/active", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "clients", "count", "active"] } }
+        },
+    
+    
+        {
+          "name": "Get Portfolios By Client ID",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/portfolios/client/:clientId", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "portfolios", "client", ":clientId"] } }
+        },
+        {
+          "name": "Get Portfolios By Investment Goal",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/portfolios/goal/:goal", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "portfolios", "goal", ":goal"] } }
+        },
+        {
+          "name": "Get Portfolios By Risk Level",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/portfolios/risk/:riskLevel", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "portfolios", "risk", ":riskLevel"] } }
+        },
+        {
+          "name": "Get Portfolios By Total VaR",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/portfolios/total-var/:totalVaR", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "portfolios", "total-var", ":totalVaR"] } }
+        },
+        {
+          "name": "Get Portfolios By Total Stress Test",
+          "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/portfolios/total-stress/:totalStressTest", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "portfolios", "total-stress", ":totalStressTest"] } }
+        },
+    
       "name": "Get Client By ID",
       "request": {
         "method": "GET",
@@ -304,6 +422,30 @@
         }
       }
     },
+
+  { "name": "Get User By Username Or Email", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/users/search?username=:username&email=:email", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "users", "search"], "query": [ {"key": "username", "value": ":username"}, {"key": "email", "value": ":email"} ] } } },
+  { "name": "Get All Active Users", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/users/active", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "users", "active"] } } },
+  { "name": "User Login", "request": { "method": "POST", "header": [ {"key": "Content-Type", "value": "application/x-www-form-urlencoded"} ], "body": { "mode": "urlencoded", "urlencoded": [ {"key": "username", "value": "", "type": "text"}, {"key": "password", "value": "", "type": "text"} ] }, "url": { "raw": "http://localhost:8080/api/users/login", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "users", "login"] } } },
+  { "name": "Generate Password Reset Token", "request": { "method": "POST", "header": [ {"key": "Content-Type", "value": "application/x-www-form-urlencoded"} ], "body": { "mode": "urlencoded", "urlencoded": [ {"key": "username", "value": "", "type": "text"} ] }, "url": { "raw": "http://localhost:8080/api/users/reset-token", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "users", "reset-token"] } } },
+  { "name": "Find User By Reset Token", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/users/reset-token/:token", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "users", "reset-token", ":token"] } } },
+  { "name": "Reset User Password", "request": { "method": "POST", "header": [ {"key": "Content-Type", "value": "application/x-www-form-urlencoded"} ], "body": { "mode": "urlencoded", "urlencoded": [ {"key": "username", "value": "", "type": "text"}, {"key": "newPassword", "value": "", "type": "text"}, {"key": "resetToken", "value": "", "type": "text"} ] }, "url": { "raw": "http://localhost:8080/api/users/reset-password", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "users", "reset-password"] } } },
+
+  // --- SUSTAINABLE PORTFOLIO ADVANCED ENDPOINTS ---
+  { "name": "Find Sustainable Portfolios by Compliance Status", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/compliance/:status", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "sustainable-portfolios", "compliance", ":status"] } } },
+  { "name": "Find Sustainable Portfolios by Theme Focus", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/theme/:theme", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "sustainable-portfolios", "theme", ":theme"] } } },
+  { "name": "Find Sustainable Portfolios by Excluded Sector", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/excluded-sector/:sector", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "sustainable-portfolios", "excluded-sector", ":sector"] } } },
+  { "name": "Find Sustainable Portfolios by ESG Score", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/esg-score/:score", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "sustainable-portfolios", "esg-score", ":score"] } } },
+
+  // --- RISK ADVANCED ENDPOINTS ---
+  { "name": "Find Risks by Type", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/risks/type/:type", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "type", ":type"] } } },
+  { "name": "Find Risks by Asset ID", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/risks/asset/:assetId", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "asset", ":assetId"] } } },
+  { "name": "Find Risks by Calculation Date", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/risks/date/:date", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "date", ":date"] } } },
+  { "name": "Find Risks by Value (Greater Than or Equal)", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/risks/value/:value", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "value", ":value"] } } },
+  { "name": "Find Risks by Confidence Level", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/risks/confidence/:confidenceLevel", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "confidence", ":confidenceLevel"] } } },
+  { "name": "Find Risks by Scenario", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/risks/scenario/:scenario", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "scenario", ":scenario"] } } },
+  { "name": "Find Risks by Currency", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:8080/api/risks/currency/:currency", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "currency", ":currency"] } } },
+  { "name": "Calculate VaR (Value at Risk)", "request": { "method": "POST", "header": [ {"key": "Accept", "value": "application/json"} ], "url": { "raw": "http://localhost:8080/api/risks/var?assetId=:assetId&confidenceLevel=:confidenceLevel&timeHorizonDays=:days", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "var"], "query": [ {"key": "assetId", "value": ":assetId"}, {"key": "confidenceLevel", "value": ":confidenceLevel"}, {"key": "timeHorizonDays", "value": ":days"} ] } } },
+  { "name": "Calculate Stress Test", "request": { "method": "POST", "header": [ {"key": "Accept", "value": "application/json"} ], "url": { "raw": "http://localhost:8080/api/risks/stress-test?assetId=:assetId&scenario=:scenario", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "risks", "stress-test"], "query": [ {"key": "assetId", "value": ":assetId"}, {"key": "scenario", "value": ":scenario"} ] } } },
 
     
     {
