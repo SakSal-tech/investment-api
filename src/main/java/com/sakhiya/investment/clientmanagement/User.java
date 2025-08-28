@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 public class User {
     //@Id
     //@GeneratedValue(strategy = GenerationType.UUID)
