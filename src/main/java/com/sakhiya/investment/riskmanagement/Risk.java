@@ -19,6 +19,7 @@ public class Risk
 
     private String type; // "VaR", "StressTest", etc. Used to distinguish risk type
     private String description; // Short description of the risk
+    @Column(name = "`value`")
     private Double value; // Main numeric outcome for aggregation/reporting
     private LocalDate calculationDate; // When the risk was calculated
     private Double confidenceLevel; // Relevant for VaR (e.g., 95% or 99%)
@@ -27,6 +28,7 @@ public class Risk
     private String currency; // Currency of the value
     //intended to store complex results, like:Full VaR calculations with multiple confidence intervals, Stress Test scenarios and Historical or detailed analytics in JSON format
     @Lob //Stands for: Large Object. Tells JPA that this field may contain a large amount of data, which wouldn't fit in a standard column like VARCHAR(255).
+    @Column(columnDefinition = "CLOB")
     private String detailsJson; // Store full detailed calculation results (JSON for analytics/export)
 
     @ManyToOne

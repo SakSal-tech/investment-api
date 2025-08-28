@@ -27,6 +27,7 @@ public class Asset {
 
 
 	private String name;
+	@Column(name = "`value`")
 	private Double value;
 
 	@ManyToOne
