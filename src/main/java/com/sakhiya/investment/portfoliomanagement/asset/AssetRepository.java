@@ -9,6 +9,13 @@ import java.util.List;
 @Repository
 //extends JpaRepository<Asset, String>, providing CRUD and custom query methods
 public interface AssetRepository extends JpaRepository<Asset, String> {
+<<<<<<< Updated upstream
+=======
+ 
+    // Find all risks of a given type for a specific asset
+    //findByRisks_RiskIdAndRisks_Type tells Spring Data JPA to look for assets where any associated risk has the given riskId and type.
+    List<Asset> findByRisks_RiskIdAndRisks_Type(String riskId, String type);
+>>>>>>> Stashed changes
 
     // Find assets by name
     List<Asset> findByName(String name);

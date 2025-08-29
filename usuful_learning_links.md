@@ -17,8 +17,8 @@ A  list of resources, videos, articles, and documentation that helped me learn a
 - [Hibernate User Guide: UUID mapping](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#basic-uuid)
 
 # how to write postman collection json file 
-
-https://www.youtube.com/watch?v=XM6kh_jnUSY
+- https://www.youtube.com/watch?v=XM6kh_jnUSY
+- https://www.youtube.com/watch?v=-4CNWIPJDgo
 
 # Spring Security Configuration (SecurityConfig.java)
 - [YouTube: Spring Security Full Course](https://www.youtube.com/watch?v=sm-8qfMWEV8)
