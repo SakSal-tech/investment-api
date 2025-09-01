@@ -2,6 +2,10 @@ package com.sakhiya.investment.portfoliomanagement;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.sakhiya.investment.clientmanagement.Client;
+import com.sakhiya.investment.clientmanagement.ClientRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -10,10 +14,12 @@ import java.util.Optional;
 public class PortfolioController {
 
     private final PortfolioRepository portfolioRepository;
+    private final ClientRepository clientRepository;
 
-    
-    public PortfolioController(PortfolioRepository portfolioRepository) {
+    public PortfolioController(PortfolioRepository portfolioRepository, ClientRepository clientRepository) {
         this.portfolioRepository = portfolioRepository;
+        this.clientRepository = clientRepository;
+
     }
 
     // Get all portfolios
@@ -30,10 +36,30 @@ public class PortfolioController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Create new portfolio
+    // Create new portfolio }
+    // Accept the DTO, not the entity, in controller. Fetch the related entity e.g Client using the ID from the DTO.
+    //create method in sets all the fields from  PortfolioCreateDTO onto the Portfolio entity before saving.
+    // call those methods to transfer data from the DTO to the entity before saving
     @PostMapping
-    public Portfolio createPortfolio(@RequestBody Portfolio portfolio) {
-        return portfolioRepository.save(portfolio);
+    public ResponseEntity<?> createPortfolio(@RequestBody PortfolioCreateDTO dto) {
+        Optional<Client> clientOpt = clientRepository.findById(dto.clientId);
+        if (clientOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Client not found");
+        }
+        Portfolio portfolio = new Portfolio();
+        portfolio.setPortfolioName(dto.portfolioName);
+        portfolio.setClient(clientOpt.get());
+        portfolio.setInvestmentGoal(dto.investmentGoal);
+        portfolio.setRiskLevel(dto.riskLevel);
+        portfolio.setTotalValue(dto.totalValue);
+        if (dto.createdAt != null) {
+            portfolio.setCreatedAt(java.time.LocalDate.parse(dto.createdAt));
+        }
+        if (dto.updatedAt != null) {
+            portfolio.setUpdatedAt(java.time.LocalDate.parse(dto.updatedAt));
+        }
+        Portfolio saved = portfolioRepository.save(portfolio);
+        return ResponseEntity.ok(saved);
     }
 
     // Update portfolio
@@ -61,8 +87,8 @@ public class PortfolioController {
 
     // Find portfolios by clientId
     @GetMapping("/client/{clientId}")
-    public List<Portfolio> getPortfoliosByClientId(@PathVariable String clientId) {
-        return portfolioRepository.findByClientId(clientId);
+    public List<Portfolio> getPortfoliosByClientId(@PathVariable Client client) {
+        return portfolioRepository.findByClient(client);
     }
 
     // Find portfolios by investment goal

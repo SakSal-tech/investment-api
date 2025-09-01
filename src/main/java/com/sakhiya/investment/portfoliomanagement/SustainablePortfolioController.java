@@ -5,6 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import com.sakhiya.investment.clientmanagement.*;;;
 
 /**
  * REST Controller for SustainablePortfolio.
@@ -15,9 +19,15 @@ import java.util.List;
 public class SustainablePortfolioController {
 
     private final SustainablePortfolioService service;
+    private final SustainablePortfolioRepository sustainablePortfolioRepository;
+    private final ClientRepository clientRepository;
 
-    public SustainablePortfolioController(SustainablePortfolioService service) {
+    public SustainablePortfolioController(SustainablePortfolioService service,
+                                          SustainablePortfolioRepository sustainablePortfolioRepository,
+                                          ClientRepository clientRepository) {
         this.service = service;
+        this.sustainablePortfolioRepository = sustainablePortfolioRepository;
+        this.clientRepository = clientRepository;
     }
 
     /**
@@ -47,13 +57,36 @@ public class SustainablePortfolioController {
      * Create a new portfolio.
      */
     @PostMapping
-    public ResponseEntity<SustainablePortfolio> createSustainablePortfolio(@RequestBody SustainablePortfolio portfolio) {
-        try {
-            SustainablePortfolio created = service.createPortfolio(portfolio);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build(); // validation failed
+    public ResponseEntity<SustainablePortfolio> createSustainablePortfolio(@RequestBody SustainablePortfolioCreateDTO dto) {
+        Optional<Client> clientOpt = clientRepository.findById(dto.clientId);
+        if (clientOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+        SustainablePortfolio portfolio = new SustainablePortfolio();
+        portfolio.setPortfolioName(dto.portfolioName);
+        portfolio.setClient(clientOpt.get());
+        portfolio.setInvestmentGoal(dto.investmentGoal);
+        portfolio.setRiskLevel(dto.riskLevel);
+        portfolio.setTotalValue(dto.totalValue);
+        if (dto.createdAt != null) {
+            portfolio.setCreatedAt(LocalDate.parse(dto.createdAt));
+        }
+        if (dto.updatedAt != null) {
+            portfolio.setUpdatedAt(LocalDate.parse(dto.updatedAt));
+        }
+        portfolio.setLastUpdated(dto.lastUpdated);
+        portfolio.setOverallEsgScore(dto.overallEsgScore);
+        portfolio.setComplianceStatus(dto.complianceStatus);
+        portfolio.setEsgScoreEnv(dto.esgScoreEnv);
+        portfolio.setEsgScoreSocial(dto.esgScoreSocial);
+        portfolio.setEsgScoreGov(dto.esgScoreGov);
+        portfolio.setImpactTargetCarbon(dto.impactTargetCarbon);
+        portfolio.setImpactTargetWater(dto.impactTargetWater);
+        portfolio.setThemeFocusString(dto.themeFocusString);
+        portfolio.setExcludedSectorsString(dto.excludedSectorsString);
+        portfolio.setPreferredSectorsString(dto.preferredSectorsString);
+        SustainablePortfolio saved = sustainablePortfolioRepository.save(portfolio);
+        return ResponseEntity.ok(saved);
     }
 
     /**

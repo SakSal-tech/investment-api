@@ -1,14 +1,14 @@
    
 package com.sakhiya.investment.riskmanagement;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RiskRepository extends JpaRepository<Risk, String> {
+public interface RiskRepository extends ListCrudRepository<Risk, String> {
     // Find by type
     List<Risk> findByType(String type);
 

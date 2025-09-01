@@ -1,113 +1,113 @@
 {
-	"info": {
-		"name": "Investment API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_postman_id": "investment-api-collection"
-	},
-	"item": [
-		{
-			"name": "Clients",
-			"item": [
-				{ "name": "Get All Clients", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients" ] } } },
-				{ "name": "Get Client by ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/:clientId", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", ":clientId" ] } } },
-				{ "name": "Get Clients by Email Server", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/search/email?emailServer=example.com", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", "search", "email" ], "query": [ { "key": "emailServer", "value": "example.com" } ] } } },
-				{ "name": "Get Clients by Postcode", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/search/postcode?postcode=SW1A1AA", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", "search", "postcode" ], "query": [ { "key": "postcode", "value": "SW1A1AA" } ] } } },
-				{ "name": "Get Clients by Registration Date Range", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/search/dates?startDate=2023-01-01&endDate=2023-12-31", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", "search", "dates" ], "query": [ { "key": "startDate", "value": "2023-01-01" }, { "key": "endDate", "value": "2023-12-31" } ] } } },
-				{ "name": "Get Clients by Active Status", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/search/active?isActive=true", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", "search", "active" ], "query": [ { "key": "isActive", "value": "true" } ] } } },
-				{ "name": "Get Total Client Count", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/count", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", "count" ] } } },
-				{ "name": "Get Active Client Count", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/count/active", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", "count", "active" ] } } },
-				{ "name": "Get Latest Clients (limit)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/clients/latest?limit=5", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", "latest" ], "query": [ { "key": "limit", "value": "5" } ] } } },
-				{ "name": "Create Client", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/clients", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients" ] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\"\n}" } } },
-				{ "name": "Update Client", "request": { "method": "PUT", "url": { "raw": "{{baseUrl}}/api/clients/:clientId", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", ":clientId" ] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Name\"\n}" } } },
-				{ "name": "Delete Client", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/clients/:clientId", "host": [ "{{baseUrl}}" ], "path": [ "api", "clients", ":clientId" ] } } }
-			]
-		},
-		{
-			"name": "Users",
-			"item": [
-				{ "name": "Get All Users", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users", "host": [ "{{baseUrl}}" ], "path": [ "api", "users" ] } } },
-				{ "name": "Get User by Username", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/:username", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", ":username" ] } } },
-				{ "name": "Get User by Email", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/email/:email", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", "email", ":email" ] } } },
-				{ "name": "Get User by Username or Email", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/search?username=foo&email=bar@example.com", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", "search" ], "query": [ { "key": "username", "value": "foo" }, { "key": "email", "value": "bar@example.com" } ] } } },
-				{ "name": "Get All Active Users", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/active", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", "active" ] } } },
-				{ "name": "User Login", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/users/login", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", "login" ], "query": [ { "key": "username", "value": "foo" }, { "key": "password", "value": "bar" } ] } } },
-				{ "name": "Generate Password Reset Token", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/users/reset-token", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", "reset-token" ], "query": [ { "key": "username", "value": "foo" } ] } } },
-				{ "name": "Find User by Reset Token", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/reset-token/:token", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", "reset-token", ":token" ] } } },
-				{ "name": "Reset User Password", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/users/reset-password", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", "reset-password" ], "query": [ { "key": "username", "value": "foo" }, { "key": "newPassword", "value": "bar" }, { "key": "resetToken", "value": "token" } ] } } },
-				{ "name": "Create User", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/users", "host": [ "{{baseUrl}}" ], "path": [ "api", "users" ] }, "body": { "mode": "raw", "raw": "{\n  \"username\": \"foo\",\n  \"email\": \"bar@example.com\"\n}" } } },
-				{ "name": "Update User", "request": { "method": "PUT", "url": { "raw": "{{baseUrl}}/api/users/:username", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", ":username" ] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"new@example.com\"\n}" } } },
-				{ "name": "Delete User", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/users/:username", "host": [ "{{baseUrl}}" ], "path": [ "api", "users", ":username" ] } } }
-			]
-		},
-		{
-			"name": "Portfolios",
-			"item": [
-				{ "name": "Get All Portfolios", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/portfolios", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios" ] } } },
-				{ "name": "Get Portfolio by ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/portfolios/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", ":id" ] } } },
-				{ "name": "Create Portfolio", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/portfolios", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"Sample Portfolio\"\n}" } } },
-				{ "name": "Update Portfolio", "request": { "method": "PUT", "url": { "raw": "{{baseUrl}}/api/portfolios/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", ":id" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"Updated Portfolio\"\n}" } } },
-				{ "name": "Delete Portfolio", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/portfolios/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", ":id" ] } } },
-				{ "name": "Find Portfolios by Client ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/portfolios/client/:clientId", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", "client", ":clientId" ] } } },
-				{ "name": "Find Portfolios by Investment Goal", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/portfolios/goal/:goal", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", "goal", ":goal" ] } } },
-				{ "name": "Find Portfolios by Risk Level", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/portfolios/risk/:riskLevel", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", "risk", ":riskLevel" ] } } },
-				{ "name": "Find Portfolios by Total VaR Greater Than", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/portfolios/total-var/:totalVaR", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", "total-var", ":totalVaR" ] } } },
-				{ "name": "Find Portfolios by Total Stress Test Greater Than", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/portfolios/total-stress/:totalStressTest", "host": [ "{{baseUrl}}" ], "path": [ "api", "portfolios", "total-stress", ":totalStressTest" ] } } }
-			]
-		},
-		{
-			"name": "Sustainable Portfolios",
-			"item": [
-				{ "name": "Get All Sustainable Portfolios", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios" ] } } },
-				{ "name": "Get Sustainable Portfolio by ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios", ":id" ] } } },
-				{ "name": "Create Sustainable Portfolio", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"Sample Sustainable Portfolio\"\n}" } } },
-				{ "name": "Update Sustainable Portfolio", "request": { "method": "PUT", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios", ":id" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"Updated Sustainable Portfolio\"\n}" } } },
-				{ "name": "Delete Sustainable Portfolio", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios", ":id" ] } } },
-				{ "name": "Find by Compliance Status", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios/compliance/:status", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios", "compliance", ":status" ] } } },
-				{ "name": "Find by Theme Focus", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios/theme/:theme", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios", "theme", ":theme" ] } } },
-				{ "name": "Find by Excluded Sector", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios/excluded-sector/:sector", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios", "excluded-sector", ":sector" ] } } },
-				{ "name": "Find by ESG Score", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/sustainable-portfolios/esg-score/:score", "host": [ "{{baseUrl}}" ], "path": [ "api", "sustainable-portfolios", "esg-score", ":score" ] } } }
-			]
-		},
-		{
-			"name": "Assets",
-			"item": [
-				{ "name": "Get All Assets", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets" ] } } },
-				{ "name": "Get Asset by ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", ":id" ] } } },
-				{ "name": "Create Asset", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/assets", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets" ] }, "body": { "mode": "raw", "raw": "{\n  \"assetName\": \"Sample Asset\"\n}" } } },
-				{ "name": "Update Asset", "request": { "method": "PUT", "url": { "raw": "{{baseUrl}}/api/assets/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", ":id" ] }, "body": { "mode": "raw", "raw": "{\n  \"assetName\": \"Updated Asset\"\n}" } } },
-				{ "name": "Delete Asset", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/assets/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", ":id" ] } } },
-				{ "name": "Find Assets by Name", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/name/:name", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "name", ":name" ] } } },
-				{ "name": "Find Assets by Value >=", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/value/:value", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "value", ":value" ] } } },
-				{ "name": "Find Assets by Portfolio ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/portfolio/:portfolioId", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "portfolio", ":portfolioId" ] } } },
-				{ "name": "Find Assets by Value <=", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/value/max/:value", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "value", "max", ":value" ] } } },
-				{ "name": "Find Assets by Value Between", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/value/between/:min/:max", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "value", "between", ":min", ":max" ] } } },
-				{ "name": "Find Assets by Name Containing", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/name/contains/:substring", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "name", "contains", ":substring" ] } } },
-				{ "name": "Find Assets by Exact Value", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/value/exact/:value", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "value", "exact", ":value" ] } } },
-				{ "name": "Count Assets by Portfolio ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/portfolio/:portfolioId/count", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "portfolio", ":portfolioId", "count" ] } } },
-				{ "name": "Find Assets by Risk Type", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/risk-type/:type", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "risk-type", ":type" ] } } },
-				{ "name": "Find Assets with Risks", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/with-risks", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "with-risks" ] } } },
-				{ "name": "Find Assets without Risks", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/without-risks", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", "without-risks" ] } } },
-				{ "name": "Get Total Risk Value by Type for Asset", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/assets/:assetId/risk-total/:riskType", "host": [ "{{baseUrl}}" ], "path": [ "api", "assets", ":assetId", "risk-total", ":riskType" ] } } }
-			]
-		},
-		{
-			"name": "Risks",
-			"item": [
-				{ "name": "Calculate VaR", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/risks/var", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "var" ], "query": [ { "key": "assetId", "value": "assetId" }, { "key": "confidenceLevel", "value": "0.95" }, { "key": "timeHorizonDays", "value": "10" } ] } } },
-				{ "name": "Calculate Stress Test", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/risks/stress-test", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "stress-test" ], "query": [ { "key": "assetId", "value": "assetId" }, { "key": "scenario", "value": "Market Crash" } ] } } },
-				{ "name": "Get All Risks", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks" ] } } },
-				{ "name": "Get Risk by ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", ":id" ] } } },
-				{ "name": "Create Risk", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/risks", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks" ] }, "body": { "mode": "raw", "raw": "{\n  \"riskType\": \"VaR\"\n}" } } },
-				{ "name": "Update Risk", "request": { "method": "PUT", "url": { "raw": "{{baseUrl}}/api/risks/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", ":id" ] }, "body": { "mode": "raw", "raw": "{\n  \"riskType\": \"Updated Type\"\n}" } } },
-				{ "name": "Delete Risk", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/risks/:id", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", ":id" ] } } },
-				{ "name": "Find Risks by Type", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/type/:type", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "type", ":type" ] } } },
-				{ "name": "Find Risks by Asset ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/asset/:assetId", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "asset", ":assetId" ] } } },
-				{ "name": "Find Risks by Calculation Date", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/date/:date", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "date", ":date" ] } } },
-				{ "name": "Find Risks by Value >=", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/value/:value", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "value", ":value" ] } } },
-				{ "name": "Find Risks by Confidence Level", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/confidence/:confidenceLevel", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "confidence", ":confidenceLevel" ] } } },
-				{ "name": "Find Risks by Scenario", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/scenario/:scenario", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "scenario", ":scenario" ] } } },
-				{ "name": "Find Risks by Currency", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/risks/currency/:currency", "host": [ "{{baseUrl}}" ], "path": [ "api", "risks", "currency", ":currency" ] } } }
-			]
-		}
-	]
+  "info": {
+    "name": "Investment API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "investment-api-collection"
+  },
+  "item": [
+    {
+      "name": "Clients",
+      "item": [
+        { "name": "Get All Clients", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients", "host": [ "http://localhost:8080" ], "path": [ "api", "clients" ] } } },
+        { "name": "Get Client by ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/{{clientId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "{{clientId}}" ] } } },
+        { "name": "Get Clients by Email Server", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/search/email?emailServer={{emailServer}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "search", "email" ], "query": [ { "key": "emailServer", "value": "{{emailServer}}" } ] } } },
+        { "name": "Get Clients by Postcode", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/search/postcode?postcode={{postcode}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "search", "postcode" ], "query": [ { "key": "postcode", "value": "{{postcode}}" } ] } } },
+        { "name": "Get Clients by Registration Date Range", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/search/dates?startDate={{startDate}}&endDate={{endDate}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "search", "dates" ], "query": [ { "key": "startDate", "value": "{{startDate}}" }, { "key": "endDate", "value": "{{endDate}}" } ] } } },
+        { "name": "Get Clients by Active Status", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/search/active?isActive={{isActive}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "search", "active" ], "query": [ { "key": "isActive", "value": "{{isActive}}" } ] } } },
+        { "name": "Get Total Client Count", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/count", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "count" ] } } },
+        { "name": "Get Active Client Count", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/count/active", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "count", "active" ] } } },
+        { "name": "Get Latest Clients (limit)", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/clients/latest?limit={{limit}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "latest" ], "query": [ { "key": "limit", "value": "{{limit}}" } ] } } },
+        { "name": "Create Client", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/clients", "host": [ "http://localhost:8080" ], "path": [ "api", "clients" ] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{name}}\",\n  \"email\": \"{{email}}\"\n}" } } },
+        { "name": "Update Client", "request": { "method": "PUT", "url": { "raw": "http://localhost:8080/api/clients/{{clientId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "{{clientId}}" ] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{name}}\"\n}" } } },
+        { "name": "Delete Client", "request": { "method": "DELETE", "url": { "raw": "http://localhost:8080/api/clients/{{clientId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "clients", "{{clientId}}" ] } } }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "Get All Users", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/users", "host": [ "http://localhost:8080" ], "path": [ "api", "users" ] } } },
+        { "name": "Get User by Username", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/users/{{username}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "{{username}}" ] } } },
+        { "name": "Get User by Email", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/users/email/{{email}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "email", "{{email}}" ] } } },
+        { "name": "Get User by Username or Email", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/users/search?username={{username}}&email={{email}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "search" ], "query": [ { "key": "username", "value": "{{username}}" }, { "key": "email", "value": "{{email}}" } ] } } },
+        { "name": "Get All Active Users", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/users/active", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "active" ] } } },
+        { "name": "User Login", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/users/login?username={{username}}&password={{password}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "login" ], "query": [ { "key": "username", "value": "{{username}}" }, { "key": "password", "value": "{{password}}" } ] } } },
+        { "name": "Generate Password Reset Token", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/users/reset-token?username={{username}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "reset-token" ], "query": [ { "key": "username", "value": "{{username}}" } ] } } },
+        { "name": "Find User by Reset Token", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/users/reset-token/{{token}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "reset-token", "{{token}}" ] } } },
+        { "name": "Reset User Password", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/users/reset-password?username={{username}}&newPassword={{newPassword}}&resetToken={{resetToken}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "reset-password" ], "query": [ { "key": "username", "value": "{{username}}" }, { "key": "newPassword", "value": "{{newPassword}}" }, { "key": "resetToken", "value": "{{resetToken}}" } ] } } },
+        { "name": "Create User", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/users", "host": [ "http://localhost:8080" ], "path": [ "api", "users" ] }, "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{username}}\",\n  \"email\": \"{{email}}\"\n}" } } },
+        { "name": "Update User", "request": { "method": "PUT", "url": { "raw": "http://localhost:8080/api/users/{{username}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "{{username}}" ] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\"\n}" } } },
+        { "name": "Delete User", "request": { "method": "DELETE", "url": { "raw": "http://localhost:8080/api/users/{{username}}", "host": [ "http://localhost:8080" ], "path": [ "api", "users", "{{username}}" ] } } }
+      ]
+    },
+    {
+      "name": "Portfolios",
+      "item": [
+        { "name": "Get All Portfolios", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/portfolios", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios" ] } } },
+        { "name": "Get Portfolio by ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/portfolios/{{portfolioId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "{{portfolioId}}" ] } } },
+        { "name": "Create Portfolio", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/portfolios", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"{{portfolioName}}\"\n}" } } },
+        { "name": "Update Portfolio", "request": { "method": "PUT", "url": { "raw": "http://localhost:8080/api/portfolios/{{portfolioId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "{{portfolioId}}" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"{{portfolioName}}\"\n}" } } },
+        { "name": "Delete Portfolio", "request": { "method": "DELETE", "url": { "raw": "http://localhost:8080/api/portfolios/{{portfolioId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "{{portfolioId}}" ] } } },
+        { "name": "Find Portfolios by Client ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/portfolios/client/{{clientId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "client", "{{clientId}}" ] } } },
+        { "name": "Find Portfolios by Investment Goal", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/portfolios/goal/{{goal}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "goal", "{{goal}}" ] } } },
+        { "name": "Find Portfolios by Risk Level", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/portfolios/risk/{{riskLevel}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "risk", "{{riskLevel}}" ] } } },
+        { "name": "Find Portfolios by Total VaR Greater Than", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/portfolios/total-var/{{totalVaR}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "total-var", "{{totalVaR}}" ] } } },
+        { "name": "Find Portfolios by Total Stress Test Greater Than", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/portfolios/total-stress/{{totalStressTest}}", "host": [ "http://localhost:8080" ], "path": [ "api", "portfolios", "total-stress", "{{totalStressTest}}" ] } } }
+      ]
+    },
+    {
+      "name": "Sustainable Portfolios",
+      "item": [
+        { "name": "Get All Sustainable Portfolios", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios" ] } } },
+        { "name": "Get Sustainable Portfolio by ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/{{sustainablePortfolioId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios", "{{sustainablePortfolioId}}" ] } } },
+        { "name": "Create Sustainable Portfolio", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"{{portfolioName}}\"\n}" } } },
+        { "name": "Update Sustainable Portfolio", "request": { "method": "PUT", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/{{sustainablePortfolioId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios", "{{sustainablePortfolioId}}" ] }, "body": { "mode": "raw", "raw": "{\n  \"portfolioName\": \"{{portfolioName}}\"\n}" } } },
+        { "name": "Delete Sustainable Portfolio", "request": { "method": "DELETE", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/{{sustainablePortfolioId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios", "{{sustainablePortfolioId}}" ] } } },
+        { "name": "Find by Compliance Status", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/compliance/{{status}}", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios", "compliance", "{{status}}" ] } } },
+        { "name": "Find by Theme Focus", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/theme/{{theme}}", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios", "theme", "{{theme}}" ] } } },
+        { "name": "Find by Excluded Sector", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/excluded-sector/{{sector}}", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios", "excluded-sector", "{{sector}}" ] } } },
+        { "name": "Find by ESG Score", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/esg-score/{{score}}", "host": [ "http://localhost:8080" ], "path": [ "api", "sustainable-portfolios", "esg-score", "{{score}}" ] } } }
+      ]
+    },
+    {
+      "name": "Assets",
+      "item": [
+        { "name": "Get All Assets", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets", "host": [ "http://localhost:8080" ], "path": [ "api", "assets" ] } } },
+        { "name": "Get Asset by ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/{{assetId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "{{assetId}}" ] } } },
+        { "name": "Create Asset", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/assets", "host": [ "http://localhost:8080" ], "path": [ "api", "assets" ] }, "body": { "mode": "raw", "raw": "{\n  \"assetName\": \"{{assetName}}\"\n}" } } },
+        { "name": "Update Asset", "request": { "method": "PUT", "url": { "raw": "http://localhost:8080/api/assets/{{assetId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "{{assetId}}" ] }, "body": { "mode": "raw", "raw": "{\n  \"assetName\": \"{{assetName}}\"\n}" } } },
+        { "name": "Delete Asset", "request": { "method": "DELETE", "url": { "raw": "http://localhost:8080/api/assets/{{assetId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "{{assetId}}" ] } } },
+        { "name": "Find Assets by Name", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/name/{{name}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "name", "{{name}}" ] } } },
+        { "name": "Find Assets by Value >=", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/value/{{value}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "value", "{{value}}" ] } } },
+        { "name": "Find Assets by Portfolio ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/portfolio/{{portfolioId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "portfolio", "{{portfolioId}}" ] } } },
+        { "name": "Find Assets by Value <=", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/value/max/{{value}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "value", "max", "{{value}}" ] } } },
+        { "name": "Find Assets by Value Between", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/value/between/{{min}}/{{max}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "value", "between", "{{min}}", "{{max}}" ] } } },
+        { "name": "Find Assets by Name Containing", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/name/contains/{{substring}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "name", "contains", "{{substring}}" ] } } },
+        { "name": "Find Assets by Exact Value", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/value/exact/{{value}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "value", "exact", "{{value}}" ] } } },
+        { "name": "Count Assets by Portfolio ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/portfolio/{{portfolioId}}/count", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "portfolio", "{{portfolioId}}", "count" ] } } },
+        { "name": "Find Assets by Risk Type", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/risk-type/{{type}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "risk-type", "{{type}}" ] } } },
+        { "name": "Find Assets with Risks", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/with-risks", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "with-risks" ] } } },
+        { "name": "Find Assets without Risks", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/without-risks", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "without-risks" ] } } },
+        { "name": "Get Total Risk Value by Type for Asset", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/assets/{{assetId}}/risk-total/{{riskType}}", "host": [ "http://localhost:8080" ], "path": [ "api", "assets", "{{assetId}}", "risk-total", "{{riskType}}" ] } } }
+      ]
+    },
+    {
+      "name": "Risks",
+      "item": [
+        { "name": "Calculate VaR", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/risks/var?assetId={{assetId}}&confidenceLevel={{confidenceLevel}}&timeHorizonDays={{timeHorizonDays}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "var" ], "query": [ { "key": "assetId", "value": "{{assetId}}" }, { "key": "confidenceLevel", "value": "{{confidenceLevel}}" }, { "key": "timeHorizonDays", "value": "{{timeHorizonDays}}" } ] } } },
+        { "name": "Calculate Stress Test", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/risks/stress-test?assetId={{assetId}}&scenario={{scenario}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "stress-test" ], "query": [ { "key": "assetId", "value": "{{assetId}}" }, { "key": "scenario", "value": "{{scenario}}" } ] } } },
+        { "name": "Get All Risks", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks", "host": [ "http://localhost:8080" ], "path": [ "api", "risks" ] } } },
+        { "name": "Get Risk by ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/{{riskId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "{{riskId}}" ] } } },
+        { "name": "Create Risk", "request": { "method": "POST", "url": { "raw": "http://localhost:8080/api/risks", "host": [ "http://localhost:8080" ], "path": [ "api", "risks" ] }, "body": { "mode": "raw", "raw": "{\n  \"riskType\": \"{{riskType}}\"\n}" } } },
+        { "name": "Update Risk", "request": { "method": "PUT", "url": { "raw": "http://localhost:8080/api/risks/{{riskId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "{{riskId}}" ] }, "body": { "mode": "raw", "raw": "{\n  \"riskType\": \"{{riskType}}\"\n}" } } },
+        { "name": "Delete Risk", "request": { "method": "DELETE", "url": { "raw": "http://localhost:8080/api/risks/{{riskId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "{{riskId}}" ] } } },
+        { "name": "Find Risks by Type", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/type/{{type}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "type", "{{type}}" ] } } },
+        { "name": "Find Risks by Asset ID", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/asset/{{assetId}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "asset", "{{assetId}}" ] } } },
+        { "name": "Find Risks by Calculation Date", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/date/{{date}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "date", "{{date}}" ] } } },
+        { "name": "Find Risks by Value >=", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/value/{{value}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "value", "{{value}}" ] } } },
+        { "name": "Find Risks by Confidence Level", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/confidence/{{confidenceLevel}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "confidence", "{{confidenceLevel}}" ] } } },
+        { "name": "Find Risks by Scenario", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/scenario/{{scenario}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "scenario", "{{scenario}}" ] } } },
+        { "name": "Find Risks by Currency", "request": { "method": "GET", "url": { "raw": "http://localhost:8080/api/risks/currency/{{currency}}", "host": [ "http://localhost:8080" ], "path": [ "api", "risks", "currency", "{{currency}}" ] } } }
+      ]
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 package com.sakhiya.investment.portfoliomanagement.asset;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 //extends JpaRepository<Asset, String>, providing CRUD and custom query methods
-public interface AssetRepository extends JpaRepository<Asset, String> {
+public interface AssetRepository extends ListCrudRepository<Asset, String> {
 
     // Find all risks of a given type for a specific asset
     //findByRisks_RiskIdAndRisks_Type tells Spring Data JPA to look for assets where any associated risk has the given riskId and type.

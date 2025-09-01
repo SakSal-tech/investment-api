@@ -21,6 +21,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener; // Ha
 
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+import com.sakhiya.investment.clientmanagement.Client;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 
 @Entity
@@ -40,7 +44,11 @@ public class Portfolio {
     // Fixes issues with JPA/Hibernate UUID mapping and Postman display
 
     private String portfolioName; // Optional descriptive name
-    private String clientId; // Foreign key to Client entity
+    
+    @ManyToOne // one client has one or more portfolio
+    @JoinColumn(name = "client_id", columnDefinition = "CHAR(36)") // joining clientId which is PK in Client table here as FK
+    private Client client; // storing the relationship as an object
+    //private String clientId; // Foreign key to Client entity
 
     @CreatedDate
     private LocalDate createdAt; // Creation date, auto-set on first save
@@ -69,10 +77,10 @@ public class Portfolio {
     }
 
     // Constructor with all fields
-    public Portfolio(String portfolioName, String clientId, LocalDate createdAt, LocalDate updatedAt,
+    public Portfolio(String portfolioName, Client client, LocalDate createdAt, LocalDate updatedAt,
             String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets) {
         this.portfolioName = portfolioName;
-        this.clientId = clientId;
+        this.client = client;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.investmentGoal = investmentGoal;
@@ -100,12 +108,12 @@ public class Portfolio {
     }
 
     // Getter/setter for clientId
-    public String getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
 
-    public void setClientId(String clienttId) {
-        this.clientId = clienttId;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     // Getter/setter for createdAt

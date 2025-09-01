@@ -89,3 +89,7 @@ A  list of resources, videos, articles, and documentation that helped me learn a
 # Understanding .Stream methods .filter and .ig
 
 https://www.geeksforgeeks.org/java/stream-filter-java-examples/
+
+
+# (35) Creating Parameterized Test Classes - JUnit Tutorial - YouTube
+https://www.youtube.com/watch?v=wLFS0-MZRfo

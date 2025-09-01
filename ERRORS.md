@@ -61,3 +61,95 @@ I commented out these methods in SustainablePortfolioRepository, and also commen
 
 **Solution:**
 
+
+**Error:**
+
+Caused by: org.hibernate.MappingException: Column 'client_id' is duplicated in mapping for entity 'com.sakhiya.investment.portfoliomanagement.SustainablePortfolio' (use '@Column(insertable=false, updatable=false)' when mapping multiple properties to the same column)
+        at org.hibernate.mapping.Value.checkColumnDuplication(Value.java:196)
+        ...#
+
+**Solution:**
+Problem
+Portfolio (the superclass) already maps a client field with @JoinColumn(name = "client_id"). SustainablePortfolio (the subclass) also declares a clientId field with @Column(name = "client_id"). Hibernate/JPA does not allow two fields in the same entity/table to map to the same column name.
+
+Removed the clientId field and its getter/setter from SustainablePortfolio.java.
+Use the inherited client field and its getter/setter from Portfolio instead.
+
+---
+
+## Errors and Solutions for September 2, 2025
+
+**Error:**
+Duplicate fields and methods in SustainablePortfolio (e.g., portfolioId, portfolioName, createdAt, updatedAt) caused conflicts and compilation errors.
+
+**Solution:**
+Removed redundant fields from SustainablePortfolio. Now only fields unique to SustainablePortfolio remain; all common fields are inherited from Portfolio.
+
+**Error:**
+Missing required methods (getEsgScores, getThemeFocus, setLastUpdated, etc.) in SustainablePortfolio after field cleanup caused controller/service errors.
+
+**Solution:**
+Restored all required getters/setters and mapping methods in SustainablePortfolio to match controller/service expectations.
+
+**Error:**
+Misplaced or duplicate import statements and syntax errors in SustainablePortfolio.java after manual/automated edits.
+
+**Solution:**
+Cleaned up import statements and fixed misplaced imports and syntax errors.
+
+**Error:**
+Confusion about the difference between updatedAt and lastUpdated fields.
+
+**Solution:**
+Clarified that updatedAt (inherited from Portfolio) is the standard JPA auditing field, while lastUpdated (if present) is a custom field. Recommended using only updatedAt for consistency unless a custom string is needed.
+
+All tests are now passing and the codebase is clean.
+
+---
+
+## My Errors and Solutions (September 1–2, 2025)
+
+**Error:**
+When I sent JSON requests to my portfolio endpoints in Postman, I kept getting 415 Unsupported Media Type or 500 Internal Server Error. This was frustrating because I thought my endpoints were correct.
+
+**Why it happened:**
+I realised that my controller methods were not always using `@RequestBody` for DTOs, and sometimes Postman was not sending the correct `Content-Type`. Also, my DTO-to-entity mapping was missing required fields, which caused deserialization or validation errors.
+
+**How I solved it:**
+I made sure every controller method that takes a request body uses `@RequestBody`, and I always set `Content-Type: application/json` in Postman. I also double-checked that all required fields are present in my DTOs and requests. This fixed the 415 and 500 errors.
+
+**Error:**
+Some API responses had null values or missing fields, especially for portfolios and sustainable portfolios.
+
+**Why it happened:**
+This was because my entity-to-DTO mapping was incomplete, and I was missing some getters/setters. Also, I had inheritance issues where the child entity didn’t have access to all the fields it needed.
+
+**How I solved it:**
+I reviewed all my mapping logic and made sure every field had a getter and setter. I fixed the inheritance so that all required fields are available in the child entities. Now, my API responses are complete and correct.
+
+**Error:**
+My tests were failing because of database schema mismatches—specifically, UUIDs were sometimes stored as CHAR(36) and sometimes as BINARY(16). Hibernate also wasn’t creating tables as I expected.
+
+**Why it happened:**
+I was using different types for UUIDs in my entities and database, which caused mapping errors. My JPA configuration was also not scanning the right packages or generating the schema as needed.
+
+**How I solved it:**
+I standardised all UUID fields to use `String` and mapped them as `CHAR(36)` in the database. I updated my JPA config to scan the correct packages and generate the schema. This made my tests pass and my database consistent.
+
+**Error:**
+After refactoring, I had missing or duplicate fields and methods in `SustainablePortfolio`, which caused compilation errors and test failures.
+
+**Why it happened:**
+I tried to clean up the class by removing duplicates, but I accidentally removed methods that the controller and service still needed. This broke the build.
+
+**How I solved it:**
+I restored all the required methods and only removed fields that were truly redundant. I made sure the controller and service logic matched the entity structure. This fixed the compilation and test errors.
+
+**Error:**
+Some Postman requests failed because the endpoint mappings were missing or incorrect.
+
+**Why it happened:**
+I had typos or missing annotations in my controller methods, and sometimes the Postman collection didn’t match my actual endpoints.
+
+**How I solved it:**
+I carefully reviewed all my controller endpoint paths and HTTP method annotations. I also updated my Postman collection to match the actual endpoints. Now, all my requests work as expected.

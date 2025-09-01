@@ -1,5 +1,6 @@
 package com.sakhiya.investment.portfoliomanagement;
 
+import com.sakhiya.investment.clientmanagement.Client;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 import com.sakhiya.investment.portfoliomanagement.asset.AssetService;
 import com.sakhiya.investment.riskmanagement.Risk;
@@ -149,11 +150,11 @@ public class PortfolioService {
                         "Portfolio with this id: " + portfolioId + " is not found"));
     }
 
-    public List<Portfolio> getClientsByEmailServer(String clientId) {
-        if (clientId == null || clientId.isBlank()) {
+    public List<Portfolio> getClientsByEmailServer(Client client) {
+        if (client == null) {
             throw new IllegalArgumentException("clientId must not be null or blank");
         }
-        return portfolioRepository.findByClientId(clientId);
+        return portfolioRepository.findByClient(client);
     }
 
     public List<Portfolio> getPortfoliosdByInvestmentGoal(String investmentGoal) {

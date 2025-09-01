@@ -1,7 +1,10 @@
 package com.sakhiya.investment.portfoliomanagement;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
+
+import com.sakhiya.investment.clientmanagement.Client;
+
 import java.util.List;
 import java.time.LocalDate;
 import java.math.BigDecimal;
@@ -10,9 +13,9 @@ import java.math.BigDecimal;
 /*changed from ListCrudRepository to JpaRepository for advanced features (paging, sorting, batch),  JpaRepository<Portfolio, String>.
  basic CRUD, ListCrudRepository<Portfolio, String> is fine. The ID type (String or UUID) must match your entity’s ID field.*/
 
-public interface PortfolioRepository extends JpaRepository<Portfolio, String> {
+public interface PortfolioRepository extends ListCrudRepository<Portfolio, String> {
     // Find all portfolios for a specific client
-    List<Portfolio> findByClientId(String clientId);
+    List<Portfolio> findByClient(Client client);
 
     // Find portfolios by investment goal
     List<Portfolio> findByInvestmentGoal(String investmentGoal);

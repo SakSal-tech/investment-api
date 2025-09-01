@@ -66,7 +66,7 @@ public class SustainablePortfolioService {
 
     // Update fields (maps/lists are converted internally by entity)
     existing.setPortfolioName(updatedData.getPortfolioName());
-    existing.setClientId(updatedData.getClientId());
+    existing.setClient(updatedData.getClient());
     existing.setEsgScores(updatedData.getEsgScores());
     existing.setImpactTargets(updatedData.getImpactTargets());
     existing.setThemeFocus(updatedData.getThemeFocus());
@@ -101,7 +101,7 @@ public class SustainablePortfolioService {
         if (portfolio.getPortfolioName() == null || portfolio.getPortfolioName().isBlank()) {
             throw new IllegalArgumentException("Portfolio name is required");
         }
-        if (portfolio.getClientId() == null || portfolio.getClientId().isBlank()) {
+        if (portfolio.getClient() == null) {
             throw new IllegalArgumentException("Client ID is required");
         }
 

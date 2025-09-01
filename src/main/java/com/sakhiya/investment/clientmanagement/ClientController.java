@@ -22,8 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-// annotation is used to map web requests onto specific handler classes and
-// methods.
+// annotation is used to map web requests onto specific handler classes and methods.
 @RequestMapping("/api/clients")
 public class ClientController {
     // coupling with ClientService. The controller user ClientService
@@ -40,8 +39,7 @@ public class ClientController {
     }
 
     @GetMapping(
-            // Use @PathVariable when the value is part of the URL path (e.g.,
-            // /api/clients/{clientId}).
+            // Using @PathVariable when the value is part of the URL path ( /api/clients/{clientId}).
             path = "/{clientId}", produces = {
                     MediaType.APPLICATION_XML_VALUE,
                     MediaType.APPLICATION_JSON_VALUE
@@ -49,8 +47,7 @@ public class ClientController {
 
     public Client getClient(@PathVariable("clientId") String clientId) {
         // I could declare the parameter clientID as UUID or convert the parameter to
-        // UUID as the method
-        // UUID uuid = UUID.fromString(clientId) ;
+        // UUID as the method UUID uuid = UUID.fromString(clientId) ;
 
         return clientService.getClient(clientId);
     }
