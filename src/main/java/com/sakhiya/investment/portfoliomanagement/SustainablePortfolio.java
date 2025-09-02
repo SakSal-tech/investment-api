@@ -1,12 +1,15 @@
 package com.sakhiya.investment.portfoliomanagement;
 
+import jakarta.persistence.ElementCollection;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
-
+import jakarta.persistence.Entity;
+@Entity
 public class SustainablePortfolio extends Portfolio {
 
     // JPA requires a public no-arg constructor
@@ -15,11 +18,16 @@ public class SustainablePortfolio extends Portfolio {
     }
 
     
+    @ElementCollection
     private Map<String, Integer> esgScores;      // ESG scores per holding
+    @ElementCollection
     private List<String> themeFocus;             // Themes like 'climate', 'human rights'
+    @ElementCollection
     private Map<String, String> impactTargets;   // Expected social/environmental impact
     private Integer overallEsgScore;              // Cached overall ESG score
+    @ElementCollection
     private List<String> excludedSectors;        // Industries to avoid (e.g., tobacco, fossil fuels)
+    @ElementCollection
     private List<String> preferredSectors;       // Preferred sectors for sustainable investment
     private LocalDate lastUpdated;               // For reporting and tracking updates
     private String complianceStatus;             // Compliance with regulations or standards (e.g., UNPRI, SFDR)

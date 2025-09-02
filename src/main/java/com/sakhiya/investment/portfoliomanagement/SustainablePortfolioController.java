@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+// Allow cross-origin requests from any origin (not needed for Postman, but added for troubleshooting 403)
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/sustainable-portfolios")
 public class SustainablePortfolioController {
@@ -97,13 +99,13 @@ public class SustainablePortfolioController {
     // Find by impact target key
     @GetMapping("/impact-target/{key}")
     public List<SustainablePortfolio> getByImpactTargetKey(@PathVariable String key) {
-        return sustainablePortfolioRepository.findByImpactTargetsKey(key);
+        return sustainablePortfolioRepository.findByImpactTargetKey(key);
     }
 
     // Find by ESG score key
     @GetMapping("/esg-score-key/{key}")
     public List<SustainablePortfolio> getByEsgScoreKey(@PathVariable String key) {
-        return sustainablePortfolioRepository.findByEsgScoresKey(key);
+        return sustainablePortfolioRepository.findByEsgScoreKey(key);
     }
 
 }

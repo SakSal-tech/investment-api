@@ -53,3 +53,26 @@ user_id is stored as a BINARY(16) (compact form of UUID, 16 bytes).
 
 **Solution:**
 converted UUID and stored it as String. user_id → UUID() generates a proper 36-character string that fits CHAR(36). client_id → uses the existing values from your client table, maintaining the one-to-one relationship.
+
+**Error:**
+Spring Boot tests failed to start, and the application context could not load. The error log showed:
+
+    Could not create query for public abstract java.util.List com.sakhiya.investment.portfoliomanagement.SustainablePortfolioRepository.findByImpactTargetKey(java.lang.String); Reason: Validation failed for query for method ...
+
+and
+
+    org.hibernate.type.descriptor.java.spi.JdbcTypeRecommendationException: Could not determine recommended JdbcType for Java type 'java.util.Map<java.lang.String, java.lang.String>'
+
+**What was happening:**
+I was using Map fields (e.g., `private Map<String, String> impactTargets;`) in my JPA entity (`SustainablePortfolio`). I had marked  this on purpose unannotated as it is a sub class I originally wanted this to be a field as portfolio type, which meant JPA did not persist them. However, my repository was trying to run JPQL queries on these fields. JPA cannot query fields that are not persisted, and it also cannot handle Map fields without the correct annotation.
+
+**Solution:**
+I annotated my Map fields with `@ElementCollection` (e.g., `@ElementCollection private Map<String, String> impactTargets;`). This tells JPA to persist the map in a separate table and enables JPQL queries on the map's keys and values. I also removed any `@Transient` annotation from these fields so this becomes persistem. After this change, my repository JPQL queries (using `KEY(mapField) = :key`) worked, and the tests passed.
+
+**Technical changes:**
+- Added `@ElementCollection` to all Map fields that need to be persisted and queried.
+- Removed `@Transient` from those fields.
+- Ensured my repository methods use JPQL with `@Query` and `KEY(mapField)` for querying map keys.
+- Updated my Postman requests to send map fields as JSON objects.
+
+This fixed the test failures and allowed the application to start and run queries on map fields as intended.
