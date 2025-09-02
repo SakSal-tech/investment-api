@@ -14,6 +14,8 @@ import com.sakhiya.investment.clientmanagement.*;;;
  * REST Controller for SustainablePortfolio.
  * Delegates business logic to SustainablePortfolioService.
  */
+// Allow cross-origin requests from any origin (not needed for Postman, but added for troubleshooting 403)
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/sustainable-portfolios")
 public class SustainablePortfolioController {
@@ -166,4 +168,24 @@ public class SustainablePortfolioController {
                 .filter(p -> p.getOverallEsgScore() >= score)
                 .toList();
     }
+
+    // Find by last updated after a certain date (format: yyyy-MM-dd)
+    @GetMapping("/last-updated-after/{date}")
+    public List<SustainablePortfolio> getByLastUpdatedAfter(@PathVariable String date) {
+        java.time.LocalDate parsedDate = java.time.LocalDate.parse(date);
+        return sustainablePortfolioRepository.findByLastUpdatedAfter(parsedDate);
+    }
+
+    // Find by impact target key
+    @GetMapping("/impact-target/{key}")
+    public List<SustainablePortfolio> getByImpactTargetKey(@PathVariable String key) {
+        return sustainablePortfolioRepository.findByImpactTargetKey(key);
+    }
+
+    // Find by ESG score key
+    @GetMapping("/esg-score-key/{key}")
+    public List<SustainablePortfolio> getByEsgScoreKey(@PathVariable String key) {
+        return sustainablePortfolioRepository.findByEsgScoreKey(key);
+    }
+
 }

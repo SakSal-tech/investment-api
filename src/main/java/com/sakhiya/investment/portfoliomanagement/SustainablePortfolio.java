@@ -1,21 +1,22 @@
 package com.sakhiya.investment.portfoliomanagement;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ElementCollection;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 
 // JPA entity representing a sustainable investment portfolio
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 @Entity
 public class SustainablePortfolio extends Portfolio {
 
 
-    @Column(name = "last_updated")
-    private String lastUpdated;
 
     // Flattened ESG scores
     @Column(name = "esg_score_env")
@@ -53,12 +54,6 @@ public class SustainablePortfolio extends Portfolio {
     @Column(name = "total_value")
     private java.math.BigDecimal totalValue;
 
-    @Column(name = "overall_esg_score")
-    private Double overallEsgScore;
-
-    @Column(name = "compliance_status")
-    private String complianceStatus;
-
     @OneToMany
     private List<Asset> assets = new ArrayList<>();
 
@@ -89,6 +84,36 @@ public class SustainablePortfolio extends Portfolio {
     public void setImpactTargets(java.util.Map<String, Double> impactTargets) {
         this.impactTargetCarbon = impactTargets != null ? impactTargets.getOrDefault("carbon", null) : null;
         this.impactTargetWater = impactTargets != null ? impactTargets.getOrDefault("water", null) : null;
+    }
+    @ElementCollection
+    private Map<String, Integer> esgScores;      // ESG scores per holding
+    @ElementCollection
+    private List<String> themeFocus;             // Themes like 'climate', 'human rights'
+    @ElementCollection
+    private Map<String, String> impactTargets;   // Expected social/environmental impact
+    private Integer overallEsgScore;              // Cached overall ESG score
+    @ElementCollection
+    private List<String> excludedSectors;        // Industries to avoid (e.g., tobacco, fossil fuels)
+    @ElementCollection
+    private List<String> preferredSectors;       // Preferred sectors for sustainable investment
+    private LocalDate lastUpdated;               // For reporting and tracking updates
+    private String complianceStatus;             // Compliance with regulations or standards (e.g., UNPRI, SFDR)
+
+    public SustainablePortfolio(String portfolioName, String clientId, LocalDate createdAt,
+            LocalDate updatedAt, String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets,
+            Map<String, Integer> esgScores, List<String> themeFocus, Map<String, String> impactTargets,
+            Integer overallEsgScore, List<String> excludedSectors, List<String> preferredSectors, LocalDate lastUpdated,
+            String complianceStatus) {
+        //super(portfolioName, clientId, createdAt, updatedAt, investmentGoal, riskLevel, totalValue, assets);
+        super(portfolioName,cl)
+        this.esgScores = esgScores;
+        this.themeFocus = themeFocus;
+        this.impactTargets = impactTargets;
+        this.overallEsgScore = overallEsgScore;
+        this.excludedSectors = excludedSectors;
+        this.preferredSectors = preferredSectors;
+        this.lastUpdated = lastUpdated;
+        this.complianceStatus = complianceStatus;
     }
 
     // Theme Focus as List
