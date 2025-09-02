@@ -1,5 +1,6 @@
 package com.sakhiya.investment.riskmanagement;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;// need to use asset to link risks to assets
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -28,11 +29,16 @@ public class Risk
     private String currency; // Currency of the value
     //intended to store complex results, like:Full VaR calculations with multiple confidence intervals, Stress Test scenarios and Historical or detailed analytics in JSON format
     @Lob //Stands for: Large Object. Tells JPA that this field may contain a large amount of data, which wouldn't fit in a standard column like VARCHAR(255).
-    @Column(columnDefinition = "CLOB")
     private String detailsJson; // Store full detailed calculation results (JSON for analytics/export)
 
     @ManyToOne
-    @JoinColumn(name = "asset_id")
+    @JoinColumn(name = "asset_id", columnDefinition = "CHAR(36)")
+    // @JsonBackReference is used here to prevent infinite recursion during JSON serialization.
+    // In a bidirectional relationship, Asset has a list of Risks (@JsonManagedReference),
+    // and each Risk points back to its Asset. Jackson uses these annotations to serialize only one direction,
+    // avoiding stack overflow errors when converting to/from JSON.
+    // When converting (serialize) a Java object to JSON, it is turning  Java objects ( Asset and Risk) into a JSON string that can be sent over HTTP or stored. When you convert (deserialize) from JSON, you are turning a JSON string (from a request or file) back into Java objects
+    @JsonBackReference
     private Asset asset; // The asset this risk is associated with
 
     // Constructors

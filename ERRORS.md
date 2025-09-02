@@ -97,16 +97,6 @@ Misplaced or duplicate import statements and syntax errors in SustainablePortfol
 **Solution:**
 Cleaned up import statements and fixed misplaced imports and syntax errors.
 
-**Error:**
-Confusion about the difference between updatedAt and lastUpdated fields.
-
-**Solution:**
-Clarified that updatedAt (inherited from Portfolio) is the standard JPA auditing field, while lastUpdated (if present) is a custom field. Recommended using only updatedAt for consistency unless a custom string is needed.
-
-All tests are now passing and the codebase is clean.
-
----
-
 ## My Errors and Solutions (September 1–2, 2025)
 
 **Error:**
@@ -175,5 +165,40 @@ I annotated my Map fields with `@ElementCollection` (e.g., `@ElementCollection p
 
 This fixed the test failures and allowed the application to start and run queries on map fields as intended.
 
+## Errors and Solutions for September 2, 2025 (Afternoon)
 
-change to accept client id instead of client object
+**Error:**
+MySQL foreign key constraint error: Referencing column 'asset_id' and referenced column 'asset_id' in foreign key constraint are incompatible.
+
+**Solution:**
+Discovered that the `risk` table had an extra `id` column (binary(16)) as primary key, while the entity only used `risk_id` (char(36)). Dropped the `id` column and set `risk_id` as the primary key. Ensured both `asset.asset_id` and `risk.asset_id` are `char(36)` and match exactly. Dropped and recreated the foreign key constraint.
+
+**Error:**
+Hibernate/Jackson serialization error: Cannot handle managed/back reference 'defaultReference': no back reference property found from type `java.util.List<com.sakhiya.investment.riskmanagement.Risk>`
+
+**Solution:**
+Fixed the use of `@JsonManagedReference` and `@JsonBackReference` in `Asset` and `Risk` entities. Only `@JsonManagedReference` is on the parent (`Asset.risks`), and only `@JsonBackReference` is on the child (`Risk.asset`).
+
+**Error:**
+MySQL syntax error: near 'CLOB' at line 1 when creating or altering the `risk` table.
+
+**Solution:**
+Removed `columnDefinition = "CLOB"` from the `detailsJson` field in `Risk.java` and used only `@Lob`, letting Hibernate map to the correct type (`LONGTEXT`) for MySQL.
+
+**Error:**
+Data truncation: Data too long for column 'asset_id' at row 1 when inserting into `asset` table.
+
+**Solution:**
+Ensured that all UUIDs are stored as `String` and mapped as `CHAR(36)` in both entity and database schema for all relevant tables and foreign keys.
+
+**Error:**
+415/403 errors on API requests (Forbidden/Unsupported Media Type).
+
+**Solution:**
+Set correct `Content-Type: application/json` in Postman, ensured all controller methods use `@RequestBody`, and checked Spring Security configuration to allow unauthenticated access for development.
+
+**Error:**
+PUT/POST JSON field mismatch (e.g., `riskType` instead of `type`, `valueAtRisk` instead of `value`)
+
+**Solution:**
+Corrected all JSON request bodies to use the exact field names as defined in the entity classes.

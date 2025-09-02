@@ -63,6 +63,15 @@ public class Portfolio {
 
     // Aggregated numeric total of all VaR calculations across all assets
     // Useful for quick reporting, dashboards, historical tracking without recalculating every time
+        @jakarta.persistence.PrePersist
+        protected void onCreate() {
+            if (this.createdAt == null) {
+                this.createdAt = java.time.LocalDate.now();
+            }
+            if (this.updatedAt == null) {
+                this.updatedAt = java.time.LocalDate.now();
+            }
+        }
     private Double totalVaR;
 
     // Aggregated numeric total of all Stress Test calculations across all assets

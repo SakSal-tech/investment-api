@@ -64,29 +64,24 @@ public class SustainablePortfolioController {
         if (clientOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        SustainablePortfolio portfolio = new SustainablePortfolio();
-        portfolio.setPortfolioName(dto.portfolioName);
-        portfolio.setClient(clientOpt.get());
-        portfolio.setInvestmentGoal(dto.investmentGoal);
-        portfolio.setRiskLevel(dto.riskLevel);
-        portfolio.setTotalValue(dto.totalValue);
-        if (dto.createdAt != null) {
-            portfolio.setCreatedAt(LocalDate.parse(dto.createdAt));
-        }
-        if (dto.updatedAt != null) {
-            portfolio.setUpdatedAt(LocalDate.parse(dto.updatedAt));
-        }
-        portfolio.setLastUpdated(dto.lastUpdated);
-        portfolio.setOverallEsgScore(dto.overallEsgScore);
-        portfolio.setComplianceStatus(dto.complianceStatus);
-        portfolio.setEsgScoreEnv(dto.esgScoreEnv);
-        portfolio.setEsgScoreSocial(dto.esgScoreSocial);
-        portfolio.setEsgScoreGov(dto.esgScoreGov);
-        portfolio.setImpactTargetCarbon(dto.impactTargetCarbon);
-        portfolio.setImpactTargetWater(dto.impactTargetWater);
-        portfolio.setThemeFocusString(dto.themeFocusString);
-        portfolio.setExcludedSectorsString(dto.excludedSectorsString);
-        portfolio.setPreferredSectorsString(dto.preferredSectorsString);
+        SustainablePortfolio portfolio = new SustainablePortfolio(
+            dto.portfolioName,
+            clientOpt.get(),
+            dto.createdAt != null ? LocalDate.parse(dto.createdAt) : null,
+            dto.updatedAt != null ? LocalDate.parse(dto.updatedAt) : null,
+            dto.investmentGoal,
+            dto.riskLevel,
+            dto.totalValue,
+            null, // assets (not set at creation)
+            dto.esgScores,
+            dto.themeFocus,
+            dto.impactTargets,
+            dto.overallEsgScore,
+            dto.excludedSectors,
+            dto.preferredSectors,
+            dto.lastUpdated != null ? LocalDate.parse(dto.lastUpdated) : null,
+            dto.complianceStatus
+        );
         SustainablePortfolio saved = sustainablePortfolioRepository.save(portfolio);
         return ResponseEntity.ok(saved);
     }

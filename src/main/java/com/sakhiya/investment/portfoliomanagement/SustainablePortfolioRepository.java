@@ -4,6 +4,8 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -11,13 +13,9 @@ public interface SustainablePortfolioRepository extends ListCrudRepository<Susta
 
     // Find by compliance status
     List<SustainablePortfolio> findByComplianceStatus(String complianceStatus);
+    List<SustainablePortfolio> findByLastUpdatedAfter(LocalDate date);
 
-    // Find by ESG score greater than or equal to a value
-    List<SustainablePortfolio> findByOverallEsgScoreGreaterThanEqual(int score);
 
-    // Other queries using Map/List keys are commented out
-    // Find by last updated after a certain date
-    List<SustainablePortfolio> findByLastUpdatedAfter(java.time.LocalDate date);
 
     // I changed from Spring Data method names to JPQL queries below because Spring Data JPA
     // does not support derived queries on Map keys/values. Using @Query with JPQL allows me

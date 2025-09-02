@@ -7,11 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
-
 import java.util.List;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sakhiya.investment.portfoliomanagement.Portfolio;
 import com.sakhiya.investment.riskmanagement.Risk;
@@ -34,8 +31,7 @@ public class Asset {
 	@JoinColumn(name = "portfolio_id")
 	private Portfolio portfolio;
 	// To prevent JSON recursion Cyclic references (Portfolio → Asset → Risk → Asset):This can cause issues with JSON serialization (infinite recursion) and sometimes with JPA if not handled
-	@JsonManagedReference 
-	@JsonBackReference
+	@JsonManagedReference
 
 	// one Asset can have many Risks.Cascade” means changes to Asset will also apply
 	// to its Risks automatically.

@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.sakhiya.investment.clientmanagement.Client;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 
 // JPA entity representing a sustainable investment portfolio
@@ -56,6 +58,9 @@ public class SustainablePortfolio extends Portfolio {
 
     @OneToMany
     private List<Asset> assets = new ArrayList<>();
+    public SustainablePortfolio() {
+    super();
+}
 
 
     // --------------------- Getters and Setters ---------------------
@@ -86,12 +91,12 @@ public class SustainablePortfolio extends Portfolio {
         this.impactTargetWater = impactTargets != null ? impactTargets.getOrDefault("water", null) : null;
     }
     @ElementCollection
-    private Map<String, Integer> esgScores;      // ESG scores per holding
+    private Map<String, Double> esgScores;      // ESG scores per holding
     @ElementCollection
     private List<String> themeFocus;             // Themes like 'climate', 'human rights'
     @ElementCollection
-    private Map<String, String> impactTargets;   // Expected social/environmental impact
-    private Integer overallEsgScore;              // Cached overall ESG score
+    private Map<String, Double> impactTargets;   // Expected social/environmental impact
+    private Double overallEsgScore;              // Cached overall ESG score
     @ElementCollection
     private List<String> excludedSectors;        // Industries to avoid (e.g., tobacco, fossil fuels)
     @ElementCollection
@@ -99,13 +104,12 @@ public class SustainablePortfolio extends Portfolio {
     private LocalDate lastUpdated;               // For reporting and tracking updates
     private String complianceStatus;             // Compliance with regulations or standards (e.g., UNPRI, SFDR)
 
-    public SustainablePortfolio(String portfolioName, String clientId, LocalDate createdAt,
+    public SustainablePortfolio(String portfolioName, Client client, LocalDate createdAt,
             LocalDate updatedAt, String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets,
-            Map<String, Integer> esgScores, List<String> themeFocus, Map<String, String> impactTargets,
-            Integer overallEsgScore, List<String> excludedSectors, List<String> preferredSectors, LocalDate lastUpdated,
+            Map<String, Double> esgScores, List<String> themeFocus, Map<String, Double> impactTargets,
+            Double overallEsgScore, List<String> excludedSectors, List<String> preferredSectors, LocalDate lastUpdated,
             String complianceStatus) {
-        //super(portfolioName, clientId, createdAt, updatedAt, investmentGoal, riskLevel, totalValue, assets);
-        super(portfolioName,cl)
+        super(portfolioName, client,  createdAt,  updatedAt, investmentGoal,  riskLevel,  totalValue, assets);
         this.esgScores = esgScores;
         this.themeFocus = themeFocus;
         this.impactTargets = impactTargets;
@@ -153,8 +157,8 @@ public class SustainablePortfolio extends Portfolio {
     }
 
     // lastUpdated
-    public String getLastUpdated() { return lastUpdated; }
-    public void setLastUpdated(String lastUpdated) { this.lastUpdated = lastUpdated; }
+    public LocalDate getLastUpdated() { return lastUpdated; }
+    public void setLastUpdated(LocalDate lastUpdated) { this.lastUpdated = lastUpdated; }
 
     // overallEsgScore
     public Double getOverallEsgScore() { return overallEsgScore; }
