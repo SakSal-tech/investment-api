@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
  */
 @Service
 public class PortfolioService {
-
+    
     // Repository to persist portfolio updates
     private final PortfolioRepository portfolioRepository;
 
@@ -198,5 +198,27 @@ public class PortfolioService {
         }
         return portfolioRepository.findByTotalStressTestGreaterThan(totalStressTest);
     }
+
+    /**
+     * Calculates the total risk value (sum of all risk values, any type) for a portfolio.
+     * @param portfolio the portfolio to sum risks for
+     * @return the total risk value
+     */
+    public double calculateTotalRisk(Portfolio portfolio) {
+        if (portfolio == null || portfolio.getAssets() == null)
+            return 0.0;
+        double totalRisk = 0.0;
+        for (Asset asset : portfolio.getAssets()) {
+            if (asset.getRisks() == null)
+                continue;
+            for (Risk risk : asset.getRisks()) {
+                if (risk.getValue() != null) {
+                    totalRisk += risk.getValue();
+                }
+            }
+        }
+        return totalRisk;
+    }
+
 
 }

@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
-
+import com.sakhiya.investment.riskmanagement.dto.RiskSummaryDTO;
 @RestController
 @RequestMapping("/api/assets")
 public class AssetController {
@@ -134,12 +134,17 @@ public class AssetController {
         return assetService.getAssetsWithoutRisks();
     }
 
-    /*
-     Get total risk value by type for a specific asset.
-     Calls the service method to calculate it.
-     */
-    @GetMapping("/{assetId}/risk-total/{riskType}")
-    public double getTotalRiskValueByType(@PathVariable String assetId, @PathVariable String riskType) {
+    // Get total risk value by type for a specific asset
+    @GetMapping("/{assetId}/total-risk/{riskType}")
+    public double getTotalRiskByType(@PathVariable String assetId, @PathVariable String riskType) {
         return assetService.getTotalRiskValueByType(assetId, riskType);
     }
+
+    // Get total risk summary (VaR and StressTest) for a specific asset
+    @GetMapping("/{assetId}/total-risk-summary")
+    public RiskSummaryDTO getTotalRiskSummary(@PathVariable String assetId) {
+        return assetService.getTotalRiskSummary(assetId);
+    }
+
+    
 }

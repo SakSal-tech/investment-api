@@ -112,6 +112,7 @@ public class RiskController {
         return riskService.getByType(type);
     }
 
+
     // Find by asset ID
     @GetMapping("/asset/{assetId}")
     public List<Risk> getRisksByAssetId(@PathVariable String assetId) {

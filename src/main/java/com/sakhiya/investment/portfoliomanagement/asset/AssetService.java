@@ -1,7 +1,7 @@
 package com.sakhiya.investment.portfoliomanagement.asset;
 
+import com.sakhiya.investment.riskmanagement.dto.RiskSummaryDTO;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -190,5 +190,40 @@ public class AssetService {
          */
 
     }
+
+        // Returns a RiskSummaryDTO with total VaR and total StressTest for a given asset
+    public RiskSummaryDTO getTotalRiskSummary(String assetId) {
+        // Try to find the asset by its ID in the database
+        Optional<Asset> assetOpt = assetRepository.findById(assetId);
+        // If the asset does not exist, throw an error with a helpful message
+        if (assetOpt.isEmpty()) {
+            throw new IllegalArgumentException("Asset with id " + assetId + " not found");
+        }
+        // Get the actual Asset object from the Optional
+        Asset asset = assetOpt.get();
+        // If the asset has no risks at all, return a summary with both values as 0
+        if (asset.getRisks() == null) {
+            return new RiskSummaryDTO(0.0, 0.0);
+        }
+        // Calculate the total VaR (Value at Risk) by summing all risk values of type "VaR"
+        double totalVaR = asset.getRisks().stream()
+            // Only include risks where the type is "VaR" (case-insensitive) and the value is not null
+            .filter(risk -> "VaR".equalsIgnoreCase(risk.getType()) && risk.getValue() != null)
+            // Convert each matching risk to its numeric value
+            .mapToDouble(risk -> risk.getValue())
+            // Add up all the values
+            .sum();
+        // Calculate the total StressTest by summing all risk values of type "StressTest"
+        double totalStressTest = asset.getRisks().stream()
+            // Only include risks where the type is "StressTest" (case-insensitive) and the value is not null
+            .filter(risk -> "StressTest".equalsIgnoreCase(risk.getType()) && risk.getValue() != null)
+            // Convert each matching risk to its numeric value
+            .mapToDouble(risk -> risk.getValue())
+            // Add up all the values
+            .sum();
+        // Return a summary object containing both totals
+        return new RiskSummaryDTO(totalVaR, totalStressTest);
+    }
+
 
 }

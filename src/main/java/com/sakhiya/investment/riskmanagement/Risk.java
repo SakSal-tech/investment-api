@@ -21,7 +21,8 @@ public class Risk
     private String type; // "VaR", "StressTest", etc. Used to distinguish risk type
     private String description; // Short description of the risk
     @Column(name = "`value`")
-    private Double value; // Main numeric outcome for aggregation/reporting
+    // potential loss/exposure
+    private Double value; // Main numeric outcome for aggregation/reporting. Numerical result of a risk calculation
     private LocalDate calculationDate; // When the risk was calculated
     private Double confidenceLevel; // Relevant for VaR (e.g., 95% or 99%)
     private String timeHorizon; // Relevant for VaR (e.g., "1 day", "10 days")

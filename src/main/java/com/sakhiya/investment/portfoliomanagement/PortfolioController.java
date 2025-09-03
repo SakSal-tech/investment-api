@@ -1,5 +1,6 @@
 package com.sakhiya.investment.portfoliomanagement;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,12 @@ public class PortfolioController {
 
     private final PortfolioRepository portfolioRepository;
     private final ClientRepository clientRepository;
+    private final PortfolioService portfolioService;
 
-    public PortfolioController(PortfolioRepository portfolioRepository, ClientRepository clientRepository) {
+    public PortfolioController(PortfolioRepository portfolioRepository, ClientRepository clientRepository, PortfolioService portfolioService) {
         this.portfolioRepository = portfolioRepository;
         this.clientRepository = clientRepository;
-
+        this.portfolioService = portfolioService;
     }
 
     // Get all portfolios
@@ -114,4 +116,19 @@ public class PortfolioController {
     public List<Portfolio> getPortfoliosByTotalStressTest(@PathVariable Double totalStressTest) {
         return portfolioRepository.findByTotalStressTestGreaterThan(totalStressTest);
     }
+
+
+    // Get total risk value (sum of all risk values) for a portfolio by ID
+    @GetMapping("/{portfolioId}/total-risk")
+    public double getTotalRiskForPortfolio(@PathVariable String portfolioId) {
+        Optional<Portfolio> portfolioOpt = portfolioRepository.findById(portfolioId);
+        if (portfolioOpt.isEmpty()) {
+            throw new IllegalArgumentException("Portfolio with id " + portfolioId + " not found");
+        }
+        return portfolioService.calculateTotalRisk(portfolioOpt.get());
+    }
+
+
+
+    
 }
