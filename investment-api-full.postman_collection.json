@@ -1,4 +1,4 @@
-    {
+{
   "info": {
     "name": "Investment Risk Management API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -68,6 +68,7 @@
                 { "name": "Get By ESG Score Key", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/sustainable-portfolios/esg-score-key/:key", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "sustainable-portfolios", "esg-score-key", ":key"] } } }
             ]
         },
+        
         {
             "name": "Asset Management",
             "item": [
@@ -89,6 +90,18 @@
                 { "name": "Get Assets By Risk Type", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/assets/risk-type/:type", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "risk-type", ":type"] } } },
                 { "name": "Get Assets With Risks", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/assets/with-risks", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "with-risks"] } } },
                 { "name": "Get Assets Without Risks", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/assets/without-risks", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "assets", "without-risks"] } } }
+            ]
+        },
+        {
+            "name": "Asset Price History",
+            "item": [
+                { "name": "Create Price History", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/asset-price-history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "asset-price-history"] }, "body": { "mode": "raw", "raw": "{\n  \"tradingDate\": \"2025-09-01\",\n  \"closingPrice\": 123.45,\n  \"source\": \"AlphaVantage\",\n  \"assetId\": \"ASSET_ID_HERE\"\n}" } } },
+                { "name": "Get All Price Histories", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/asset-price-history", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "asset-price-history"] } } },
+                { "name": "Get Price History By ID", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/asset-price-history/:id", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "asset-price-history", ":id"] } } },
+                { "name": "Update Price History", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/asset-price-history/:id", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "asset-price-history", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"tradingDate\": \"2025-09-02\",\n  \"closingPrice\": 130.00,\n  \"source\": \"AlphaVantage\",\n  \"assetId\": \"ASSET_ID_HERE\"\n}" } } },
+                { "name": "Delete Price History", "request": { "method": "DELETE", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/asset-price-history/:id", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "asset-price-history", ":id"] } } },
+                { "name": "Get Price History By Asset", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/asset-price-history/asset/:assetId", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "asset-price-history", "asset", ":assetId"] } } },
+                { "name": "Get Price History By Symbol", "request": { "method": "GET", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" } ], "url": { "raw": "http://localhost:8080/api/asset-price-history/symbol/:symbol", "protocol": "http", "host": ["localhost"], "port": "8080", "path": ["api", "asset-price-history", "symbol", ":symbol"] } } }
             ]
         },
         {

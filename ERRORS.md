@@ -202,3 +202,30 @@ PUT/POST JSON field mismatch (e.g., `riskType` instead of `type`, `valueAtRisk` 
 
 **Solution:**
 Corrected all JSON request bodies to use the exact field names as defined in the entity classes.
+
+---
+## Errors and Solutions for 4/09/2025
+
+**Error:**
+API endpoint `/api/asset-price-history/asset/{assetId}` returned extremely large and deeply nested JSON output, including asset, portfolio, and client details for every price history record.
+
+**Solution:**
+Created and used a dedicated DTO (`AssetPriceHistoryDTO`) for price history responses, including only the necessary fields (trading date, closing price, source, assetId, assetName). Updated the controller to map entities to DTOs, preventing recursive serialization and large output.
+
+**Error:**
+API returned months of price history data, making it hard to focus on recent prices.
+
+**Solution:**
+Updated the controller to accept optional `startDate` and `endDate` query parameters, defaulting to the last 7 days if not provided. Also updated the import method to only fetch and save the last 7 days of price data from AlphaVantage, keeping the database focused on recent prices.
+
+**Error:**
+Duplicate import methods in `AssetPriceHistoryController` caused confusion about which method was correct for importing price history.
+
+**Solution:**
+Removed the duplicate method and kept only the version that filters and saves the last 7 days of price history, ensuring only recent data is imported and stored.
+
+**Error:**
+Duplicate price history records for the same asset and trading date were being saved, causing repeated entries in the database and API output.
+
+**Solution:**
+Updated the service logic to check for existing records before saving new price history entries, preventing duplicates and ensuring only one record per asset per date is stored.

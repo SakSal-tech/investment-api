@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -40,8 +42,12 @@ public class Asset {
 	// Prevents “orphaned” risks that no longer belong to any asset
 
 	@OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Risk> risks;
+	private List<Risk> risks = new ArrayList<>();
+	@OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true)
 
+	private List<AssetPriceHistory> priceHistoryList = new ArrayList<>();
+
+	
 	public Asset() {
 	}
 
@@ -86,5 +92,23 @@ public class Asset {
 	public void setRisks(List<Risk> risks) {
 		this.risks = risks;
 	}
+
+	public List<AssetPriceHistory> getPriceHistory() {
+		return priceHistoryList;
+	}
+
+	public void setPriceHistory(List<AssetPriceHistory> priceHistory) {
+		this.priceHistoryList = priceHistory;
+	}
+
+
+//managing the bidirectional relationship between Asset and AssetPriceHistory at the entity level
+    public void addPriceHistory(AssetPriceHistory history) {
+	//history is an instance of AssetPriceHistory. this refers to the current Asset object inside the Asset entity class
+    history.setAsset(this);//setAsset() is just the setter method in AssetPriceHistory class
+    this.priceHistoryList.add(history);//Set the asset field inside this AssetPriceHistory object to point back to the current Asset
+}
+
+
 
 }

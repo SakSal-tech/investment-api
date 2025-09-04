@@ -1,3 +1,4 @@
+
 //Reasons putting marketdata package in asset management:
 //The API fetches market/asset data, so it's logically part of asset management, not clients or risk.
 //Keeps  RiskService clean as it only calculates risks using data from assets, without worrying about API calls.
@@ -26,6 +27,9 @@ Java Brains video: "Jackson JSON Processor - Java Brains" (YouTube) */
 
 // Used to parse and create JSON objects from API responses
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 // Exception thrown when the end of a JSON input is reached unexpectedly (Jackson library)
 import com.fasterxml.jackson.core.io.JsonEOFException;
 // Exception thrown for errors in JSON parsing or formatting (org.json library)
@@ -36,13 +40,16 @@ import org.json.JSONException;
 - Parse JSON into a usable format (e.g., List<Double> for historical prices)
 - Return the data to be stored in an Asset objec
 */
+//Component is a Spring annotation that marks a class as a Spring-managed bean.
+//This means Spring will automatically create an instance of the class and manage its lifecycle, allowing you to use features like dependency injection
+//Because of want Spring to inject values (like your API key with @Value) or dependencies (with @Autowired), the class must be a Spring bean
+@Component
 public class AlphaVantageClient {
+    //  inject the value of the property named alphaVantage.apiKey from local.properties
+    @Value("${alphaVantage.apiKey}")
+    private  String apiKey;
 
-    private final String apiKey;
-
-    public AlphaVantageClient(String apiKey){
-        this.apiKey = apiKey;
-    }
+    public AlphaVantageClient(){}
 
     /* Fetches daily historical prices for a given asset symbol from Alpha Vantage
      *  @param symbol The stock/asset symbol (e.g., "IBM")
@@ -109,14 +116,78 @@ public class AlphaVantageClient {
             price.add(closingPrices.get(date));
         }
         return price;
+    }
 
 
+        /**
+     * Fetches daily historical prices for a given asset symbol from Alpha Vantage, returning a list of AlphaVantagePriceDTO (date and price).
+     * @param symbol The stock/asset symbol (e.g., "IBM")
+     * @return List of AlphaVantagePriceDTO in chronological order (oldest to newest)
+     */
+    /**
+     * Fetches daily historical prices for a given asset symbol from Alpha Vantage, returning a list of AlphaVantagePriceDTO (date and price).
+     *
+     * @param symbol The stock/asset symbol (e.g., "IBM")
+     * @return List of AlphaVantagePriceDTO in chronological order (oldest to newest)
+     * @throws IOException If there is a network or IO error
+     * @throws InterruptedException If the HTTP request is interrupted
+     * @throws JsonEOFException If the JSON is incomplete
+     * @throws JSONException If the JSON cannot be parsed
+     *
+     * Steps:
+     * 1. Build the Alpha Vantage API URL for daily prices.
+     * 2. Make an HTTP GET request to fetch the JSON response.
+     * 3. Parse the JSON to extract the "Time Series (Daily)" object.
+     * 4. For each date, extract the closing price and store it in a map keyed by LocalDate.
+     * 5. Sort the dates in chronological order.
+     * 6. For each date, create an AlphaVantagePriceDTO with the date and closing price.
+     * 7. Return the list of DTOs (oldest to newest).
+     */
+    public List<AlphaVantagePriceDTO> getDailyPriceDTOs(String symbol) throws IOException, InterruptedException, JsonEOFException, JSONException {
+        // List to hold the result DTOs
+        List<AlphaVantagePriceDTO> dtos = new ArrayList<>();
 
-        
+        // 1. Build the API URL for the given symbol
+        String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol="
+                + symbol + "&outputsize=compact&apikey=" + apiKey;
 
+        // 2. Make the HTTP GET request
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+        // 3. Parse the JSON response
+        JSONObject json = new JSONObject(response.body());
+        JSONObject timeSeriesDaily = json.getJSONObject("Time Series (Daily)");
 
-     }
+        // 4. Extract closing prices for each date
+        // 4. Extract closing prices for each date in the JSON response
+        Map<LocalDate, Double> closingPrices = new HashMap<>();
+        Iterator<String> dates = timeSeriesDaily.keys();
+        while (dates.hasNext()) {
+            // Get the next date string (e.g., "2025-09-03")
+            String dateStr = dates.next();
+            // Get the nested JSON object for this date (contains open, high, low, close, volume)
+            JSONObject dailyData = timeSeriesDaily.getJSONObject(dateStr);
+            // Extract the closing price as a string (e.g., "144.23")
+            String closingStr = dailyData.getString("4. close");
+            // Convert the closing price string to a double value
+            double closingPrice = Double.parseDouble(closingStr);
+            // Convert the date string to LocalDate and store the closing price in the map
+            closingPrices.put(LocalDate.parse(dateStr), closingPrice);
+        }
 
+        // 5. Sort the dates in chronological order (oldest to newest)
+        List<LocalDate> sortedDates = new ArrayList<>(closingPrices.keySet());
+        Collections.sort(sortedDates);
+
+        // 6. For each sorted date, create a DTO with the date and its closing price
+        for (LocalDate date : sortedDates) {
+            dtos.add(new AlphaVantagePriceDTO(date, closingPrices.get(date)));
+        }
+
+        // 7. Return the list of DTOs (each contains date and closing price)
+        return dtos;
+    }
 
 }

@@ -35,9 +35,9 @@ public class RiskController {
             @RequestParam String assetId,
             @RequestParam double confidenceLevel,
             @RequestParam int timeHorizonDays) {
-        Asset asset = assetService.getAssetById(assetId)
+        assetService.getAssetById(assetId)
                 .orElseThrow(() -> new NoSuchElementException("Asset with id " + assetId + " not found"));
-        Risk risk = riskService.calculateVaR(asset, confidenceLevel, timeHorizonDays);
+        Risk risk = riskService.calculateVaR(assetId, confidenceLevel, timeHorizonDays);
         return ResponseEntity.ok(risk);
     }
 
