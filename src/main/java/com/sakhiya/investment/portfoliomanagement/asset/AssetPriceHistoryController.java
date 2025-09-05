@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 import com.sakhiya.investment.portfoliomanagement.asset.marketdata.AlphaVantageClient;
 import com.sakhiya.investment.portfoliomanagement.asset.marketdata.AlphaVantagePriceDTO;
-
+import org.springframework.format.annotation.DateTimeFormat;
 import java.util.List;
 
 @RestController
@@ -20,49 +20,105 @@ public class AssetPriceHistoryController {
     @Autowired
     private AlphaVantageClient alphaVantageClient;
 
-    //To handle the import and saving of price history data
+    // To handle the import and saving of price history data
     @Autowired
     private AssetPriceHistoryRepository priceHistoryRepository;
 
+    // controller can use the servicess logic, while Spring handles the wiring for
+    // me
+    // Follows the dependency injection principle, making code loosely coupled and
+    // easier to test
     @Autowired
     private AssetHistoryService assetHistoryService;
 
-    // (I) Handles HTTP POST requests to /api/asset-price-history to add a new price
+    // Refactoring and created a helper method to avoid repetition, I had same
+    // code(limiting the price history from external API to be 7 days only to avoid
+    // so much data is returned) appearing more than one method
+    // now I can extract the date range calculation from helper method so other
+    // methods can call
+    // It returns a LocalDate[] array so it can easily return both the start and end
+    // dates together f
+    private LocalDate[] getDateRange(LocalDate startDate, LocalDate endDate) {
+        LocalDate end;
+        if (endDate != null) {
+            end = endDate;
+        } else {
+            end = LocalDate.now();
+        }
+
+        LocalDate start;
+        if (startDate != null) {
+            start = startDate;
+        } else {
+            start = end.minusDays(6);
+        }
+
+        return new LocalDate[] { start, end };
+    }
+
+    // --- Another Refactoring: Helper method for mapping AssetPriceHistory to DTO ---
+/**
+ * Refactored to avoid repeated DTO mapping code in each GET endpoint.
+  * Only exposes clean DTOs in API responses, preventing nested asset/portfolio/client data.
+ */
+private AssetPriceHistoryDTO toDTOHelper(AssetPriceHistory priceHistory) {
+    return new AssetPriceHistoryDTO(
+        priceHistory.getAsset().getAssetId(),
+        priceHistory.getAsset().getName(),
+        priceHistory.getTradingDate(),
+        priceHistory.getClosingPrice(),
+        priceHistory.getSource()
+    );
+}
+
+    // Handles HTTP POST requests to /api/asset-price-history to add a new price
     // history record
     @PostMapping
     public AssetPriceHistory addPriceHistory(@RequestBody AssetPriceHistoryDTO dto) {
-        // (I) Create a new AssetPriceHistory entity object
+        // Create a new AssetPriceHistory entity object
         AssetPriceHistory priceHistory = new AssetPriceHistory();
-        // (I) Set the trading date from the DTO (data sent by the client)
+        // Set the trading date from the DTO (data sent by the client)
         priceHistory.setTradingDate(dto.getTradingDate());
-        // (I) Set the closing price from the DTO
+        // Set the closing price from the DTO
         priceHistory.setClosingPrice(dto.getClosingPrice());
-        // (I) Set the data source (e.g., AlphaVantage) from the DTO
+        // Set the data source (e.g., AlphaVantage) from the DTO
         priceHistory.setSource(dto.getSource());
-        // (I) Fetch the Asset entity from the database using the assetId provided in
-        // the DTO
+        // Fetch the Asset entity from the database using the assetId provided in the
+        // DTO.
+        // else if no assetID throw and exception
         Asset asset = assetRepository.findById(dto.getAssetId())
                 .orElseThrow(() -> new IllegalArgumentException("Asset not found: " + dto.getAssetId()));
-        // (I) Link the AssetPriceHistory to the correct Asset
+        // Link the AssetPriceHistory to the correct Asset
         priceHistory.setAsset(asset);
-        // (I) Save the new AssetPriceHistory entity to the database and return it
+        // Save the new AssetPriceHistory entity to the database and return it
         return priceHistoryRepository.save(priceHistory);
     }
 
-    // (I) Get all price history records
+    // Get all price history records
     @GetMapping
-    public List<AssetPriceHistory> getAllPriceHistories() {
-        return priceHistoryRepository.findAll();
+    public List<AssetPriceHistoryDTO> getAllPriceHistories(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        //optional parameters, if user does not pass it will still retun 7 days history by calling getDateRange method
+        LocalDate[] range = getDateRange(startDate, endDate);
+        LocalDate start = range[0];
+        LocalDate end = range[1];
+        //Using a custom repository method for date filtering as findall() does not take parameters
+        List<AssetPriceHistory> priceObs = priceHistoryRepository.findByTradingDateBetweenOrderByTradingDateAsc(start, end);
+        return priceObs.stream().map(this::toDTOHelper).toList();
     }
 
-    // (I) Get price history by ID
+    // Get price history by ID
     @GetMapping("/{id}")
-    public AssetPriceHistory getPriceHistoryById(@PathVariable String id) {
-        return priceHistoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Price history not found: " + id));
+    public AssetPriceHistoryDTO getPriceHistoryById(@PathVariable String id) {
+        AssetPriceHistory priceHistory = priceHistoryRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Price history not found: " + id));
+        // call the helper method
+        return toDTOHelper(priceHistory);
+
     }
 
-    // (I) Update price history by ID
+    // Update price history by ID
     @PutMapping("/{id}")
     public AssetPriceHistory updatePriceHistory(@PathVariable String id, @RequestBody AssetPriceHistoryDTO dto) {
         AssetPriceHistory history = priceHistoryRepository.findById(id)
@@ -76,7 +132,7 @@ public class AssetPriceHistoryController {
         return priceHistoryRepository.save(history);
     }
 
-    // (I) Delete price history by ID
+    // Delete price history by ID
     @DeleteMapping("/{id}")
     public void deletePriceHistory(@PathVariable String id) {
         if (!priceHistoryRepository.existsById(id)) {
@@ -85,53 +141,88 @@ public class AssetPriceHistoryController {
         priceHistoryRepository.deleteById(id);
     }
 
-    // (I) Get all price history for a specific asset
+    // Get all price history for a specific asset
     @GetMapping("/asset/{assetId}")
     /**
-     * Returns a clean list of price history DTOs for the given asset, filtered by date range.
-     * Accepts optional startDate and endDate query parameters. Defaults to last 7 days if not provided.
+     * Returns a clean list of price history DTOs for the given asset, filtered by
+     * date range.
+     * Accepts optional startDate and endDate query parameters. Defaults to last 7
+     * days if not provided.
+     * returns List<AssetPriceHistoryDTO list of DTOs not entities.
      */
     public List<AssetPriceHistoryDTO> getPriceHistoryByAsset(
             @PathVariable String assetId,
-            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate startDate,
-            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate endDate) {
-        java.time.LocalDate end = endDate != null ? endDate : java.time.LocalDate.now();
-        java.time.LocalDate start = startDate != null ? startDate : end.minusDays(6);
-        List<AssetPriceHistory> entities = priceHistoryRepository.findByAsset_AssetIdAndTradingDateBetweenOrderByTradingDateAsc(assetId, start, end);
-        return entities.stream()
-            .map(ph -> new AssetPriceHistoryDTO(
-                ph.getAsset().getAssetId(),
-                ph.getAsset().getName(),
-                ph.getTradingDate(),
-                ph.getClosingPrice(),
-                ph.getSource()
-            ))
-            .toList();
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            LocalDate[] range = getDateRange(startDate, endDate);
+            LocalDate start = range[0];
+            LocalDate end = range[1];
+        List<AssetPriceHistory> entities = priceHistoryRepository
+                .findByAsset_AssetIdAndTradingDateBetweenOrderByTradingDateAsc(assetId, start, end);
+        return entities.stream().map(this::toDTOHelper).toList();
+
+        /* Refactored code moved to the helper method. To be deleted.
+        // entities.stream(): Converts the list of AssetPriceHistory objects (entities)
+        // into a stream
+        // which allows processing each item in the list.
+       // return entities.stream()
+                // For each AssetPriceHistory object (priceHistory) in the stream
+                // it creates a new AssetPriceHistoryDTO object using selected fields(I want to
+                // expose in API response) from ph and its associated Asset.
+                // map is used here to transform each element in the stream from an entity to a
+                // DTO.
+                .map(priceHistory -> new AssetPriceHistoryDTO(
+                        priceHistory.getAsset().getAssetId(),
+                        priceHistory.getAsset().getName(),
+                        priceHistory.getTradingDate(),
+                        priceHistory.getClosingPrice(),
+                        priceHistory.getSource()))
+                .toList();// Collects all the DTOs created by the map operation into a new list and
+                          // returns it.
+            */
+
     }
 
-    // (I) Get all price history for a specific asset symbol (e.g., IBM)
+    // Get all price history for a specific asset symbol (e.g., IBM)
     @GetMapping("/symbol/{symbol}")
-    public List<AssetPriceHistory> getPriceHistoryBySymbol(@PathVariable String symbol) {
-        return priceHistoryRepository.findByAsset_NameOrderByTradingDateAsc(symbol);
+    public List<AssetPriceHistoryDTO> getPriceHistoryBySymbol(@PathVariable String symbol) {
+        List<AssetPriceHistory> pricHistoryeObs = priceHistoryRepository.findBySourceOrderByTradingDateAsc(symbol);
+        return pricHistoryeObs.stream().map(this::toDTOHelper).toList();
+
     }
 
     /**
-     * Import asset price history for a given asset and symbol, only for the last 7 days (including today).
-     * This prevents importing excessive data and keeps the database focused on recent prices.
+     * Import asset price history for a given asset and symbol, only for the last 7
+     * days (including today).
+     * This prevents importing excessive data and keeps the database focused on
+     * recent prices.
      */
+    @PostMapping("/import/{assetId}/{symbol}")
     public ResponseEntity<?> importFromAlphaVantage(
             @PathVariable String assetId,
             @PathVariable String symbol) {
         try {
-            LocalDate end = LocalDate.now();
-            LocalDate start = end.minusDays(6);
+            LocalDate end = LocalDate.now();// today's date
+            LocalDate start = end.minusDays(6);// go back 6 days
+            // create a list of alphaObjects contains DTOs built from the real data fetched
+            // via the external API for specific symbol e.g IBM. calls client class, which
+            // connects to the external AlphaVantage API and fetches the price data
             List<AlphaVantagePriceDTO> alphaObjects = alphaVantageClient.getDailyPriceDTOs(symbol);
             // Filter the DTOs to only include those within the last 7 days
             List<AlphaVantagePriceDTO> filtered = alphaObjects.stream()
-                .filter(dto -> !dto.getTradingDate().isBefore(start) && !dto.getTradingDate().isAfter(end))
-                .toList();
+                    // .filter keeps only the elements in the stream that match the condition inside
+                    // the parentheses.dto is a lambda expression(foreach AlphaVantagePriceDTO         // object (named dto)).
+                    // !dto.getTradingDate().isBefore(start) and isAfter(end), Check that the
+                    // trading date is NOT before & after the start date.dto.getTradingDate(), gets
+                    // the trading date from the current DTO.
+                    .filter(dto -> !dto.getTradingDate().isBefore(start) && !dto.getTradingDate().isAfter(end))
+                    .toList();
+            // call the import method from service class
             assetHistoryService.importPriceHistoryFromAlphaVantage(assetId, filtered, symbol);
-            return ResponseEntity.ok("Imported asset price history for last 7 days: " + start + " to " + end);
+            return ResponseEntity.ok(filtered);
+            // In case external AlphaVantage API is unreachable or returns an error or there
+            // is a problem with filtering or processing the data or any other unexpected
+            // runtime error
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("Failed to import price history: " + ex.getMessage());
         }

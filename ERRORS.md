@@ -229,3 +229,33 @@ Duplicate price history records for the same asset and trading date were being s
 
 **Solution:**
 Updated the service logic to check for existing records before saving new price history entries, preventing duplicates and ensuring only one record per asset per date is stored.
+Error:
+403 Forbidden error when calling POST /api/asset-price-history/import/{assetId}/{symbol} to import asset price history.
+Solution:
+I added the missing @PostMapping annotation to the import endpoint in AssetPriceHistoryController.java, allowing POST requests and resolving the 403 error.
+
+Error:
+GET endpoints (/api/asset-price-history, /api/asset-price-history/{id}, /api/asset-price-history/asset/{assetId}, /api/asset-price-history/symbol/{symbol}) returned nested entity data, including asset and portfolio objects, resulting in large and confusing API responses.
+Solution:
+I refactored all GET endpoints to return DTOs (AssetPriceHistoryDTO) using a helper method, so only clean, relevant fields are exposed in the API response and nested data is prevented.
+
+Error:
+Importing price history from AlphaVantage via POST /api/asset-price-history/import/{assetId}/{symbol} fetched and stored excessive historical data, making the database unnecessarily large.
+Solution:
+I implemented a helper method to calculate a 7-day date range and filtered the imported data to only include the last 7 days, keeping the database focused on recent prices.
+
+Error:
+Duplicate records appeared in asset price history after multiple imports using POST /api/asset-price-history/import/{assetId}/{symbol}.
+Solution:
+I added deduplication logic in the service layer to check for existing records before saving new price history entries, ensuring only unique records are stored.
+
+Error:
+GET endpoints (/api/asset-price-history, /api/asset-price-history/asset/{assetId}) returned empty lists even when data existed in the database.
+Solution:
+I created custom repository methods for date filtering and used a helper method in the controller to handle optional date parameters, ensuring the correct data is returned.
+
+Error:
+Some controller methods for GET endpoints (/api/asset-price-history, /api/asset-price-history/{id}, /api/asset-price-history/asset/{assetId}, /api/asset-price-history/symbol/{symbol}) were returning entities instead of DTOs, leading to inconsistent API responses.
+Solution:
+I reviewed and refactored all GET methods in AssetPriceHistoryController.java to consistently return DTOs using the helper method.
+

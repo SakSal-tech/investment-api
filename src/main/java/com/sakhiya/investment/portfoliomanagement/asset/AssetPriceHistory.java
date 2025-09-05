@@ -13,14 +13,13 @@ import jakarta.persistence.ManyToOne;
 public class AssetPriceHistory {
     @Id
     @Column(name = "price_History_Id", columnDefinition = "CHAR(36)")
-    private String priceHistoryId = UUID.randomUUID().toString();  // store UUID as String
+    private String priceHistoryId = UUID.randomUUID().toString();  // stored UUID as String for easier JPA hypernate 
 
     @ManyToOne //many price history rows belong to one asset
     @JoinColumn(name="asset_Id", nullable = false) //tells JPA this column in the database (asset_id) is the foreign key.
     // Injecting. back-reference that JPA uses to link the AssetPriceHistory entity back to its parent Asset
     private Asset asset;
-
-    private LocalDate tradingDate;//trading date of the price from the external API
+    private LocalDate tradingDate;//trading date of the price from the external API AlphaVantage
     private Double closingPrice;
     private String source;//Identify which API the data came from:AlphaVantage
 

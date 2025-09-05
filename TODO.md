@@ -11,5 +11,28 @@
 
 - [ ] Add JUnitParams parameterised test .
 
+- [ ]  Build client management (Client entity, repository, CRUD endpoints, field validation)
+- [ ]  Build user management (User entity, repository, registration/authentication endpoints)
+- [ ]  Add password and email validation logic
+- [ ]  Integrate BCrypt password hashing for secure user storage
+- [ ]  Configure Spring Security and JWT authentication
+- [ ]  Document and resolve 401/403 errors
+- [ ]  Build portfolio management (Portfolio entity, CRUD endpoints, client/user association)
+- [ ]  Build sustainable portfolio features (SustainablePortfolio entity, endpoints)
+- [ ]  Implement Value-at-Risk (VaR) and stress test calculations (service, endpoints, modular code)
+- [ ]  Connect to external API (AlphaVantage) for asset price history import
+- [ ]  Implement deduplication and date filtering for imported data
+- [ ]  Refactor controllers/services to use DTO classes for clean API responses
+- [ ]  Add helper methods for DRY code (date range calculation)
+- [ ]  Write and update unit tests
+- [ ]  Write integration tests
+- [ ]  Write Mockito tests for service/repository logic
+- [ ]  Validate endpoints using Postman and test cases
+- [ ]  Improve commit messages for clarity and traceability
+- [ ]  Add JUnitParams parameterised test
+- [ ]  Create and maintain DTO classes
+- [ ]  Refactor code where necessary to follow SOLID design
+
+
 
 
