@@ -132,6 +132,8 @@ public class UserService {
      * with a reset token.
      */
     public User findByResetToken(String resetToken) {
+        System.out.println("Looking for user with resetToken: " + resetToken);
+
         if (resetToken == null || resetToken.isBlank()) {
             throw new IllegalArgumentException("resetToken must not be null or blank");
         }
@@ -144,7 +146,8 @@ public class UserService {
         User user = userRepository.findByUsername(userName)
                 .orElseThrow(
                         () -> new NoSuchElementException("User with this username: " + userName + " is not found"));
-        user.setPasswordHash(encoder.encode(newPassword));
+        user.setPasswordHash(encoder.encode(newPassword));//The password is updated for the user with the given username
+        user.setResetToken(null); // Clear the reset token after use
         userRepository.save(user);
         return user;
     }
@@ -155,7 +158,7 @@ public class UserService {
         /*
          * Regex checking Has minimum 8 characters in length * {8,}
          * At least one uppercase English letter (?=.*?[A-Z]). ?=.*? means look ahead
-         * and check the precense of characters
+         * and check the presence of characters
          * At least one lowercase English letter. (?=.*?[a-z])
          * At least one digit (?=.*?[0-9])
          * At least one special character (?=.*?[#?!@$%^&*-])

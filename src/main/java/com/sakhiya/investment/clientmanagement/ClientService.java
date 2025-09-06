@@ -26,13 +26,13 @@ public class ClientService {
         return clients;
     }
 
-        public Client getClient(String clientID) throws NoSuchElementException{
+    public Client getClient(String clientID) throws NoSuchElementException {
         // I had an error with int type. the id should be UUID type not int
         return clientRepository.findById(clientID)
-            //orElseThrow Optional<T> is a container object in java.util that may or may not hold a non-null value
-            .orElseThrow(() -> new NoSuchElementException("Client with this id: " + clientID + " is not found"));
+                // orElseThrow Optional<T> is a container object in java.util that may or may
+                // not hold a non-null value
+                .orElseThrow(() -> new NoSuchElementException("Client with this id: " + clientID + " is not found"));
     }
-
 
     public List<Client> getClientsByEmailServer(String emailServer) {
         if (emailServer == null || emailServer.isBlank()) {
@@ -41,16 +41,15 @@ public class ClientService {
         return clientRepository.findByEmailContaining(emailServer);
     }
 
-
     public List<Client> getClientsByPostcode(String postcode) {
-        //  separate parts of postcode by space
-        String[] postArea = postcode.split("");
-        //extract first part of the postcode which is index
-        String area = postArea[0];
         if (postcode == null || postcode.isBlank()) {
             throw new IllegalArgumentException("Postcode must not be null or blank");
         }
-    return clientRepository.findByPostCodeStartingWith(area);
+        // separate parts of postcode by space
+        String[] postArea = postcode.split(" ");
+        // extract first part of the postcode which is index
+        String area = postArea[0];
+        return clientRepository.findByPostCodeStartingWith(area);
     }
 
     public List<Client> getClientsByDates(LocalDate startDate, LocalDate endDate) {
@@ -67,6 +66,7 @@ public class ClientService {
     public List<Client> getActiveClients(boolean isActive) {
         return clientRepository.findByActive(isActive);
     }
+
     public Long getCountClients() {
         return clientRepository.countAllClients();
     }
@@ -75,44 +75,24 @@ public class ClientService {
         return clientRepository.countActiveClients();
     }
 
-    public List<Client> getLatestClients(int limit){
-            //PageRequest is a helper in Spring that lets you ask for just a part of a big list from the database, not the whole list at once using a limit with start page and maximum page. 
-            //returns slice" of results called(a page)
-            int max = 10;
-            if(limit <=0 || limit > max){
-                throw new IllegalArgumentException("Limit must be greater than zero and less than 10");
-            }
-            Pageable pageable = PageRequest.of(0, limit);
-            return clientRepository.findByLatestTenCreated(pageable);
+    private static final int MAX_LATEST_CLIENTS = 10;
+
+    public List<Client> getLatestClients(int limit) {
+        // PageRequest is a helper in Spring that lets you ask for just a part of a big
+        // list from the database, not the whole list at once using a limit with start
+        // page and maximum page.
+        // returns slice" of results called(a page)
+        if (limit <= 0 || limit > MAX_LATEST_CLIENTS) {
+            throw new IllegalArgumentException("Limit must be greater than zero and less than or equal to " + MAX_LATEST_CLIENTS);
         }
+        Pageable pageable = PageRequest.of(0, limit);
+        return clientRepository.findByLatestTenCreated(pageable);
+    }
 
     // OptimisticLockingFailureException It helps prevent data loss or conflicts
     // when multiple users/processes try to update the same data at the same time
     public Client createClient(Client client) throws IllegalArgumentException, OptimisticLockingFailureException {
-        if (client.getFirstName() == null || client.getFirstName().isBlank()) {
-            throw new IllegalArgumentException("First Name cannot be null");
-        }
-        if (client.getSurname() == null || client.getSurname().isBlank()) {
-            throw new IllegalArgumentException("Surname cannot be null");
-        }
-        if (client.getEmail() == null || client.getEmail().isBlank()) {
-            throw new IllegalArgumentException("Email cannot be null or blank");
-        }
-        if (!Validations.isValidEmail(client.getEmail())) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-        if (client.getDob() != null && !Validations.isValidDate(client.getDob().toString())) {
-            throw new IllegalArgumentException("Invalid date of birth format, expected yyyy-MM-dd");
-        }
-        if (client.getCreatedAt() != null && !Validations.isValidDate(client.getCreatedAt().toString())) {
-            throw new IllegalArgumentException("Invalid createdAt date format, expected yyyy-MM-dd");
-        }
-        if (client.getAddress() == null || client.getAddress().isBlank()) {
-            throw new IllegalArgumentException("Address cannot be null or blank");
-        }
-        if (client.getPostCode() == null || client.getPostCode().isBlank()) {
-            throw new IllegalArgumentException("Postcode cannot be null or blank");
-        }
+        validateClient(client);
         return clientRepository.save(client);
     }
 
@@ -121,31 +101,7 @@ public class ClientService {
     // .orElseThrow is a concise way to handle the case where the client might not
     // exist.
     public Client updateClient(String clientId, Client updatedClient) throws NoSuchElementException {
-        if (updatedClient.getFirstName() == null || updatedClient.getFirstName().isBlank()) {
-            throw new IllegalArgumentException("First Name cannot be null");
-        }
-        if (updatedClient.getSurname() == null || updatedClient.getSurname().isBlank()) {
-            throw new IllegalArgumentException("Surname cannot be null");
-        }
-        if (updatedClient.getEmail() == null || updatedClient.getEmail().isBlank()) {
-            throw new IllegalArgumentException("Email cannot be null or blank");
-        }
-        if (!Validations.isValidEmail(updatedClient.getEmail())) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-        if (updatedClient.getDob() != null && !Validations.isValidDate(updatedClient.getDob().toString())) {
-            throw new IllegalArgumentException("Invalid date of birth format, expected yyyy-MM-dd");
-        }
-        if (updatedClient.getCreatedAt() != null && !Validations.isValidDate(updatedClient.getCreatedAt().toString())) {
-            throw new IllegalArgumentException("Invalid createdAt date format, expected yyyy-MM-dd");
-        }
-        if (updatedClient.getAddress() == null || updatedClient.getAddress().isBlank()) {
-            throw new IllegalArgumentException("Address cannot be null or blank");
-        }
-        if (updatedClient.getPostCode() == null || updatedClient.getPostCode().isBlank()) {
-            throw new IllegalArgumentException("Postcode cannot be null or blank");
-        }
-        Client currentClient = clientRepository.findByClientId(clientId)
+        Client currentClient = clientRepository.findById(clientId)
                 .orElseThrow(() -> new NoSuchElementException("Client with this id:" + clientId + " is not found"));
         // update database fields with new values
         currentClient.setFirstName(updatedClient.getFirstName());
@@ -164,6 +120,36 @@ public class ClientService {
             clientRepository.deleteById(clientId);
         } else {
             throw new NoSuchElementException("Client with this id:" + clientId + " is not found");
+        }
+    }
+
+    //Refactored and created this method as I had the validations lines in both create and update methods
+    private void validateClient(Client client) {
+        if (client.getFirstName() == null || client.getFirstName().isBlank()) {
+            throw new IllegalArgumentException("First Name cannot be null or blank");
+        }
+        if (client.getSurname() == null || client.getSurname().isBlank()) {
+            throw new IllegalArgumentException("Surname cannot be null or blank");
+        }
+        if (client.getEmail() == null || client.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email cannot be null or blank");
+        }
+        if (!Validations.isValidEmail(client.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        if (client.getDob() != null && !Validations.isValidDate(client.getDob().toString())) {
+            throw new IllegalArgumentException("Invalid date of birth format, expected yyyy-MM-dd");
+        }
+        if (client.getCreatedAt() == null) {
+            client.setCreatedAt(LocalDate.now());
+        } else if (!Validations.isValidDate(client.getCreatedAt().toString())) {
+            throw new IllegalArgumentException("Invalid createdAt date format, expected yyyy-MM-dd");
+        }
+        if (client.getAddress() == null || client.getAddress().isBlank()) {
+            throw new IllegalArgumentException("Address cannot be null or blank");
+        }
+        if (client.getPostCode() == null || client.getPostCode().isBlank()) {
+            throw new IllegalArgumentException("Postcode must not be null or blank");
         }
     }
 

@@ -271,3 +271,181 @@ Solution:
 @Mock private RiskService riskService; This created a mock RiskService (not a real one).
 I should have used @InjectMocks for the class too test (RiskService), and @Mock for its dependencies (AssetHistoryService, etc).This way, Mockito creates a real RiskService and injects the mocks into it.
 In the future, only use @InjectMocks on the class under test, and @Mock for its dependencies.
+
+rror:
+Risk calculation was failing in tests with NullPointerException when calling:
+
+assetHistoryService.getHistoricalReturns(String assetId)
+
+
+Symptoms:
+
+RiskServiceTest failed.
+
+Asset historical returns were null.
+
+OpenJDK warning: "Not enough price history for assetId: test..."
+
+Cause:
+
+AssetHistoryService dependency in RiskService was not injected correctly.
+
+Mockito mocks were applied incorrectly: @Mock and @InjectMocks were swapped.
+
+RiskService constructor expected a real AssetHistoryService, but none was provided.
+
+Solution:
+
+Correct Mockito annotations:
+
+@Mock
+private AssetHistoryService assetHistoryService; // dependency
+
+@InjectMocks
+private RiskService riskService; // class under test
+
+
+@InjectMocks is always used on the class you are testing (RiskService).
+
+@Mock is used for all its dependencies (AssetHistoryService, repositories, etc.).
+
+Provide test data via mock:
+
+when(assetHistoryService.getHistoricalReturns("test"))
+    .thenReturn(List.of(0.02, 0.03, -0.01));
+
+
+Constructor injection:
+
+RiskService should have a constructor accepting AssetHistoryService.
+
+Mockito automatically injects the mock into the constructor when using @InjectMocks.
+
+Run test:
+
+RiskService now calculates risk using mocked historical returns.
+
+NullPointerException no longer occurs.
+
+Warnings about insufficient price history are expected in test logs but do not fail the test.
+
+Result:
+
+RiskServiceTest runs successfully.
+
+Risk calculation logic works with injected mock data.
+
+Future tests can mock different return values for various asset scenarios.
+
+Error
+Parameterized JUnit test for dummy client generation was failing. Symptoms included:
+
+Test not running or reporting no parameters supplied.
+
+NullPointerException when trying to use injected dependencies inside the test method.
+
+Mismatched types in CSV source vs method parameters.
+
+Cause:
+
+@ParameterizedTest annotation used incorrectly or missing.
+
+@CsvSource or other parameter provider had values not matching method parameter types.
+
+Mocks and @InjectMocks/@Mock were applied to the wrong objects.
+
+Solution:
+
+Correct JUnit annotations:
+
+@ParameterizedTest
+@CsvSource({
+    "Client1, client1@example.com",
+    "Client2, client2@example.com"
+})
+void testDummyClientGeneration(String name, String email) {
+    // Test logic here
+}
+
+
+Ensure method parameters match CSV source types:
+
+String in CSV maps to String in method parameters.
+
+Any primitive type (int, boolean, etc.) in CSV must match the parameter type exactly.
+
+Properly inject mocks and tested class:
+
+@Mock
+private ClientRepository clientRepository;
+
+@InjectMocks
+private ClientService clientService; // class under test
+
+
+@InjectMocks goes on the class you are testing.
+
+@Mock goes on its dependencies.
+
+Verify constructor injection if used:
+
+If ClientService has a constructor with ClientRepository or other dependencies, Mockito automatically injects mocks via @InjectMocks.
+
+Run test with JUnit 5 (Jupiter) engine to support parameterized tests.
+
+Result:
+
+Test ran for each row in the CSV source.
+
+Dependencies were correctly mocked.
+
+Dummy client generation test passed without NullPointerException.
+
+# Error Log and Solutions
+
+This file documents errors encountered during development and how they were solved.
+
+---
+
+## September 6, 2025
+
+**Error:**  
+Client was not updating in the database.  
+**Cause:**  
+The `createdAt` field in the Client entity was missing a setter, so updates failed when Hibernate tried to set this value (even though it is auto-inserted).  
+**Solution:**  
+Added a setter for `createdAt` in the Client entity. Now updates work as expected.
+
+---
+
+**Error:**  
+User login and password reset were failing.  
+**Cause:**  
+- Login was failing due to incorrect request body field names (`rawPassword` was required, not `password`).
+- Password reset was failing due to mismatched or missing reset tokens, and password validation was rejecting passwords longer than 15 characters.
+- Error handling was unclear, returning 404 or 403 without specific messages.
+**Solution:**  
+- Updated login endpoint to use `UserDTO` and require `rawPassword` in the request body.
+- Improved password validation logic and clarified requirements (8–15 characters, at least one uppercase, one lowercase, one digit, one special character).
+- Added logging and improved error messages for reset token and username mismatches.
+- Fixed the reset password flow to clear the reset token after successful password change.
+- Verified that the reset token and username match in the database before allowing password reset.
+
+---
+
+**Error:**  
+API was returning 404 for valid reset password requests.  
+**Cause:**  
+Password validation was failing due to length or missing required character types, or the reset token was not found for the user.  
+**Solution:**  
+- Added debug logging to `findByResetToken` and `resetPassword` methods in `UserService`.
+- Improved error handling in `UserController` to return specific error messages for token not found, invalid username, or password validation failure.
+- Ensured the reset token and username are checked together before updating the password.
+
+---
+
+**Summary:**  
+- Fixed client update issues by adding missing setters.
+- Standardized user login and password reset flows using DTOs and clear validation.
+- Improved error handling and logging for easier debugging.
+- Password reset now works reliably with proper validation and token clearing.
