@@ -67,6 +67,7 @@ private AssetPriceHistoryDTO toDTOHelper(AssetPriceHistory priceHistory) {
         priceHistory.getAsset().getName(),
         priceHistory.getTradingDate(),
         priceHistory.getClosingPrice(),
+        
         priceHistory.getSource()
     );
 }

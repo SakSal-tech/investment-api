@@ -18,69 +18,52 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 
 @SpringBootTest
-@Transactional // Rolls back changes after each test All changes made to the database during
+@Transactional // Rolls back changes after each test. All changes made to the database during
                // the test are rolled back (undone) after the test finishes
-
 public class UserServiceIntegrationTest {
+
+    @Autowired
+    private UserService userService;
 
     @Test
     @DisplayName("checks password is valid and returns false if not")
     void testPasswordIsValid() {
         String shortPassword = "abcd"; // too short
         boolean isValid = userService.validatePassword(shortPassword);
-        assertFalse(isValid);
+        assertFalse(isValid); // Expect false because password is too short
     }
 
     @Test
     @DisplayName("checks email is valid and returns false if not")
     void testEmailIsValid() {
-        String invalidEmail = "abcd@hotmail"; 
-    // moved email validations to the shared validations class
-    boolean isValid = Validations.isValidEmail(invalidEmail);
-        assertFalse(isValid);
+        String invalidEmail = "abcd@hotmail";
+        // Refactored and moved email validations to the shared validations class as it is needed in both client and user classes
+        boolean isValid = Validations.isValidEmail(invalidEmail);
+        assertFalse(isValid); // Expect false because email format is invalid
     }
-    @Autowired
-    private UserService userService;
 
     @Test
     @DisplayName("Creates a user if username and email do not exist")
     void testCreateAndFindUser() {
-        // Generate a unique username and email for each test run
-        String username = "integrationUser" + System.currentTimeMillis();
-        String email = username + "@example.com";
-        String password = "password123";
+        // Refactoring to follow SOLID principle: use helper for creating unique user
+        User user = createUniqueUser("integrationUser");
 
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setRawPassword(password);
-
-        userService.createUser(user);
-
-        User found = userService.getUserByUserName(username);
-        assertEquals(username, found.getUsername());
-        assertEquals(email, found.getEmail());
+        // Check that the user was successfully created
+        User found = userService.getUserByUserName(user.getUsername());
+        assertEquals(user.getUsername(), found.getUsername()); // username matches
+        assertEquals(user.getEmail(), found.getEmail()); // email matches
     }
 
     @Test
     @DisplayName("userLogin works for a newly created user")
     void testUserLoginWithExistingUser() {
-        // Create a unique user for this test
-        String username = "integrationUser" + System.currentTimeMillis();
-        String email = username + "@example.com";
-        String password = "Password123!";
+        // Create a unique user for this test using helper
+        User user = createUniqueUser("integrationUser");
 
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setRawPassword(password);
-        userService.createUser(user);
-
-        User loggedIn = userService.userLogin(username,  password);
-        assertNotNull(loggedIn);
-        assertEquals(username, loggedIn.getUsername());
+        User loggedIn = userService.userLogin(user.getUsername(), user.getRawPassword());
+        assertNotNull(loggedIn); // user should exist
+        assertEquals(user.getUsername(), loggedIn.getUsername());
     }
-    
 
     @Test
     @DisplayName("userLogin throws if user does not exist in the real database")
@@ -106,36 +89,48 @@ public class UserServiceIntegrationTest {
     @Test
     @DisplayName("userLogin throws if password is blank")
     void testUserLoginBlankPassword() {
-        // always create a unique user before each login attempt.
-        // This ensures the user exists and avoids conflicts or missing user errors
-        // Use a unique username for this test
-        String username = "blankPasswordUser" + System.currentTimeMillis();
-        String email = username + "@example.com";
-        String validPassword = "ValidPassword123";
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setRawPassword(validPassword);
-        userService.createUser(user);
-        assertThrows(NoSuchElementException.class, () -> userService.userLogin(username, ""));
+        // Use helper to create a valid user
+        User user = createUniqueUser("blankPasswordUser");
+        assertThrows(NoSuchElementException.class, () -> userService.userLogin(user.getUsername(), ""));
     }
 
     @Test
     @DisplayName("userLogin throws if password is null")
     void testUserLoginNullPassword() {
-        // always create a unique user before each login attempt.
-        // This ensures the user exists and avoids conflicts or missing user errors
-        // Use a unique username for this test
+        // Use helper to create a valid user
+        User user = createUniqueUser("nullPasswordUser");
+        assertThrows(IllegalArgumentException.class, () -> userService.userLogin(user.getUsername(), null));
+    }
 
-        String username = "nullPasswordUser" + System.currentTimeMillis();
+    // Helper method to create a unique user for tests
+    // Refactoring to follow SOLID principles (Single Responsibility & DRY):
+    // - Each test no longer has to repeat user creation logic
+    // - Test methods focus only on what they are actually testing.
+    // Previously I had to call userService.createUser(user) multiple times
+    private User createUniqueUser(String baseUsername) {
+        String username = baseUsername + System.currentTimeMillis();
         String email = username + "@example.com";
-        String validPassword = "ValidPassword123";
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
-        user.setRawPassword(validPassword);
-        userService.createUser(user);
-        assertThrows(IllegalArgumentException.class, () -> userService.userLogin(username, null));
+        user.setRawPassword("ValidPassword123");
+        userService.createUser(user); // Actually creates the user in the database
+        return user;
+    }
+
+    @Test
+    @DisplayName("Creates user successfully when username and email are unique")
+    void testCreateUserSuccess() {
+        // Using helper to create a unique user
+        User user = createUniqueUser("uniqueUser");
+
+        // Fetch the user from the database to ensure it was created
+        User found = userService.getUserByUserName(user.getUsername());
+
+        // Assertions to verify correct creation
+        assertEquals(user.getUsername(), found.getUsername(), "Username should match");
+        assertEquals(user.getEmail(), found.getEmail(), "Email should match");
+        assertNotNull(found.getRawPassword(), "Password should be set");
     }
 
 }

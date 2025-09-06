@@ -37,9 +37,9 @@ public class AssetHistoryService {
             return returns;
         }
         for (int i = 1; i < priceHistory.size(); i++) {
-            double today = priceHistory.get(i).getClosingPrice();
-            double yesterday = priceHistory.get(i - 1).getClosingPrice();
-            returns.add((today - yesterday) / yesterday);
+            double today = priceHistory.get(i).getClosingPrice();//closing price of asset on day i
+            double yesterday = priceHistory.get(i - 1).getClosingPrice();//closing price of asset on day i-1
+            returns.add((today - yesterday) / yesterday);//Dividing by yesterday converts the change into a relative change (return).
         }
         return returns;
     }

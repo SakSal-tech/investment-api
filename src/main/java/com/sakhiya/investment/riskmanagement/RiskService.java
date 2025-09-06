@@ -1,8 +1,10 @@
 package com.sakhiya.investment.riskmanagement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 import com.sakhiya.investment.portfoliomanagement.asset.AssetPriceHistory;
 import com.sakhiya.investment.portfoliomanagement.asset.AssetHistoryService;
+import com.sakhiya.investment.riskmanagement.dto.VaRCalculationDetailsDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,15 +17,16 @@ import org.springframework.stereotype.Service;
 public class RiskService {
 
     private final RiskRepository riskRepository;
-    // (I) Refactored: Inject AssetHistoryService instead of directly using AssetPriceHistoryRepository
+    // Refactored: Inject AssetHistoryService instead of directly using AssetPriceHistoryRepository
     @Autowired
     private AssetHistoryService assetHistoryService;
 
     @Autowired
     private com.sakhiya.investment.portfoliomanagement.asset.AssetPriceHistoryRepository priceHistoryRepository;
 
-    public RiskService(RiskRepository riskRepository) {
+    public RiskService(RiskRepository riskRepository, AssetHistoryService assetHistoryService) {
         this.riskRepository = riskRepository;
+        this.assetHistoryService = assetHistoryService;
     }
 
     // Fetch all Risk records from the database.
@@ -162,43 +165,54 @@ public class RiskService {
      * @param timeHorizonDays The time horizon in days
      * @return The persisted Risk object
      */
-    public Risk calculateVaR(String assetId, double confidenceLevel, int timeHorizonDays) {
+    public Risk createAndSaveVaR(String assetId, double confidenceLevel, int timeHorizonDays) {
         // Fetch the Asset object by ID (needed for value and to link to Risk)
-        // (I) Refactored: Still need to fetch Asset for linking to Risk, but price history logic is now in AssetHistoryService
-        Asset asset = assetHistoryService
-            .getHistoricalReturns(assetId)
-            .isEmpty() ? null : null;
-        // (I) For now, fallback to old logic to fetch Asset from price history for Risk linkage
-        asset = asset == null ? assetHistoryService
-            .getHistoricalReturns(assetId)
-            .isEmpty() ? null : null : asset;
-        // (I) The above is a placeholder; ideally, Asset should be fetched from AssetRepository
-        asset = asset == null ? priceHistoryRepository.findByAsset_AssetIdOrderByTradingDateAsc(assetId)
-            .stream().findFirst().map(AssetPriceHistory::getAsset)
-            .orElseThrow(() -> new NoSuchElementException("Asset with id " + assetId + " not found in price history")) : asset;
-        // Calculate VaR using historical returns from price history
-    double varValue = varCalculator(assetId, asset.getValue(), confidenceLevel, timeHorizonDays);
+        // Refactored: Fetch asset from price history repository for linking to Risk
+        Asset asset = priceHistoryRepository.findByAsset_AssetIdOrderByTradingDateAsc(assetId)
+                .stream().findFirst()
+                .map(AssetPriceHistory::getAsset)
+                .orElseThrow(() -> new NoSuchElementException("Asset with id " + assetId + " not found in price history"));
 
+        // Fetch historical returns from AssetHistoryService
+        List<Double> returns = assetHistoryService.getHistoricalReturns(assetId);
+
+        // Calculate mean (average daily return) and standard deviation
+        double mean = calculateMean(returns); // average return
+        double stdDev = calculateStandardDev(returns); // Calculate volatility of returns
+
+        // Z-score for the given confidence level
+        double zScore = getZScore(confidenceLevel);
+
+        // Calculate raw VaR (negative for losses) 
+        double rawVaR = asset.getValue() * (mean + zScore * stdDev * Math.sqrt(timeHorizonDays));
+
+        // Build DTO for detailsJson 
+        VaRCalculationDetailsDTO details = new VaRCalculationDetailsDTO(
+                returns, mean, stdDev, zScore, confidenceLevel, timeHorizonDays, rawVaR
+        );
+
+        // Serialize DTO to JSON. Uses ObjectMapper to serialize that DTO into a JSON string.
+        ObjectMapper mapper = new ObjectMapper();
+        String detailsJson;
+        try {
+            detailsJson = mapper.writeValueAsString(details);
+        } catch (Exception e) {
+            detailsJson = "{}"; // fallback
+        }
+
+        // Build Risk entity
         Risk risk = new Risk();
         risk.setType("VaR");
-        risk.setValue(varValue);
+        risk.setValue(rawVaR); //Keep raw negative value
         risk.setAsset(asset);
         risk.setCalculationDate(LocalDate.now());
         risk.setConfidenceLevel(confidenceLevel);
         risk.setTimeHorizon(timeHorizonDays + " days");
+        risk.setDetailsJson(detailsJson); // Save detailed JSON
 
         return riskRepository.save(risk);
     }
 
-    /**
-     * Parametric VaR using the variance-covariance method.
-     * StdDev Standard Deviation = volatility (how much it fluctuates).
-     * Mean = average return (are you making money on average?).
-     * Z-Score (Confidence Level)
-     * Formula: VaR = PortfolioValue * |(mean + Z * StdDev * sqrt(timeHorizon))|
-     * VaR is reported as a positive number representing the potential loss (not a
-     * signed value).
-     */
     /**
      * Parametric VaR using the variance-covariance method, using assetId and value.
      * This version fetches historical returns from the DB using assetId.
@@ -207,74 +221,27 @@ public class RiskService {
      * @param assetValue The current value of the asset
      * @param confidenceLevel The confidence level for VaR (e.g., 0.95)
      * @param timeHorizonDays The time horizon in days
-     * @return The calculated VaR value
+     * @return The calculated VaR value (negative = loss)
      */
     public double varCalculator(String assetId, double assetValue, double confidenceLevel, int timeHorizonDays) {
         // Get historical returns for the asset from DB
-    // (I) Refactored: Use AssetHistoryService to fetch historical returns, reducing coupling and following SRP
-    List<Double> returns = assetHistoryService.getHistoricalReturns(assetId);
+        List<Double> returns = assetHistoryService.getHistoricalReturns(assetId);
 
-        // Calculate mean (average daily return) and standard deviation of returns.
-        double mean = calculateMean(returns); // average return
-        double standardDev = calculateStandardDev(returns); // Calculate volatility of returns
+        // Calculate mean and standard deviation
+        double mean = calculateMean(returns); // average daily return
+        double stdDev = calculateStandardDev(returns); // volatility
 
-        // Convert confidence level to Z-score. Converts confidence level (95% → -1.65, 99% → -2.33) to a multiplier.
-        double confidenceMultiplier = getZScore(confidenceLevel);
+        // Z-score
+        double zScore = getZScore(confidenceLevel);
 
-        // Apply the VaR formula (Parametric / Variance-Covariance Method)
-        // Multiply by assetValue → convert % risk into actual money. Multiply by Math.sqrt(timeHorizonDays) = scale daily volatility to the chosen time horizon
-        // Add mean → corrects for typical expected return
-        // Using mean in the formula for a more precise calculation. Tells the worst-case loss asset might face with X% confidence over Y days?
-        // use the square-root-of-time rule (works if returns are independent day-to-day). Time horizon → scales risk from 1 day to multiple days using T squareroot
-        double var = assetValue * (mean + confidenceMultiplier * standardDev * Math.sqrt(timeHorizonDays));
+        // Apply the VaR formula (signed, negative for loss) 
+        double var = assetValue * (mean + zScore * stdDev * Math.sqrt(timeHorizonDays));
 
-        // Return Value at Risk estimated worst-case monetary loss for that time period
-        return var;
+        return var; //Return signed VaR
     }
 
     // -------------------- Helper methods --------------------
 
-    /**
-     * I used this as a dummy method to simulate fetching historical returns.
-     * Replaced with API. The historic pricesare fetched and stored in the DB now.
-     *      
-    private List<Double> getHistoricalReturns(Asset asset) {
-        // list to store daily returns for the asset
-        List<Double> returns = new ArrayList<>();
-        // random number generator to simulate daily returns. Remember to change this
-        // fetch historical prices of the asset from the database
-        Random random = new Random();
-        for (int i = 0; i < 30; i++) { // Loop 30 times to simulate 30 days of returns
-            // random.nextDouble +++++++++++++Generates a random decimal between 0.0
-            // (inclusive) and 1.0 (exclusive).
-            returns.add(random.nextDouble() * 0.02 - 0.01); // For each day:* 0.02 - 0.01 transforms it into a return
-                                                            // between -1% and +1%
-        }
-        return returns;// Return the list of simulated daily returns
-    }
-
-    */
-    
-
-    /**
-     * Fetches historical daily returns for an asset using its price history.
-     *
-     * @param assetId The ID of the asset whose returns are to be calculated.
-     * @return List of daily returns (as decimals, e.g., 0.01 for 1%) in chronological order.
-     *
-     * This method retrieves all price history records for the asset, sorted by trading date (oldest to newest).
-     * It then calculates the daily return for each day as:
-     *   (today's closing price - yesterday's closing price) / yesterday's closing price
-     * Returns are useful for risk calculations such as VaR and volatility.
-     */
-    // (I) Refactored: Removed getHistoricalReturns from RiskService to reduce coupling and follow SRP. Now provided by AssetHistoryService.
-    // private double getCurrentValue(Asset asset) {
-    // return asset.getValue();
-    // }
-
-    /**
-     * Calculate mean (average) of a list of returns.
-     */
     private double calculateMean(List<Double> returns) {
         if (returns == null || returns.isEmpty())
             return 0;
@@ -284,13 +251,6 @@ public class RiskService {
         return sum / returns.size();// Divide the total by the number of returns average daily return (mean).
     }
 
-    /**
-     * Calculate standard deviation (volatility) of a list of returns.
-     * Standard deviation measures how much the asset's daily returns swing around
-     * the mean:
-     * Small std dev means stable asset (less risky)
-     * Large std devmeans volatile asset (more risky)
-     */
     private double calculateStandardDev(List<Double> returns) {
         if (returns == null || returns.isEmpty())// No returns. volatility = 0.
             return 0;
@@ -299,23 +259,11 @@ public class RiskService {
         double mean = calculateMean(returns);
         double sumSquares = 0;
         for (double r : returns) {
-            // pow squares each deviation power of 2. Square it so that negatives don't
-            // cancel positives e.g. +0.05 and -0.05 would average to zero, which hides risk
             sumSquares += Math.pow(r - mean, 2);// For each return:(r - mean) = How far is the return from the average?
         }
-        // find variance which is the average of the squared deviations from the mean.
-        // Variance shows how volatile an asset
-        // Square Root to get Standard Deviation
         return Math.sqrt(sumSquares / (returns.size() - 1));// Take square root standard deviation (volatility in %).
     }
 
-    /**
-     * Convert confidence level (like 95% or 99%) to Z-score for VaR calculation.
-     * 
-     * Note: Only supports 0.95 and 0.99 confidence levels.
-     * Returns negative Z-scores, which is standard for VaR (representing loss
-     * quantiles).
-     */
     private double getZScore(double confidenceLevel) {
         // Negative because in VaR I am looking at the loss tail of the distribution
         // (worst-case scenario).
@@ -329,7 +277,7 @@ public class RiskService {
     }
 
     /**
-     * Uses probability & historical volatilitysuch as Historical events. Analysts
+     * Uses probability & historical volatility such as Historical events. Analysts
      * look at past crises:
      * 2008 financial crash: many assets dropped ~30-40% in days. 2020 COVID shock:
      * S&P 500 fell ~35% in a month.
@@ -348,7 +296,7 @@ public class RiskService {
      */
     public Risk stressTestCalculator(Asset asset, String scenario) {
         double shockFactor;
-        // using switch case instead of if statement for better efficency.
+        // using switch case instead of if statement for better efficiency.
         switch (scenario) {
             case "Market Crash":
                 shockFactor = -0.3; // -30% drop. Asset price falls 30%
@@ -372,7 +320,7 @@ public class RiskService {
         risk.setScenario(scenario);// Saves the exact scenario used, e.g. "Market Crash", "Interest Rate Shock"
         risk.setValue(stressedValue);// Records the post-shock value of the asset. Shock factor = “what-if
                                      // assumption” (decided by humans/regulators). Post-shock value = “asset’s
-                                     // simulated worth under that assumption.”
+                                     // simulated worth under that assumption.” 
         risk.setAsset(asset);// Associates this risk record with the specific asset that was tested. A
                              // portfolio can have multiple assets
         risk.setCalculationDate(LocalDate.now());// Saves today’s date to know when this stress test was performed

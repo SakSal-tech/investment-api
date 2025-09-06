@@ -259,3 +259,15 @@ Some controller methods for GET endpoints (/api/asset-price-history, /api/asset-
 Solution:
 I reviewed and refactored all GET methods in AssetPriceHistoryController.java to consistently return DTOs using the helper method.
 
+Error:
+RiskServiceTest fails: 
+java.lang.NullPointerException: Cannot invoke "com.sakhiya.investment.portfoliomanagement.asset.AssetHistoryService.getHistoricalReturns(String)" because "this.assetHistoryService" is null
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended. [WARN] Not enough price history for assetId: test. Returning empty returns list.
+
+Solution:
+1. Added the constructor to RiskService to take AssetHistoryService as a parameter
+2. I had @MOck and @InjectMocks in reverse places infront of the wrong class that I want to mock
+@Mock is used to create a mock (fake) version of a dependency. I changed to @InjectMocks on the class I wanted to test; Mockito will automatically inject any mocks into it. In my test:@Mock private AssetPriceHistoryRepository assetPriceHistoryRepository; This created a mock repository. @InjectMocks private AssetHistoryService assetHistoryService; This created a real AssetHistoryService and injects the mock repository into it.
+@Mock private RiskService riskService; This created a mock RiskService (not a real one).
+I should have used @InjectMocks for the class too test (RiskService), and @Mock for its dependencies (AssetHistoryService, etc).This way, Mockito creates a real RiskService and injects the mocks into it.
+In the future, only use @InjectMocks on the class under test, and @Mock for its dependencies.
