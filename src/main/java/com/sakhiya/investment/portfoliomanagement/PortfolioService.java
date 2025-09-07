@@ -3,6 +3,7 @@ package com.sakhiya.investment.portfoliomanagement;
 import com.sakhiya.investment.clientmanagement.Client;
 import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 import com.sakhiya.investment.portfoliomanagement.asset.AssetService;
+import com.sakhiya.investment.portfoliomanagement.asset.AssetRepository;
 import com.sakhiya.investment.riskmanagement.Risk;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Service class to handle operations related to Portfolio,
@@ -23,10 +25,12 @@ public class PortfolioService {
     
     // Repository to persist portfolio updates
     private final PortfolioRepository portfolioRepository;
+    private final AssetRepository assetRepository;
 
-    // Constructor injection for the repository
-    public PortfolioService(PortfolioRepository portfolioRepository) {
+    // Constructor injection for the repositories
+    public PortfolioService(PortfolioRepository portfolioRepository, AssetRepository assetRepository) {
         this.portfolioRepository = portfolioRepository;
+        this.assetRepository = assetRepository;
     }
 
     /**
@@ -36,8 +40,7 @@ public class PortfolioService {
      * 
      * @param portfolio the portfolio to update
      */
-    @Transactional // Marks the method as transactional: all database changes succeed or fail
-                   // together
+    @Transactional // Marks the method as transactional: all database changes succeed or fail together
     public void updatePortfolioRiskTotals(Portfolio portfolio, AssetService assetService) {
         if (portfolio == null)
             return; // Safety check: exit if portfolio is null
@@ -47,25 +50,9 @@ public class PortfolioService {
 
         if (portfolio.getAssets() != null) { // Check if portfolio has assets
             for (Asset asset : portfolio.getAssets()) { // Loop through each asset
-                // Refactored: removed the old nested loops that summed VaR/StressTest for each asset
-                // Removed lines:
-                // for (Risk risk : asset.getRisks()) {
-                // if (risk.getValue() != null) {
-                // if ("VaR".equalsIgnoreCase(risk.getType())) {
-                // totalVaR += risk.getValue();
-                // } else if ("StressTest".equalsIgnoreCase(risk.getType())) {
-                // totalStress += risk.getValue();
-                // }
-                // }
-                // }
-                //Reason for removal:
-                // 1. Logic for summing risks already exists in
-                // AssetService.getTotalRiskValueByType().
-                // 2. Avoids duplicate code DRY (Don't Repeat Yourself) principle.
-                // 3. Makes PortfolioService simpler and more readable KISS principle.
-                // New code delegates calculation to AssetService:
-                totalVaR += assetService.getTotalRiskValueByType(asset.getAssetId(), "VaR"); // DRY
-                totalStress += assetService.getTotalRiskValueByType(asset.getAssetId(), "StressTest"); // DRY
+                // Delegate calculation to AssetService for DRY principle
+                totalVaR += assetService.getTotalRiskValueByType(asset.getAssetId(), "VaR");
+                totalStress += assetService.getTotalRiskValueByType(asset.getAssetId(), "StressTest");
             }
         }
 
@@ -74,8 +61,7 @@ public class PortfolioService {
 
         // Pattern matching for instanceof. If portfolio is a SustainablePortfolio:
         if (portfolio instanceof SustainablePortfolio sustainable) {
-            // Ensure all Map/List fields are initializsd before save to prevent JPA errors
-            //// KISS: simple initialisation
+            // Ensure all Map/List fields are initialized before save to prevent JPA errors
             if (sustainable.getEsgScores() == null)
                 sustainable.setEsgScores(new java.util.HashMap<>()); 
             if (sustainable.getImpactTargets() == null)
@@ -89,9 +75,13 @@ public class PortfolioService {
         }
 
         portfolioRepository.save(portfolio); // Persist the portfolio with updated totals and initialized fields
-
     }
 
+    /**
+     * Calculates total VaR for a portfolio by summing VaR risks from all assets.
+     * @param portfolio the portfolio to calculate for
+     * @return total VaR value
+     */
     public double calculateTotalVaR(Portfolio portfolio) {
         if (portfolio == null || portfolio.getAssets() == null)
             return 0.0;
@@ -109,6 +99,11 @@ public class PortfolioService {
         return totalVaR;
     }
 
+    /**
+     * Calculates total Stress Test for a portfolio by summing StressTest risks from all assets.
+     * @param portfolio the portfolio to calculate for
+     * @return total Stress Test value
+     */
     public double calculateTotalStressTest(Portfolio portfolio) {
         if (portfolio == null || portfolio.getAssets() == null)
             return 0.0;
@@ -126,6 +121,11 @@ public class PortfolioService {
         return totalStress;
     }
 
+    /**
+     * Returns all risks for a portfolio by collecting risks from all assets.
+     * @param portfolio the portfolio to collect risks for
+     * @return list of all risks
+     */
     public List<Risk> getAllPortfolioRisks(Portfolio portfolio) {
         List<Risk> allRisks = new ArrayList<>();
         if (portfolio == null || portfolio.getAssets() == null)
@@ -220,5 +220,9 @@ public class PortfolioService {
         return totalRisk;
     }
 
+    public Asset getAssetById(String assetId) {
+        Optional<Asset> assetOpt = assetRepository.findById(assetId);
+        return assetOpt.orElse(null);
+    }
 
 }

@@ -1,7 +1,9 @@
 package com.sakhiya.investment.portfoliomanagement;
 
 import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
+import java.util.Map;
 
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class SustainablePortfolioService {
     java.time.LocalDate today = java.time.LocalDate.now();
     portfolio.setCreatedAt(today);
     portfolio.setUpdatedAt(today);
+    calculateOverallEsgScore(portfolio);
 
     return repository.save(portfolio);
     }
@@ -74,6 +77,7 @@ public class SustainablePortfolioService {
     existing.setPreferredSectors(updatedData.getPreferredSectors());
 
     existing.setUpdatedAt(java.time.LocalDate.now());
+     calculateOverallEsgScore(existing);
 
     return repository.save(existing);
     }
@@ -114,4 +118,13 @@ public class SustainablePortfolioService {
             });
         }
     }
+
+    private void calculateOverallEsgScore(SustainablePortfolio portfolio) {
+    Map<String, Double> esgScores = portfolio.getEsgScores();
+    if (esgScores != null && !esgScores.isEmpty()) {
+        double avg = esgScores.values().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        portfolio.setOverallEsgScore(avg);
+    }
+}
+
 }

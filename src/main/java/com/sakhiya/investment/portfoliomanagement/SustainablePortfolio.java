@@ -2,6 +2,9 @@ package com.sakhiya.investment.portfoliomanagement;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.JoinColumn;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,12 +18,11 @@ import com.sakhiya.investment.portfoliomanagement.asset.Asset;
 // JPA entity representing a sustainable investment portfolio
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+
 @Entity
 public class SustainablePortfolio extends Portfolio {
 
-
-
-    // Flattened ESG scores
+    // Flattened ESG scores for legacy support (single columns)
     @Column(name = "esg_score_env")
     private Double esgScoreEnv;
 
@@ -30,14 +32,14 @@ public class SustainablePortfolio extends Portfolio {
     @Column(name = "esg_score_gov")
     private Double esgScoreGov;
 
-    // Flattened impact targets
+    // Flattened impact targets for legacy support (single columns)
     @Column(name = "impact_target_carbon")
     private Double impactTargetCarbon;
 
     @Column(name = "impact_target_water")
     private Double impactTargetWater;
 
-    // Stored as delimited strings
+    // Stored as delimited strings for legacy support
     @Column(name = "theme_focus")
     private String themeFocusString;
 
@@ -58,58 +60,99 @@ public class SustainablePortfolio extends Portfolio {
 
     @OneToMany
     private List<Asset> assets = new ArrayList<>();
-    public SustainablePortfolio() {
-    super();
-}
 
+    public SustainablePortfolio() {
+        super();
+    }
 
     // --------------------- Getters and Setters ---------------------
 
-    // ESG Scores as a Map
-    public java.util.Map<String, Double> getEsgScores() {
+    // ESG Scores as a Map (legacy support)
+    // This is for backward compatibility with older columns
+    public java.util.Map<String, Double> getEsgScoresLegacy() {
         java.util.Map<String, Double> map = new java.util.HashMap<>();
-        if (esgScoreEnv != null) map.put("environmental", esgScoreEnv);
-        if (esgScoreSocial != null) map.put("social", esgScoreSocial);
-        if (esgScoreGov != null) map.put("governance", esgScoreGov);
+        if (esgScoreEnv != null)
+            map.put("environmental", esgScoreEnv);
+        if (esgScoreSocial != null)
+            map.put("social", esgScoreSocial);
+        if (esgScoreGov != null)
+            map.put("governance", esgScoreGov);
         return map;
     }
-    public void setEsgScores(java.util.Map<String, Double> esgScores) {
+
+    public void setEsgScoresLegacy(java.util.Map<String, Double> esgScores) {
         this.esgScoreEnv = esgScores != null ? esgScores.getOrDefault("environmental", null) : null;
         this.esgScoreSocial = esgScores != null ? esgScores.getOrDefault("social", null) : null;
         this.esgScoreGov = esgScores != null ? esgScores.getOrDefault("governance", null) : null;
     }
 
-    // Impact Targets as a Map
-    public java.util.Map<String, Double> getImpactTargets() {
+    // Impact Targets as a Map (legacy support)
+    // This is for backward compatibility with older columns
+    public java.util.Map<String, Double> getImpactTargetsLegacy() {
         java.util.Map<String, Double> map = new java.util.HashMap<>();
-        if (impactTargetCarbon != null) map.put("carbon", impactTargetCarbon);
-        if (impactTargetWater != null) map.put("water", impactTargetWater);
+        if (impactTargetCarbon != null)
+            map.put("carbon", impactTargetCarbon);
+        if (impactTargetWater != null)
+            map.put("water", impactTargetWater);
         return map;
     }
-    public void setImpactTargets(java.util.Map<String, Double> impactTargets) {
+
+    public void setImpactTargetsLegacy(java.util.Map<String, Double> impactTargets) {
         this.impactTargetCarbon = impactTargets != null ? impactTargets.getOrDefault("carbon", null) : null;
         this.impactTargetWater = impactTargets != null ? impactTargets.getOrDefault("water", null) : null;
     }
-    @ElementCollection
-    private Map<String, Double> esgScores;      // ESG scores per holding
-    @ElementCollection
-    private List<String> themeFocus;             // Themes like 'climate', 'human rights'
-    @ElementCollection
-    private Map<String, Double> impactTargets;   // Expected social/environmental impact
-    private Double overallEsgScore;              // Cached overall ESG score
-    @ElementCollection
-    private List<String> excludedSectors;        // Industries to avoid (e.g., tobacco, fossil fuels)
-    @ElementCollection
-    private List<String> preferredSectors;       // Preferred sectors for sustainable investment
-    private LocalDate lastUpdated;               // For reporting and tracking updates
-    private String complianceStatus;             // Compliance with regulations or standards (e.g., UNPRI, SFDR)
 
+    // --- JPA mappings for collection tables ---
+    // These are the actual normalized fields mapped to join tables
+
+    // ESG scores per holding (normalized)
+    @ElementCollection
+    @CollectionTable(name = "sustainable_portfolio_esg_scores", joinColumns = @JoinColumn(name = "sustainable_portfolio_portfolio_id"))
+    @MapKeyColumn(name = "esg_scores_key")
+    @Column(name = "esg_scores")
+    private Map<String, Double> esgScores; // ESG scores per holding
+
+    // Themes like 'climate', 'human rights' (normalized)
+    @ElementCollection
+    @CollectionTable(name = "sustainable_portfolio_theme_focus", joinColumns = @JoinColumn(name = "sustainable_portfolio_portfolio_id"))
+    @Column(name = "theme_focus")
+    private List<String> themeFocus;
+
+    // Expected social/environmental impact (normalized)
+    @ElementCollection
+    @CollectionTable(name = "sustainable_portfolio_impact_targets", joinColumns = @JoinColumn(name = "sustainable_portfolio_portfolio_id"))
+    @MapKeyColumn(name = "impact_targets_key")
+    @Column(name = "impact_targets")
+    private Map<String, Double> impactTargets;
+
+    // Cached overall ESG score
+    private Double overallEsgScore;
+
+    // Industries to avoid (e.g., tobacco, fossil fuels) (normalized)
+    @ElementCollection
+    @CollectionTable(name = "sustainable_portfolio_excluded_sectors", joinColumns = @JoinColumn(name = "sustainable_portfolio_portfolio_id"))
+    @Column(name = "excluded_sectors")
+    private List<String> excludedSectors;
+
+    // Preferred sectors for sustainable investment (normalized)
+    @ElementCollection
+    @CollectionTable(name = "sustainable_portfolio_preferred_sectors", joinColumns = @JoinColumn(name = "sustainable_portfolio_portfolio_id"))
+    @Column(name = "preferred_sectors")
+    private List<String> preferredSectors;
+
+    // For reporting and tracking updates
+    private LocalDate lastUpdated;
+
+    // Compliance with regulations or standards (e.g., UNPRI, SFDR)
+    private String complianceStatus;
+
+    // Full constructor for all fields
     public SustainablePortfolio(String portfolioName, Client client, LocalDate createdAt,
             LocalDate updatedAt, String investmentGoal, Integer riskLevel, BigDecimal totalValue, List<Asset> assets,
             Map<String, Double> esgScores, List<String> themeFocus, Map<String, Double> impactTargets,
             Double overallEsgScore, List<String> excludedSectors, List<String> preferredSectors, LocalDate lastUpdated,
             String complianceStatus) {
-        super(portfolioName, client,  createdAt,  updatedAt, investmentGoal,  riskLevel,  totalValue, assets);
+        super(portfolioName, client, createdAt, updatedAt, investmentGoal, riskLevel, totalValue, assets);
         this.esgScores = esgScores;
         this.themeFocus = themeFocus;
         this.impactTargets = impactTargets;
@@ -120,66 +163,158 @@ public class SustainablePortfolio extends Portfolio {
         this.complianceStatus = complianceStatus;
     }
 
-    // Theme Focus as List
-    public java.util.List<String> getThemeFocus() {
+    // Theme Focus as List (legacy string field)
+    // Used for backward compatibility with delimited string columns
+    public java.util.List<String> getThemeFocusLegacy() {
         java.util.List<String> list = new java.util.ArrayList<>();
         if (themeFocusString != null && !themeFocusString.isBlank()) {
-            for (String s : themeFocusString.split(",")) list.add(s.trim());
+            for (String s : themeFocusString.split(","))
+                list.add(s.trim());
         }
         return list;
     }
-    public void setThemeFocus(java.util.List<String> list) {
+
+    public void setThemeFocusLegacy(java.util.List<String> list) {
         this.themeFocusString = list != null ? String.join(",", list) : null;
     }
 
-    // Excluded Sectors as List
-    public java.util.List<String> getExcludedSectors() {
+    // Excluded Sectors as List (legacy string field)
+    // Used for backward compatibility with delimited string columns
+    public java.util.List<String> getExcludedSectorsLegacy() {
         java.util.List<String> list = new java.util.ArrayList<>();
         if (excludedSectorsString != null && !excludedSectorsString.isBlank()) {
-            for (String s : excludedSectorsString.split(",")) list.add(s.trim());
+            for (String s : excludedSectorsString.split(","))
+                list.add(s.trim());
         }
         return list;
     }
-    public void setExcludedSectors(java.util.List<String> list) {
+
+    public void setExcludedSectorsLegacy(java.util.List<String> list) {
         this.excludedSectorsString = list != null ? String.join(",", list) : null;
     }
 
-    // Preferred Sectors as List
-    public java.util.List<String> getPreferredSectors() {
+    // Preferred Sectors as List (legacy string field)
+    // Used for backward compatibility with delimited string columns
+    public java.util.List<String> getPreferredSectorsLegacy() {
         java.util.List<String> list = new java.util.ArrayList<>();
         if (preferredSectorsString != null && !preferredSectorsString.isBlank()) {
-            for (String s : preferredSectorsString.split(",")) list.add(s.trim());
+            for (String s : preferredSectorsString.split(","))
+                list.add(s.trim());
         }
         return list;
     }
-    public void setPreferredSectors(java.util.List<String> list) {
+
+    public void setPreferredSectorsLegacy(java.util.List<String> list) {
         this.preferredSectorsString = list != null ? String.join(",", list) : null;
     }
 
     // lastUpdated
-    public LocalDate getLastUpdated() { return lastUpdated; }
-    public void setLastUpdated(LocalDate lastUpdated) { this.lastUpdated = lastUpdated; }
+    public LocalDate getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDate lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
 
     // overallEsgScore
-    public Double getOverallEsgScore() { return overallEsgScore; }
-    public void setOverallEsgScore(Double overallEsgScore) { this.overallEsgScore = overallEsgScore; }
+    public Double getOverallEsgScore() {
+        return overallEsgScore;
+    }
+
+    public void setOverallEsgScore(Double overallEsgScore) {
+        this.overallEsgScore = overallEsgScore;
+    }
 
     // complianceStatus
-    public String getComplianceStatus() { return complianceStatus; }
-    public void setComplianceStatus(String complianceStatus) { this.complianceStatus = complianceStatus; }
+    public String getComplianceStatus() {
+        return complianceStatus;
+    }
+
+    public void setComplianceStatus(String complianceStatus) {
+        this.complianceStatus = complianceStatus;
+    }
 
     // assets
-    public java.util.List<Asset> getAssets() { return assets; }
-    public void setAssets(java.util.List<Asset> assets) { this.assets = assets; }
+    public java.util.List<Asset> getAssets() {
+        return assets;
+    }
+
+    public void setAssets(java.util.List<Asset> assets) {
+        this.assets = assets;
+    }
 
     // --- Added setters for controller mapping ---
-    public void setEsgScoreEnv(Double esgScoreEnv) { this.esgScoreEnv = esgScoreEnv; }
-    public void setEsgScoreSocial(Double esgScoreSocial) { this.esgScoreSocial = esgScoreSocial; }
-    public void setEsgScoreGov(Double esgScoreGov) { this.esgScoreGov = esgScoreGov; }
-    public void setImpactTargetCarbon(Double impactTargetCarbon) { this.impactTargetCarbon = impactTargetCarbon; }
-    public void setImpactTargetWater(Double impactTargetWater) { this.impactTargetWater = impactTargetWater; }
-    public void setThemeFocusString(String themeFocusString) { this.themeFocusString = themeFocusString; }
-    public void setExcludedSectorsString(String excludedSectorsString) { this.excludedSectorsString = excludedSectorsString; }
-    public void setPreferredSectorsString(String preferredSectorsString) { this.preferredSectorsString = preferredSectorsString; }
+    public void setEsgScoreEnv(Double esgScoreEnv) {
+        this.esgScoreEnv = esgScoreEnv;
+    }
+
+    public void setEsgScoreSocial(Double esgScoreSocial) {
+        this.esgScoreSocial = esgScoreSocial;
+    }
+
+    public void setEsgScoreGov(Double esgScoreGov) {
+        this.esgScoreGov = esgScoreGov;
+    }
+
+    public void setImpactTargetCarbon(Double impactTargetCarbon) {
+        this.impactTargetCarbon = impactTargetCarbon;
+    }
+
+    public void setImpactTargetWater(Double impactTargetWater) {
+        this.impactTargetWater = impactTargetWater;
+    }
+
+    public void setThemeFocusString(String themeFocusString) {
+        this.themeFocusString = themeFocusString;
+    }
+
+    public void setExcludedSectorsString(String excludedSectorsString) {
+        this.excludedSectorsString = excludedSectorsString;
+    }
+
+    public void setPreferredSectorsString(String preferredSectorsString) {
+        this.preferredSectorsString = preferredSectorsString;
+    }
+
+    public Map<String, Double> getEsgScores() {
+        return esgScores;
+    }
+
+    public void setEsgScores(Map<String, Double> esgScores) {
+        this.esgScores = esgScores;
+    }
+
+    public Map<String, Double> getImpactTargets() {
+        return impactTargets;
+    }
+
+    public void setImpactTargets(Map<String, Double> impactTargets) {
+        this.impactTargets = impactTargets;
+    }
+
+    public List<String> getThemeFocus() {
+        return themeFocus;
+    }
+
+    public void setThemeFocus(List<String> themeFocus) {
+        this.themeFocus = themeFocus;
+    }
+
+    public List<String> getExcludedSectors() {
+        return excludedSectors;
+    }
+
+    public void setExcludedSectors(List<String> excludedSectors) {
+        this.excludedSectors = excludedSectors;
+    }
+
+    public List<String> getPreferredSectors() {
+        return preferredSectors;
+    }
+
+    public void setPreferredSectors(List<String> preferredSectors) {
+        this.preferredSectors = preferredSectors;
+    }
 
 }

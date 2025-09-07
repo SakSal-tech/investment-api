@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import org.springframework.data.annotation.CreatedDate; // Marks a field to be automatically set when entity is first saved
 import org.springframework.data.annotation.LastModifiedDate; // Updated automatically on any entity update
 import jakarta.persistence.EntityListeners; // Hooks into entity lifecycle events for auditing
+import jakarta.persistence.FetchType;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener; // Handles populating auditing fields
 
 import jakarta.persistence.DiscriminatorType;
@@ -78,8 +80,11 @@ public class Portfolio {
     // Provides an overall view of portfolio exposure under stress scenarios
     private Double totalStressTest;
 
-    @OneToMany(mappedBy = "portfolio") // One portfolio can have many assets
-    private List<Asset> assets; // List of all assets associated with this portfolio
+    // This is the list of assets linked to this portfolio
+    @OneToMany(mappedBy = "portfolio", fetch = FetchType.EAGER) // One portfolio can have many assets
+    private List<Asset> assets;// List of all assets associated with this portfolio
+
+
 
     // Default no-arg constructor required by JPA
     public Portfolio() {

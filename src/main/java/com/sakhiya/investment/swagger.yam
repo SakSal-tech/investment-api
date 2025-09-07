@@ -1,0 +1,708 @@
+openapi: 3.0.3
+info:
+  title: Investment Portfolio Asset & Risk Management API
+  description: API for managing clients, users, portfolios, assets, risks, and price history.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+paths:
+  # ClientController
+  /api/clients:
+    get:
+      summary: Get all clients
+      tags: [Client]
+      responses:
+        '200':
+          description: List of all clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
+    post:
+      summary: Create new client
+      tags: [Client]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        '200':
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+  /api/clients/{id}:
+    get:
+      summary: Get client by ID
+      tags: [Client]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '404':
+          description: Client not found
+    put:
+      summary: Update client
+      tags: [Client]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        '200':
+          description: Client updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '404':
+          description: Client not found
+    delete:
+      summary: Delete client
+      tags: [Client]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Client deleted
+        '404':
+          description: Client not found
+
+  # UserController
+  /api/users:
+    get:
+      summary: Get all users
+      tags: [User]
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Create new user
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/users/{username}:
+    get:
+      summary: Get user by username
+      tags: [User]
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    put:
+      summary: Update user
+      tags: [User]
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    delete:
+      summary: Delete user
+      tags: [User]
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted
+        '404':
+          description: User not found
+
+  # PortfolioController
+  /api/portfolios:
+    get:
+      summary: Get all portfolios
+      tags: [Portfolio]
+      responses:
+        '200':
+          description: List of all portfolios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portfolio'
+    post:
+      summary: Create new portfolio
+      tags: [Portfolio]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Portfolio'
+      responses:
+        '200':
+          description: Portfolio created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+  /api/portfolios/{id}:
+    get:
+      summary: Get portfolio by ID
+      tags: [Portfolio]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Portfolio found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+        '404':
+          description: Portfolio not found
+    put:
+      summary: Update portfolio
+      tags: [Portfolio]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Portfolio'
+      responses:
+        '200':
+          description: Portfolio updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio'
+        '404':
+          description: Portfolio not found
+    delete:
+      summary: Delete portfolio
+      tags: [Portfolio]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Portfolio deleted
+        '404':
+          description: Portfolio not found
+
+  # SustainablePortfolioController
+  /api/sustainable-portfolios:
+    get:
+      summary: Get all sustainable portfolios
+      tags: [SustainablePortfolio]
+      responses:
+        '200':
+          description: List of all sustainable portfolios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SustainablePortfolio'
+    post:
+      summary: Create new sustainable portfolio
+      tags: [SustainablePortfolio]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SustainablePortfolio'
+      responses:
+        '200':
+          description: Sustainable portfolio created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SustainablePortfolio'
+  /api/sustainable-portfolios/{id}:
+    get:
+      summary: Get sustainable portfolio by ID
+      tags: [SustainablePortfolio]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sustainable portfolio found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SustainablePortfolio'
+        '404':
+          description: Sustainable portfolio not found
+    put:
+      summary: Update sustainable portfolio
+      tags: [SustainablePortfolio]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SustainablePortfolio'
+      responses:
+        '200':
+          description: Sustainable portfolio updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SustainablePortfolio'
+        '404':
+          description: Sustainable portfolio not found
+    delete:
+      summary: Delete sustainable portfolio
+      tags: [SustainablePortfolio]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Sustainable portfolio deleted
+        '404':
+          description: Sustainable portfolio not found
+
+  # AssetController
+  /api/assets:
+    get:
+      summary: Get all assets
+      tags: [Asset]
+      responses:
+        '200':
+          description: List of all assets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+    post:
+      summary: Create new asset
+      tags: [Asset]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+      responses:
+        '200':
+          description: Asset created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+  /api/assets/{id}:
+    get:
+      summary: Get asset by ID
+      tags: [Asset]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Asset found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '404':
+          description: Asset not found
+    put:
+      summary: Update asset
+      tags: [Asset]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+      responses:
+        '200':
+          description: Asset updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '404':
+          description: Asset not found
+    delete:
+      summary: Delete asset
+      tags: [Asset]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Asset deleted
+        '404':
+          description: Asset not found
+
+  # RiskController
+  /api/risks:
+    get:
+      summary: Get all risks
+      tags: [Risk]
+      responses:
+        '200':
+          description: List of all risks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Risk'
+    post:
+      summary: Create new risk
+      tags: [Risk]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Risk'
+      responses:
+        '200':
+          description: Risk created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk'
+  /api/risks/{id}:
+    get:
+      summary: Get risk by ID
+      tags: [Risk]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Risk found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk'
+        '404':
+          description: Risk not found
+    put:
+      summary: Update risk
+      tags: [Risk]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Risk'
+      responses:
+        '200':
+          description: Risk updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk'
+        '404':
+          description: Risk not found
+    delete:
+      summary: Delete risk
+      tags: [Risk]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Risk deleted
+        '404':
+          description: Risk not found
+
+  # PriceHistoryController
+  /api/pricehistory:
+    get:
+      summary: Get all price history records
+      tags: [PriceHistory]
+      responses:
+        '200':
+          description: List of all price history records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PriceHistory'
+    post:
+      summary: Create new price history record
+      tags: [PriceHistory]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceHistory'
+      responses:
+        '200':
+          description: Price history record created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceHistory'
+  /api/pricehistory/{id}:
+    get:
+      summary: Get price history record by ID
+      tags: [PriceHistory]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Price history record found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceHistory'
+        '404':
+          description: Price history record not found
+    put:
+      summary: Update price history record
+      tags: [PriceHistory]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceHistory'
+      responses:
+        '200':
+          description: Price history record updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceHistory'
+        '404':
+          description: Price history record not found
+    delete:
+      summary: Delete price history record
+      tags: [PriceHistory]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Price history record deleted
+        '404':
+          description: Price history record not found
+
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        clientId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        portfolios:
+          type: array
+          items:
+            $ref: '#/components/schemas/Portfolio'
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        rawPassword:
+          type: string
+        isActive:
+          type: boolean
+    Portfolio:
+      type: object
+      properties:
+        portfolioId:
+          type: string
+        name:
+          type: string
+        clientId:
+          type: string
+        assets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Asset'
+    SustainablePortfolio:
+      allOf:
+        - $ref: '#/components/schemas/Portfolio'
+        - type: object
+          properties:
+            esgScore:
+              type: number
+            complianceStatus:
+              type: string
+    Asset:
+      type: object
+      properties:
+        assetId:
+          type: string
+        name:
+          type: string
+        value:
+          type: number
+        portfolioId:
+          type: string
+    Risk:
+      type: object
+      properties:
+        riskId:
+          type: string
+        assetId:
+          type: string
+        type:
+          type: string
+        value:
+          type: number
+        detailsJson:
+          type: string
+    PriceHistory:
+      type: object
+      properties:
+        priceHistoryId:
+          type: string
+        assetId:
+          type: string
+        date:
+          type: string
+          format: date
+        closingPrice:
+          type: number

@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.Optional;
-
-import com.sakhiya.investment.clientmanagement.*;;;
+import com.sakhiya.investment.clientmanagement.*;
 
 /**
  * REST Controller for SustainablePortfolio.
@@ -32,13 +31,53 @@ public class SustainablePortfolioController {
         this.clientRepository = clientRepository;
     }
 
+    //helper method in controller that converts a SustainablePortfolio entity object into a SustainablePortfolioDTO object.
+    private SustainablePortfolioDTO toDTO(SustainablePortfolio portfolio) {
+        SustainablePortfolioDTO dto = new SustainablePortfolioDTO();
+        dto.setPortfolioId(portfolio.getPortfolioId());
+        dto.setPortfolioName(portfolio.getPortfolioName());
+        dto.setCreatedAt(portfolio.getCreatedAt());
+        dto.setUpdatedAt(portfolio.getUpdatedAt());
+        dto.setInvestmentGoal(portfolio.getInvestmentGoal());
+        dto.setRiskLevel(portfolio.getRiskLevel());
+        dto.setTotalValue(portfolio.getTotalValue());
+        dto.setOverallEsgScore(portfolio.getOverallEsgScore());
+        dto.setEsgScores(portfolio.getEsgScores());
+        dto.setImpactTargets(portfolio.getImpactTargets());
+        dto.setThemeFocus(portfolio.getThemeFocus());
+        dto.setExcludedSectors(portfolio.getExcludedSectors());
+        dto.setPreferredSectors(portfolio.getPreferredSectors());
+        dto.setLastUpdated(portfolio.getLastUpdated());
+        dto.setComplianceStatus(portfolio.getComplianceStatus());
+
+        // Set clientName
+        if (portfolio.getClient() != null) {
+            String fullName = portfolio.getClient().getFirstName() + " " + portfolio.getClient().getSurname();
+            dto.setClientName(fullName);
+        }
+
+        // Set assetCount and assetNames. If the portfolio has no assets, calling .stream() on null will throw a NullPointerException.
+        if (portfolio.getAssets() != null) {
+            dto.setAssetCount(portfolio.getAssets().size());
+            List<String> assetNames = portfolio.getAssets().stream()//Converts the list of assets into a Java Stream
+                .map(asset -> asset.getName())// each Asset object in the stream, gets the list of Asset objects associated with the portfolio.
+                .toList();//Collects all the asset names from the stream into a new  list
+            dto.setAssetNames(assetNames);
+        }
+
+        return dto;
+    }
+
     /**
      * GET /api/sustainable-portfolios
      * Fetch all portfolios.
      */
     @GetMapping
-    public List<SustainablePortfolio> getAllSustainablePortfolios() {
-        return service.getAllPortfolios();
+    public List<SustainablePortfolioDTO> getAllSustainablePortfolios() {
+        List<SustainablePortfolio> portfolios = sustainablePortfolioRepository.findAll();
+        return portfolios.stream()
+            .map(this::toDTO)
+            .toList();
     }
 
     /**
@@ -46,9 +85,10 @@ public class SustainablePortfolioController {
      * Fetch a portfolio by ID.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SustainablePortfolio> getSustainablePortfolioById(@PathVariable String id) {
+    public ResponseEntity<SustainablePortfolioDTO> getSustainablePortfolioById(@PathVariable String id) {
         try {
-            return ResponseEntity.ok(service.getPortfolioById(id));
+            SustainablePortfolio portfolio = service.getPortfolioById(id);
+            return ResponseEntity.ok(toDTO(portfolio));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
@@ -121,10 +161,11 @@ public class SustainablePortfolioController {
      * Find portfolios by compliance status (simple String field – works with JPA).
      */
     @GetMapping("/compliance/{status}")
-    public List<SustainablePortfolio> getByComplianceStatus(@PathVariable String status) {
+    public List<SustainablePortfolioDTO> getByComplianceStatus(@PathVariable String status) {
         return service.getAllPortfolios()
                 .stream()
                 .filter(p -> status.equalsIgnoreCase(p.getComplianceStatus()))
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -133,10 +174,11 @@ public class SustainablePortfolioController {
      * (In-memory filter, since JPA cannot query inside List<String>)
      */
     @GetMapping("/theme/{theme}")
-    public List<SustainablePortfolio> getByThemeFocus(@PathVariable String theme) {
+    public List<SustainablePortfolioDTO> getByThemeFocus(@PathVariable String theme) {
         return service.getAllPortfolios()
                 .stream()
                 .filter(p -> p.getThemeFocus() != null && p.getThemeFocus().contains(theme))
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -145,10 +187,11 @@ public class SustainablePortfolioController {
      * (In-memory filter, since excludedSectors is stored as JSON in DB)
      */
     @GetMapping("/excluded-sector/{sector}")
-    public List<SustainablePortfolio> getByExcludedSector(@PathVariable String sector) {
+    public List<SustainablePortfolioDTO> getByExcludedSector(@PathVariable String sector) {
         return service.getAllPortfolios()
                 .stream()
                 .filter(p -> p.getExcludedSectors() != null && p.getExcludedSectors().contains(sector))
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -157,30 +200,39 @@ public class SustainablePortfolioController {
      * Query by numeric ESG score (simple DB-supported field).
      */
     @GetMapping("/esg-score/{score}")
-    public List<SustainablePortfolio> getByEsgScore(@PathVariable int score) {
+    public List<SustainablePortfolioDTO> getByEsgScore(@PathVariable int score) {
         return service.getAllPortfolios()
                 .stream()
                 .filter(p -> p.getOverallEsgScore() >= score)
+                .map(this::toDTO)
                 .toList();
     }
 
     // Find by last updated after a certain date (format: yyyy-MM-dd)
     @GetMapping("/last-updated-after/{date}")
-    public List<SustainablePortfolio> getByLastUpdatedAfter(@PathVariable String date) {
+    public List<SustainablePortfolioDTO> getByLastUpdatedAfter(@PathVariable String date) {
         java.time.LocalDate parsedDate = java.time.LocalDate.parse(date);
-        return sustainablePortfolioRepository.findByLastUpdatedAfter(parsedDate);
+        return sustainablePortfolioRepository.findByLastUpdatedAfter(parsedDate)
+            .stream()
+            .map(this::toDTO)
+            .toList();
     }
 
     // Find by impact target key
     @GetMapping("/impact-target/{key}")
-    public List<SustainablePortfolio> getByImpactTargetKey(@PathVariable String key) {
-        return sustainablePortfolioRepository.findByImpactTargetKey(key);
+    public List<SustainablePortfolioDTO> getByImpactTargetKey(@PathVariable String key) {
+        return sustainablePortfolioRepository.findByImpactTargetKey(key)
+            .stream()
+            .map(this::toDTO)
+            .toList();
     }
 
     // Find by ESG score key
     @GetMapping("/esg-score-key/{key}")
-    public List<SustainablePortfolio> getByEsgScoreKey(@PathVariable String key) {
-        return sustainablePortfolioRepository.findByEsgScoreKey(key);
+    public List<SustainablePortfolioDTO> getByEsgScoreKey(@PathVariable String key) {
+        return sustainablePortfolioRepository.findByEsgScoreKey(key)
+            .stream()
+            .map(this::toDTO)
+            .toList();
     }
-
 }

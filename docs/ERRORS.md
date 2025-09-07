@@ -449,3 +449,23 @@ Password validation was failing due to length or missing required character type
 - Standardized user login and password reset flows using DTOs and clear validation.
 - Improved error handling and logging for easier debugging.
 - Password reset now works reliably with proper validation and token clearing.
+
+**getAppPortfolio returns so much unwanted data**  
+Since connecting to external API, the getAllPortfolio request, I am getting back all related data from asset, clients and risk data
+
+**Cause:**  
+
+Why I return the full SustainablePortfolio entity from  controller, Jackson serializes all fields and relationships, including the assets list and any nested objects.
+Relationships and Fields
+@ManyToOne private Client client;
+This means each portfolio is linked to a client entity.
+@OneToMany private List<Asset> assets;
+This means each portfolio contains a list of asset entities.
+Why You Get Nested Data
+When I return a Portfolio entity from your controller, Jackson will serialize:
+The client object (with all its fields)
+The assets list (with all asset fields)
+Any other fields in Portfolio
+This is why I see all related data (client, assets, etc.) in your API response.
+This is standard JPA/Jackson behavior and not related to the external API usage for stock prices.
+**Solutions:**  

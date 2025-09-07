@@ -23,8 +23,6 @@ public class Asset {
     private String assetId = UUID.randomUUID().toString();  // store UUID as String
     //generates a proper 36-char string that maps to CHAR(36) in MySQL. 
     //I had issues with the way UUID is stored and the way is presented by postman problem how with JPA and Hibernate was mapping it 
-
-
 	private String name;
 	@Column(name = "`value`")
 	private Double value;

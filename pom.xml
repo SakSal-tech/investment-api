@@ -96,6 +96,11 @@
 			<artifactId>json</artifactId>
 			<version>20230227</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.3.0</version>
+		</dependency>
 
 
 	</dependencies>
@@ -108,5 +113,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>
