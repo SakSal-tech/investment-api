@@ -33,13 +33,13 @@ Parameter 1 of constructor in com.sakhiya.investment.clientmanagement.UserServic
 No qualifying bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' available: expected at least 1 bean which qualifies as autowire candidate.
 
 **Solution:**
-After researching the issue was Spring could not find a BCryptPasswordEncoder bean to inject into your UserService constructor.
+After researching the issue was Spring could not find a BCryptPasswordEncoder bean to inject into  UserService constructor.
 
 I had to create passwordConfig class and define beans with @Bean methods (like password encoders, data sources, custom services, etc.)
 
 How PasswordEncoderConfig solves it:
-A configuration class in Spring is not only for defining beans like BCryptPasswordEncoder—it can be used for any application configuration that you want Spring to manage.
-By defining a @Bean method for BCryptPasswordEncoder in PasswordEncoderConfig, you tell Spring how to create and manage this object. Now, Spring can inject it wherever it’s needed ( in  UserService), and  application tests started without this error.
+A configuration class in Spring is not only for defining beans like BCryptPasswordEncoder—it can be used for any application configuration that want Spring to manage.
+By defining a @Bean method for BCryptPasswordEncoder in PasswordEncoderConfig, I am telingl Spring how to create and manage this object. Now, Spring can inject it wherever it’s needed ( in  UserService), and  application tests started without this error.
 
 **Error:**
 
@@ -49,10 +49,10 @@ problem I had the primary key as UUID     //@Id
     
 user_id is stored as a BINARY(16) (compact form of UUID, 16 bytes).
 
- User entity uses @GeneratedValue(strategy = GenerationType.UUID) which will produce a 36-char UUID string, but Hibernate automatically stores it as binary(16) in MySQL if you let it handle the persistence.
+ User entity uses @GeneratedValue(strategy = GenerationType.UUID) which will produce a 36-char UUID string, but Hibernate automatically stores it as binary(16) in MySQL if I let it handle the persistence.
 
 **Solution:**
-converted UUID and stored it as String. user_id → UUID() generates a proper 36-character string that fits CHAR(36). client_id → uses the existing values from your client table, maintaining the one-to-one relationship.
+converted UUID and stored it as String. user_id → UUID() generates a proper 36-character string that fits CHAR(36). client_id → uses the existing values from client table, maintaining the one-to-one relationship.
 
 **Error:**
 Tests failing
@@ -305,7 +305,7 @@ private AssetHistoryService assetHistoryService; // dependency
 private RiskService riskService; // class under test
 
 
-@InjectMocks is always used on the class you are testing (RiskService).
+@InjectMocks is always used on the class testing (RiskService).
 
 @Mock is used for all its dependencies (AssetHistoryService, repositories, etc.).
 
@@ -383,7 +383,7 @@ private ClientRepository clientRepository;
 private ClientService clientService; // class under test
 
 
-@InjectMocks goes on the class you are testing.
+@InjectMocks goes on the class testing.
 
 @Mock goes on its dependencies.
 
@@ -461,11 +461,11 @@ Relationships and Fields
 This means each portfolio is linked to a client entity.
 @OneToMany private List<Asset> assets;
 This means each portfolio contains a list of asset entities.
-Why You Get Nested Data
-When I return a Portfolio entity from your controller, Jackson will serialize:
+Why Get Nested Data
+When I return a Portfolio entity from  controller, Jackson will serialize:
 The client object (with all its fields)
 The assets list (with all asset fields)
 Any other fields in Portfolio
-This is why I see all related data (client, assets, etc.) in your API response.
+This is why I see all related data (client, assets, etc.) in API response.
 This is standard JPA/Jackson behavior and not related to the external API usage for stock prices.
 **Solutions:**  

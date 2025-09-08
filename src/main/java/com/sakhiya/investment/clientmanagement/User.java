@@ -67,7 +67,7 @@ public class User {
     }
 
     public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash; // just assign, no encoding here
+        this.passwordHash = passwordHash; // just assign, no encoding here. I had to move encoding logic in service class to avoid double encoding error.
     }
 
 

@@ -24,18 +24,15 @@ public class AssetPriceHistoryController {
     @Autowired
     private AssetPriceHistoryRepository priceHistoryRepository;
 
-    // controller can use the servicess logic, while Spring handles the wiring for
-    // me
-    // Follows the dependency injection principle, making code loosely coupled and
-    // easier to test
+    // controller can use the service logic, while Spring handles the wiring
+    // Follows the dependency injection principle, making code loosely coupled and easier to test
     @Autowired
     private AssetHistoryService assetHistoryService;
 
     // Refactoring and created a helper method to avoid repetition, I had same
     // code(limiting the price history from external API to be 7 days only to avoid
     // so much data is returned) appearing more than one method
-    // now I can extract the date range calculation from helper method so other
-    // methods can call
+    // now I can extract the date range calculation from helper method so other methods can call
     // It returns a LocalDate[] array so it can easily return both the start and end
     // dates together f
     private LocalDate[] getDateRange(LocalDate startDate, LocalDate endDate) {
@@ -161,26 +158,6 @@ private AssetPriceHistoryDTO toDTOHelper(AssetPriceHistory priceHistory) {
         List<AssetPriceHistory> entities = priceHistoryRepository
                 .findByAsset_AssetIdAndTradingDateBetweenOrderByTradingDateAsc(assetId, start, end);
         return entities.stream().map(this::toDTOHelper).toList();
-
-        /* Refactored code moved to the helper method. To be deleted.
-        // entities.stream(): Converts the list of AssetPriceHistory objects (entities)
-        // into a stream
-        // which allows processing each item in the list.
-       // return entities.stream()
-                // For each AssetPriceHistory object (priceHistory) in the stream
-                // it creates a new AssetPriceHistoryDTO object using selected fields(I want to
-                // expose in API response) from ph and its associated Asset.
-                // map is used here to transform each element in the stream from an entity to a
-                // DTO.
-                .map(priceHistory -> new AssetPriceHistoryDTO(
-                        priceHistory.getAsset().getAssetId(),
-                        priceHistory.getAsset().getName(),
-                        priceHistory.getTradingDate(),
-                        priceHistory.getClosingPrice(),
-                        priceHistory.getSource()))
-                .toList();// Collects all the DTOs created by the map operation into a new list and
-                          // returns it.
-            */
 
     }
 

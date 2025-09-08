@@ -27,8 +27,8 @@ public class AssetController {
     public ResponseEntity<Asset> getAssetById(@PathVariable String id) {
         Optional<Asset> assetOpt = assetService.getAssetById(id);
 
-        // - If asset exists → return ResponseEntity.ok(asset)
-        // - If asset does not exist → return ResponseEntity.notFound().build()
+        // - If asset exists, return ResponseEntity.ok(asset)
+        // - If asset does not exists, return ResponseEntity.notFound().build()
         if (assetOpt.isPresent()) {//isPresent() returns true if the Optional contains a non-null value.
             return ResponseEntity.ok(assetOpt.get()); // Return 200 OK with asset
         } else {

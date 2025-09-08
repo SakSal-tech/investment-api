@@ -1,5 +1,5 @@
 -- =====================================================
--- Sample data insertion for your investment database
+-- Sample data insertion for the investment database
 -- 
 -- Table descriptions:
 --

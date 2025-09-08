@@ -2,7 +2,7 @@
 //Reasons putting marketdata package in asset management:
 //The API fetches market/asset data, so it's logically part of asset management, not clients or risk.
 //Keeps  RiskService clean as it only calculates risks using data from assets, without worrying about API calls.
-// Easy to extend later if you want multiple APIs (AlphaVantageClient, MarketstackClient, etc.).
+// Easy to extend later with multiple APIs (AlphaVantageClient, MarketstackClient, etc.).
 package com.sakhiya.investment.portfoliomanagement.asset.marketdata;
 
 import java.io.IOException;
@@ -41,8 +41,8 @@ import org.json.JSONException;
 - Return the data to be stored in an Asset objec
 */
 //Component is a Spring annotation that marks a class as a Spring-managed bean.
-//This means Spring will automatically create an instance of the class and manage its lifecycle, allowing you to use features like dependency injection
-//Because of want Spring to inject values (like your API key with @Value) or dependencies (with @Autowired), the class must be a Spring bean
+//This means Spring will automatically create an instance of the class and manage its lifecycle, allowing me to use features like dependency injection
+//Because of want Spring to inject values or dependencies (with @Autowired), the class must be a Spring bean
 @Component
 public class AlphaVantageClient {
     //  inject the value of the property named alphaVantage.apiKey from local.properties

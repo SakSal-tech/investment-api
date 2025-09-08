@@ -61,7 +61,7 @@ public class PortfolioService {
 
         // Pattern matching for instanceof. If portfolio is a SustainablePortfolio:
         if (portfolio instanceof SustainablePortfolio sustainable) {
-            // Ensure all Map/List fields are initialized before save to prevent JPA errors
+            // Ensuring all Map/List fields are initialised before save to prevent JPA errors
             if (sustainable.getEsgScores() == null)
                 sustainable.setEsgScores(new java.util.HashMap<>()); 
             if (sustainable.getImpactTargets() == null)

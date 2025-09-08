@@ -78,7 +78,7 @@ public class ClientService {
     private static final int MAX_LATEST_CLIENTS = 10;
 
     public List<Client> getLatestClients(int limit) {
-        // PageRequest is a helper in Spring that lets you ask for just a part of a big
+        // PageRequest is a helper in Spring that lets asking for just a part of a big
         // list from the database, not the whole list at once using a limit with start
         // page and maximum page.
         // returns slice" of results called(a page)
@@ -98,8 +98,7 @@ public class ClientService {
 
     // findByClientId returns an Optional<Client>. Optional is a container object
     // that may or may not contain a non-null value (in this case, a Client).
-    // .orElseThrow is a concise way to handle the case where the client might not
-    // exist.
+    // .orElseThrow is a concise way to handle the case where the client might not exist.
     public Client updateClient(String clientId, Client updatedClient) throws NoSuchElementException {
         Client currentClient = clientRepository.findById(clientId)
                 .orElseThrow(() -> new NoSuchElementException("Client with this id:" + clientId + " is not found"));

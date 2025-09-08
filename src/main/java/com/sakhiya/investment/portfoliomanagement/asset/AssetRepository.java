@@ -16,7 +16,7 @@ public interface AssetRepository extends ListCrudRepository<Asset, String> {
 
     // Find assets by name
     List<Asset> findByName(String name);
-    // If you use asset name as symbol, you can use findByName for symbol lookup.
+    // If I use asset name as symbol, I can use findByName for symbol lookup.
 
     // Find assets by value greater than or equal to
     List<Asset> findByValueGreaterThanEqual(Double value);

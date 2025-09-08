@@ -1,8 +1,7 @@
 package com.sakhiya.investment.portfoliomanagement.asset.marketdata;
 
 /**
- * (I) Simple DTO for price data from AlphaVantageClient. You can replace this
- * with your actual DTO.
+ * Simple DTO for price data from AlphaVantageClient. 
  */
 public  class AlphaVantagePriceDTO {
     private final java.time.LocalDate tradingDate;

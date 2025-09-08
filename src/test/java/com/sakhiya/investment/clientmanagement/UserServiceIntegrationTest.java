@@ -68,7 +68,7 @@ public class UserServiceIntegrationTest {
     @Test
     @DisplayName("userLogin throws if user does not exist in the real database")
     void testUserLoginWithNonExistentUser() {
-        String username = "Ali.J"; // Use a username you know does NOT exist
+        String username = "Ali.J"; // Using a username that does NOT exist
         String password = "Password123!";
 
         assertThrows(NoSuchElementException.class, () -> userService.userLogin(username, password));

@@ -335,8 +335,8 @@ public class RiskService {
                                                                                                   // to convert as
                                                                                                   // percent
 
-        // Check the below. This game me errors in the past as JPA (Hibernate) doesn’t
-        // natively support JSON fields unless your DB column is set to a JSON type
+        // Check the below. This game me errors in the past as JPA (Hibernate) doesn'rt
+        // natively support JSON fields unless DB column is set to a JSON type
         // (like in PostgreSQL with jsonb).
         // AS I am using H2, MySQL, or plain VARCHAR columns, this JSON will just be
         // stored as a string.

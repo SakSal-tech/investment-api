@@ -16,7 +16,7 @@ public class PasswordEncoderConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         // This creates a new BCryptPasswordEncoder instance
         // BCrypt is a secure hashing algorithm for storing user passwords
-        // By using this bean, your API can securely hash and verify passwords for user authentication
+        // By using this bean,  API can securely hash and verify passwords for user authentication
         return new BCryptPasswordEncoder();
     }
 }

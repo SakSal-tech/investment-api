@@ -45,7 +45,11 @@ public class RiskController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Refactored: Return Risk + parsed details as a JSON object
+        /*Refactored: Return Risk + parsed details as a JSON object response is a map with two keys:
+         "risk" and "details". This allows clients (like Postman or your frontend) 
+         to see both the main risk data and the extra details (which were originally stored as a JSON string) 
+         as a proper JSON object, making it easier to work with in API consumers.
+         */ 
         Map<String, Object> response = new HashMap<>();
         response.put("risk", risk);
         response.put("details", details);
@@ -61,7 +65,10 @@ public class RiskController {
                 .orElseThrow(() -> new NoSuchElementException("Asset with id " + assetId + " not found"));
         Risk risk = riskService.stressTestCalculator(asset, scenario);
 
-        // Refactored: Deserialize detailsJson to JSON object for Postman presentation
+        /**Refactored: to Deserialize detailsJson to JSON object for Postman presentation
+         * code is converting the detailsJson field (which is a JSON string stored in the Risk object) 
+         * into a real Java Map object.
+          */ 
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> details = null;
         try {

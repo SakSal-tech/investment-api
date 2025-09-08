@@ -68,7 +68,7 @@ public class UserService {
     }
 
     public List<User> getActiveUsers() {
-        return userRepository.findByIsActive(true); // or whatever your repository method is
+        return userRepository.findByIsActive(true); 
     }
 
     /**
@@ -163,12 +163,10 @@ public class UserService {
          * At least one digit (?=.*?[0-9])
          * At least one special character (?=.*?[#?!@$%^&*-])
          * . means "any single character except a newline
-         * Pattern.compile(...) creates a compiled regular expression pattern from the
-         * string you provide.
+         * Pattern.compile(...) creates a compiled regular expression pattern from the * string provided.
          * .matcher(password) creates a Matcher object that will check if the password
          * matches the pattern.
          * .find() checks if there is any part of the password that matches the pattern
-         * (in your case, it checks the whole string because of the ^ and $ anchors)
          */
 
         boolean isValidPassword = password.length() >= 8 && password.length() <= 15

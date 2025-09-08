@@ -1,6 +1,6 @@
 package com.sakhiya.investment.portfoliomanagement;
 
-// PortfolioCreateDTO.java separates your API contract from your database model, making your code more flexible and secure.
+// PortfolioCreateDTO.java separates  API contract from  database model, making  code more flexible and secure.
 //This DTO's fields to not exactly match the entity's fields. 
 //A DTO (Data Transfer Object) is designed for how data is sent/received over the network, not how it's stored in the database.
 //The DTO is optimised for API clients (e.g., it uses clientId instead of a full Client object). The entity is optimised for JPA/Hibernate and database relationships (e.g., it uses a Client object, not just an ID).

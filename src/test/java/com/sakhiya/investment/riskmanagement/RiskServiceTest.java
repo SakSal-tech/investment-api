@@ -17,7 +17,7 @@ import com.sakhiya.investment.portfoliomanagement.asset.AssetPriceHistoryReposit
 
 public class RiskServiceTest {
      // Tells Mockito to create a mock UserRepository. Mockito will create a fake
-    // version of UserRepository for your test.
+    // version of UserRepository for the test.
     // To test service without needing a real database
     @Mock  
     private AssetPriceHistoryRepository assetPriceHistoryRepository;
@@ -52,7 +52,7 @@ public class RiskServiceTest {
 
         double results = riskService.varCalculator(assetID, assetValue, confidenceLevel, timeHorizonDays);
         double expectedValue = assetValue * (expectedMean + expectedconfidenceMultiplier * expectedStandardDev * Math.sqrt(timeHorizonDays) );
-        // added delta  so small tolerance value that allows your test to pass even if there are tiny differences between the expected and actual values due to floating-point rounding error
+        // added delta  so small tolerance value that allows  test to pass even if there are tiny differences between the expected and actual values due to floating-point rounding error
         assertEquals(results, expectedValue,002 );
 
     }

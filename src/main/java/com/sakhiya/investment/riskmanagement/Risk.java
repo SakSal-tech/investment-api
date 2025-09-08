@@ -38,7 +38,7 @@ public class Risk
     // In a bidirectional relationship, Asset has a list of Risks (@JsonManagedReference),
     // and each Risk points back to its Asset. Jackson uses these annotations to serialize only one direction,
     // avoiding stack overflow errors when converting to/from JSON.
-    // When converting (serialize) a Java object to JSON, it is turning  Java objects ( Asset and Risk) into a JSON string that can be sent over HTTP or stored. When you convert (deserialize) from JSON, you are turning a JSON string (from a request or file) back into Java objects
+    // When converting (serialize) a Java object to JSON, it is turning  Java objects ( Asset and Risk) into a JSON string that can be sent over HTTP or stored. When convering (deserialize) from JSON, turning a JSON string (from a request or file) back into Java objects
     @JsonBackReference
     private Asset asset; // The asset this risk is associated with
 

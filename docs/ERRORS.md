@@ -33,13 +33,13 @@ Parameter 1 of constructor in com.sakhiya.investment.clientmanagement.UserServic
 No qualifying bean of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' available: expected at least 1 bean which qualifies as autowire candidate.
 
 **Solution:**
-After researching the issue was Spring could not find a BCryptPasswordEncoder bean to inject into your UserService constructor.
+After researching the issue was Spring could not find a BCryptPasswordEncoder bean to inject into  UserService constructor.
 
 I had to create passwordConfig class and define beans with @Bean methods (like password encoders, data sources, custom services, etc.)
 
 How PasswordEncoderConfig solves it:
-A configuration class in Spring is not only for defining beans like BCryptPasswordEncoder—it can be used for any application configuration that you want Spring to manage.
-By defining a @Bean method for BCryptPasswordEncoder in PasswordEncoderConfig, you tell Spring how to create and manage this object. Now, Spring can inject it wherever it’s needed ( in  UserService), and  application tests started without this error.
+A configuration class in Spring is not only for defining beans like BCryptPasswordEncoder—it can be used for any application configuration that I  want Spring to manage.
+By defining a @Bean method for BCryptPasswordEncoder in PasswordEncoderConfig, I tell Spring how to create and manage this object. Now, Spring can inject it wherever it’s needed ( in  UserService), and  application tests started without this error.
 
 **Error:**
 
@@ -49,10 +49,10 @@ problem I had the primary key as UUID     //@Id
     
 user_id is stored as a BINARY(16) (compact form of UUID, 16 bytes).
 
- User entity uses @GeneratedValue(strategy = GenerationType.UUID) which will produce a 36-char UUID string, but Hibernate automatically stores it as binary(16) in MySQL if you let it handle the persistence.
+ User entity uses @GeneratedValue(strategy = GenerationType.UUID) which will produce a 36-char UUID string, but Hibernate automatically stores it as binary(16) in MySQL if I let it handle the persistence.
 
 **Solution:**
-converted UUID and stored it as String. user_id → UUID() generates a proper 36-character string that fits CHAR(36). client_id → uses the existing values from your client table, maintaining the one-to-one relationship.
+converted UUID and stored it as String. user_id → UUID() generates a proper 36-character string that fits CHAR(36). client_id → uses the existing values from Ir client table, maintaining the one-to-one relationship.
 
 **Error:**
 Tests failing
@@ -229,37 +229,39 @@ Duplicate price history records for the same asset and trading date were being s
 
 **Solution:**
 Updated the service logic to check for existing records before saving new price history entries, preventing duplicates and ensuring only one record per asset per date is stored.
-Error:
+**Error:**
+
 403 Forbidden error when calling POST /api/asset-price-history/import/{assetId}/{symbol} to import asset price history.
 Solution:
 I added the missing @PostMapping annotation to the import endpoint in AssetPriceHistoryController.java, allowing POST requests and resolving the 403 error.
+**Error:**
 
-Error:
 GET endpoints (/api/asset-price-history, /api/asset-price-history/{id}, /api/asset-price-history/asset/{assetId}, /api/asset-price-history/symbol/{symbol}) returned nested entity data, including asset and portfolio objects, resulting in large and confusing API responses.
 Solution:
 I refactored all GET endpoints to return DTOs (AssetPriceHistoryDTO) using a helper method, so only clean, relevant fields are exposed in the API response and nested data is prevented.
 
-Error:
+**Error:**
+
 Importing price history from AlphaVantage via POST /api/asset-price-history/import/{assetId}/{symbol} fetched and stored excessive historical data, making the database unnecessarily large.
 Solution:
 I implemented a helper method to calculate a 7-day date range and filtered the imported data to only include the last 7 days, keeping the database focused on recent prices.
 
-Error:
+**Error:**
 Duplicate records appeared in asset price history after multiple imports using POST /api/asset-price-history/import/{assetId}/{symbol}.
 Solution:
 I added deduplication logic in the service layer to check for existing records before saving new price history entries, ensuring only unique records are stored.
 
-Error:
+**Error:**
 GET endpoints (/api/asset-price-history, /api/asset-price-history/asset/{assetId}) returned empty lists even when data existed in the database.
 Solution:
 I created custom repository methods for date filtering and used a helper method in the controller to handle optional date parameters, ensuring the correct data is returned.
 
-Error:
+**Error:**
 Some controller methods for GET endpoints (/api/asset-price-history, /api/asset-price-history/{id}, /api/asset-price-history/asset/{assetId}, /api/asset-price-history/symbol/{symbol}) were returning entities instead of DTOs, leading to inconsistent API responses.
 Solution:
 I reviewed and refactored all GET methods in AssetPriceHistoryController.java to consistently return DTOs using the helper method.
 
-Error:
+**Error:**
 RiskServiceTest fails: 
 java.lang.NullPointerException: Cannot invoke "com.sakhiya.investment.portfoliomanagement.asset.AssetHistoryService.getHistoricalReturns(String)" because "this.assetHistoryService" is null
 OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended. [WARN] Not enough price history for assetId: test. Returning empty returns list.
@@ -272,12 +274,9 @@ Solution:
 I should have used @InjectMocks for the class too test (RiskService), and @Mock for its dependencies (AssetHistoryService, etc).This way, Mockito creates a real RiskService and injects the mocks into it.
 In the future, only use @InjectMocks on the class under test, and @Mock for its dependencies.
 
-rror:
+**Error:**
 Risk calculation was failing in tests with NullPointerException when calling:
-
 assetHistoryService.getHistoricalReturns(String assetId)
-
-
 Symptoms:
 
 RiskServiceTest failed.
@@ -305,7 +304,7 @@ private AssetHistoryService assetHistoryService; // dependency
 private RiskService riskService; // class under test
 
 
-@InjectMocks is always used on the class you are testing (RiskService).
+@InjectMocks is always used on the class I are testing (RiskService).
 
 @Mock is used for all its dependencies (AssetHistoryService, repositories, etc.).
 
@@ -383,7 +382,7 @@ private ClientRepository clientRepository;
 private ClientService clientService; // class under test
 
 
-@InjectMocks goes on the class you are testing.
+@InjectMocks goes on the class I are testing.
 
 @Mock goes on its dependencies.
 
@@ -461,11 +460,11 @@ Relationships and Fields
 This means each portfolio is linked to a client entity.
 @OneToMany private List<Asset> assets;
 This means each portfolio contains a list of asset entities.
-Why You Get Nested Data
-When I return a Portfolio entity from your controller, Jackson will serialize:
+Why I Get Nested Data
+When I return a Portfolio entity from my controller, Jackson will serialize:
 The client object (with all its fields)
 The assets list (with all asset fields)
 Any other fields in Portfolio
-This is why I see all related data (client, assets, etc.) in your API response.
+This is why I see all related data (client, assets, etc.) in my API response.
 This is standard JPA/Jackson behavior and not related to the external API usage for stock prices.
 **Solutions:**  

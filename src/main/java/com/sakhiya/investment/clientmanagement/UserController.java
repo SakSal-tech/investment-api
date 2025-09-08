@@ -115,11 +115,10 @@ public class UserController {
 							"username", username,
 							"newPassword", "YOUR_NEW_PASSWORD",
 							"resetToken", resetToken));
-					// A note to help user fill in your new password
+					// A note to help user fill in new password
 					resetJson.put("note", "Replace YOUR_NEW_PASSWORD with your new password");
 					return ResponseEntity.status(403).body(resetJson);
 				}
-				// Optionally, you could return a message for each failed attempt
 			}
 		}
 		// This should never be reached

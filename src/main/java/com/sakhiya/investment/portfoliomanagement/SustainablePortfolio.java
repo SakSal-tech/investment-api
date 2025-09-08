@@ -128,13 +128,13 @@ public class SustainablePortfolio extends Portfolio {
     // Cached overall ESG score
     private Double overallEsgScore;
 
-    // Industries to avoid (e.g., tobacco, fossil fuels) (normalized)
+    // Industries to avoid (e.g., tobacco, fossil fuels) (database normalised)
     @ElementCollection
     @CollectionTable(name = "sustainable_portfolio_excluded_sectors", joinColumns = @JoinColumn(name = "sustainable_portfolio_portfolio_id"))
     @Column(name = "excluded_sectors")
     private List<String> excludedSectors;
 
-    // Preferred sectors for sustainable investment (normalized)
+    // Preferred sectors for sustainable investment (database normalised)
     @ElementCollection
     @CollectionTable(name = "sustainable_portfolio_preferred_sectors", joinColumns = @JoinColumn(name = "sustainable_portfolio_portfolio_id"))
     @Column(name = "preferred_sectors")

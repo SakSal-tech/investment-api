@@ -29,3 +29,9 @@ The following limitations and issues are currently known in the Risk Analysis AP
 7. **External Data**
    - Currently no integration with live financial data or ESG scoring APIs.
    - All asset data must be entered manually or via seeding.
+
+8. **DTO Usage and Excessive Data Exposure**
+   - The Asset entity currently needs a dedicated DTO to avoid returning large, nested data structures.
+   - Without a DTO, Spring Boot's default serialization exposes all related tables (such as price history, portfolio, and risk records) for each asset.
+   - This can result in very large JSON responses, including historical data and external API results, which may be unnecessary for most API consumers and can impact performance and security.
+   - DTOs have been added for most entities to control and limit the data returned, but Asset still requires this improvement.

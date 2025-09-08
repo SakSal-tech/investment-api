@@ -1,0 +1,292 @@
+### =========================
+### CLIENT ENDPOINTS
+### =========================
+
+# Get all clients
+GET http://localhost:8080/api/clients
+
+# Create a new client
+POST http://localhost:8080/api/clients
+Content-Type: application/json
+
+{
+  "first_name": "Alice",
+  "surname": "Smith",
+  "email": "alice@example.com",
+  "dob": "1990-01-01",
+  "address": "123 Main St",
+  "post_code": "12345",
+  "telephone": "0123456789",
+  "national_insurance_number": "AB123456C",
+  "active": 1
+}
+
+# Get client by ID
+GET http://localhost:8080/api/clients/{{client_id}}
+
+# Update client
+PUT http://localhost:8080/api/clients/{{client_id}}
+Content-Type: application/json
+
+{
+  "first_name": "Alice",
+  "surname": "Johnson",
+  "email": "alice.johnson@example.com",
+  "dob": "1990-01-01",
+  "address": "456 New St",
+  "post_code": "54321",
+  "telephone": "0987654321",
+  "national_insurance_number": "AB123456C",
+  "active": 1
+}
+
+# Delete client
+DELETE http://localhost:8080/api/clients/{{client_id}}
+
+
+### =========================
+### USER ENDPOINTS
+### =========================
+
+# Get all users
+GET http://localhost:8080/api/users
+
+# Get user by username
+GET http://localhost:8080/api/users/{{username}}
+
+# Get user by email
+GET http://localhost:8080/api/users/email/{{email}}
+
+# Search user by username or email
+GET http://localhost:8080/api/users/search?username={{username}}&email={{email}}
+
+# Get all active users
+GET http://localhost:8080/api/users/active
+
+# User login
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "username": "yourUsername",
+  "rawPassword": "yourPassword"
+}
+
+# Generate password reset token
+POST http://localhost:8080/api/users/reset-token?username={{username}}
+
+# Find user by reset token
+GET http://localhost:8080/api/users/reset-token/{{token}}
+
+# Reset user password
+POST http://localhost:8080/api/users/reset-password?username={{username}}&newPassword={{newPassword}}&resetToken={{resetToken}}
+
+# Create new user
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "newuser",
+  "email": "newuser@example.com",
+  "rawPassword": "password"
+}
+
+# Update user
+PUT http://localhost:8080/api/users/{{username}}
+Content-Type: application/json
+
+{
+  "email": "updated@example.com",
+  "rawPassword": "newpassword"
+}
+
+# Delete user
+DELETE http://localhost:8080/api/users/{{username}}
+
+
+### =========================
+### PORTFOLIO ENDPOINTS
+### =========================
+
+# Get all portfolios
+GET http://localhost:8080/api/portfolios
+
+# Create a new portfolio
+POST http://localhost:8080/api/portfolios
+Content-Type: application/json
+
+{
+  "portfolio_name": "Alice Portfolio",
+  "portfolio_type": "Standard",
+  "client_id": "{{client_id}}",
+  "investment_goal": "Growth",
+  "risk_level": 3
+}
+
+# Get portfolio by ID
+GET http://localhost:8080/api/portfolios/{{portfolio_id}}
+
+# Update portfolio
+PUT http://localhost:8080/api/portfolios/{{portfolio_id}}
+Content-Type: application/json
+
+{
+  "portfolio_name": "Updated Portfolio Name",
+  "investment_goal": "Balanced",
+  "risk_level": 2
+}
+
+# Delete portfolio
+DELETE http://localhost:8080/api/portfolios/{{portfolio_id}}
+
+
+### =========================
+### SUSTAINABLE PORTFOLIO ENDPOINTS
+### =========================
+
+# Get all sustainable portfolios
+GET http://localhost:8080/api/sustainable-portfolios
+
+# Create a new sustainable portfolio
+POST http://localhost:8080/api/sustainable-portfolios
+Content-Type: application/json
+
+{
+  "portfolio_name": "Green Portfolio",
+  "portfolio_type": "Sustainable",
+  "client_id": "{{client_id}}",
+  "overall_esg_score": 85,
+  "compliance_status": "Compliant"
+}
+
+# Get sustainable portfolio by ID
+GET http://localhost:8080/api/sustainable-portfolios/{{portfolio_id}}
+
+# Update sustainable portfolio
+PUT http://localhost:8080/api/sustainable-portfolios/{{portfolio_id}}
+Content-Type: application/json
+
+{
+  "portfolio_name": "Updated Green Portfolio",
+  "overall_esg_score": 90,
+  "compliance_status": "Compliant"
+}
+
+# Delete sustainable portfolio
+DELETE http://localhost:8080/api/sustainable-portfolios/{{portfolio_id}}
+
+
+### =========================
+### ASSET ENDPOINTS
+### =========================
+
+# Get all assets
+GET http://localhost:8080/api/assets
+
+# Create new asset
+POST http://localhost:8080/api/assets
+Content-Type: application/json
+
+{
+  "name": "Apple Inc.",
+  "value": 150000,
+  "portfolio_id": "{{portfolio_id}}"
+}
+
+# Get asset by ID
+GET http://localhost:8080/api/assets/{{asset_id}}
+
+# Update asset
+PUT http://localhost:8080/api/assets/{{asset_id}}
+Content-Type: application/json
+
+{
+  "name": "Updated Asset Name",
+  "value": 155000
+}
+
+# Delete asset
+DELETE http://localhost:8080/api/assets/{{asset_id}}
+
+# Advanced queries
+GET http://localhost:8080/api/assets/name/{{name}}
+GET http://localhost:8080/api/assets/value/{{value}}
+GET http://localhost:8080/api/assets/value/max/{{value}}
+GET http://localhost:8080/api/assets/value/between/{{min}}/{{max}}
+GET http://localhost:8080/api/assets/name/contains/{{substring}}
+GET http://localhost:8080/api/assets/value/exact/{{value}}
+GET http://localhost:8080/api/assets/portfolio/{{portfolio_id}}/count
+GET http://localhost:8080/api/assets/risk-type/{{type}}
+GET http://localhost:8080/api/assets/with-risks
+GET http://localhost:8080/api/assets/without-risks
+GET http://localhost:8080/api/assets/{{asset_id}}/total-risk-summary
+
+
+### =========================
+### RISK ENDPOINTS
+### =========================
+
+# Get all risks
+GET http://localhost:8080/api/risks
+
+# Create risk
+POST http://localhost:8080/api/risks
+Content-Type: application/json
+
+{
+  "asset_id": "{{asset_id}}",
+  "type": "VaR",
+  "value": 5000
+}
+
+# Get, update, delete risk
+GET http://localhost:8080/api/risks/{{risk_id}}
+PUT http://localhost:8080/api/risks/{{risk_id}}
+Content-Type: application/json
+{
+  "value": 6000
+}
+DELETE http://localhost:8080/api/risks/{{risk_id}}
+
+# Advanced queries
+GET http://localhost:8080/api/risks/type/{{type}}
+GET http://localhost:8080/api/risks/asset/{{asset_id}}
+GET http://localhost:8080/api/risks/date/{{date}}
+GET http://localhost:8080/api/risks/value/{{value}}
+GET http://localhost:8080/api/risks/confidence/{{confidenceLevel}}
+GET http://localhost:8080/api/risks/scenario/{{scenario}}
+GET http://localhost:8080/api/risks/currency/{{currency}}
+
+# Calculation endpoints
+POST http://localhost:8080/api/risks/var?assetId={{asset_id}}&confidenceLevel={{confidenceLevel}}&timeHorizonDays={{timeHorizonDays}}
+POST http://localhost:8080/api/risks/stress-test?assetId={{asset_id}}&scenario={{scenario}}
+
+
+### =========================
+### PRICE HISTORY ENDPOINTS
+### =========================
+
+# Get all price history
+GET http://localhost:8080/api/pricehistory
+
+# Create new price history record
+POST http://localhost:8080/api/pricehistory
+Content-Type: application/json
+
+{
+  "asset_id": "{{asset_id}}",
+  "trading_date": "2025-09-01",
+  "closing_price": 100.5,
+  "source": "Manual insert"
+}
+
+# Get, update, delete price history
+GET http://localhost:8080/api/pricehistory/{{price_history_id}}
+PUT http://localhost:8080/api/pricehistory/{{price_history_id}}
+Content-Type: application/json
+{
+  "closing_price": 101.0
+}
+DELETE http://localhost:8080/api/pricehistory/{{price_history_id}}
+
+# Note: Normally price history is fetched automatically from AlphaVantage; manual insert is optional.

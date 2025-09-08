@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 @Repository
 /*changed from ListCrudRepository to JpaRepository for advanced features (paging, sorting, batch),  JpaRepository<Portfolio, String>.
- basic CRUD, ListCrudRepository<Portfolio, String> is fine. The ID type (String or UUID) must match your entity’s ID field.*/
+ basic CRUD, ListCrudRepository<Portfolio, String> is fine. The ID type (String or UUID) must match  entity's ID field.*/
 
 public interface PortfolioRepository extends ListCrudRepository<Portfolio, String> {
     // Find all portfolios for a specific client

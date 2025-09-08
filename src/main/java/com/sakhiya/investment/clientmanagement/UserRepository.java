@@ -8,7 +8,7 @@ import org.springframework.data.repository.ListCrudRepository;
 
 /*This is an interface that extends ListCrudRepository<User, UUID>.
 Spring Data JPA automatically provides the implementation at runtime.
-It allows you to perform CRUD operations on the User table without writing SQL.
+It allows performing CRUD operations on the User table without writing SQL.
  */
 public interface UserRepository extends ListCrudRepository<User, String> {
     // Find a client by username, username or username/email (from User class). This

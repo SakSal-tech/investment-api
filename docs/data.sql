@@ -1,6 +1,36 @@
 -- =====================================================
--- Sample data insertion for your investment database
+-- Sample data insertion for investment database
 -- 
+
+-- Insert clients
+INSERT INTO client (client_id, active, first_name, surname, email, address, post_code, telephone, dob, national_insurance_number, created_at)
+VALUES
+  (UUID(), b'1', 'Alice', 'Smith', 'alice@example.com', '123 Main St', 'AB12 3CD', '0123456789', '1985-06-15', 'AB123456C', CURRENT_DATE),
+  (UUID(), b'1', 'Bob', 'Johnson', 'bob@example.com', '456 Oak Ave', 'CD34 5EF', '0987654321', '1990-09-20', 'CD987654E', CURRENT_DATE);
+
+-- Insert portfolios
+INSERT INTO portfolio (portfolio_id, portfolio_type, portfolio_name, client_id, created_at, updated_at, investment_goal, risk_level, total_value)
+VALUES
+  (UUID(), 'Retirement', 'Alice Portfolio', (SELECT client_id FROM client WHERE email='alice@example.com'), CURRENT_DATE, CURRENT_DATE, 'Long-term growth', 5, 100000.00),
+  (UUID(), 'Wealth Management', 'Bob Portfolio', (SELECT client_id FROM client WHERE email='bob@example.com'), CURRENT_DATE, CURRENT_DATE, 'Capital preservation', 3, 50000.00);
+
+-- Insert assets
+INSERT INTO asset (asset_id, name, value, portfolio_id)
+VALUES
+  (UUID(), 'Apple Inc.', 150.25, (SELECT portfolio_id FROM portfolio WHERE portfolio_name='Alice Portfolio')),
+  (UUID(), 'Alphabet Inc.', 2800.50, (SELECT portfolio_id FROM portfolio WHERE portfolio_name='Alice Portfolio')),
+  (UUID(), 'Tesla Inc.', 720.15, (SELECT portfolio_id FROM portfolio WHERE portfolio_name='Bob Portfolio'));
+
+-- Insert asset price history (manual insert example)
+-- Note: normally fetched automatically from AlphaVantage
+INSERT INTO asset_price_history (price_history_id, closing_price, source, trading_date, asset_id)
+VALUES
+  (UUID(), 150.25, 'Manual', '2025-09-01', (SELECT asset_id FROM asset WHERE name='Apple Inc.')),
+  (UUID(), 152.30, 'Manual', '2025-09-02', (SELECT asset_id FROM asset WHERE name='Apple Inc.')),
+  (UUID(), 2800.50, 'Manual', '2025-09-01', (SELECT asset_id FROM asset WHERE name='Alphabet Inc.')),
+  (UUID(), 720.15, 'Manual', '2025-09-01', (SELECT asset_id FROM asset WHERE name='Tesla Inc.'));
+
+
 -- Table descriptions:
 --
 -- client:
@@ -58,31 +88,3 @@
 -- 2. asset_price_history is normally fetched automatically from AlphaVantage API.
 --    Manual inserts are just examples.
 -- =====================================================
-
--- Insert clients
-INSERT INTO client (client_id, active, first_name, surname, email, address, post_code, telephone, dob, national_insurance_number, created_at)
-VALUES
-  (UUID(), b'1', 'Alice', 'Smith', 'alice@example.com', '123 Main St', 'AB12 3CD', '0123456789', '1985-06-15', 'AB123456C', CURRENT_DATE),
-  (UUID(), b'1', 'Bob', 'Johnson', 'bob@example.com', '456 Oak Ave', 'CD34 5EF', '0987654321', '1990-09-20', 'CD987654E', CURRENT_DATE);
-
--- Insert portfolios
-INSERT INTO portfolio (portfolio_id, portfolio_type, portfolio_name, client_id, created_at, updated_at, investment_goal, risk_level, total_value)
-VALUES
-  (UUID(), 'Retirement', 'Alice Portfolio', (SELECT client_id FROM client WHERE email='alice@example.com'), CURRENT_DATE, CURRENT_DATE, 'Long-term growth', 5, 100000.00),
-  (UUID(), 'Wealth Management', 'Bob Portfolio', (SELECT client_id FROM client WHERE email='bob@example.com'), CURRENT_DATE, CURRENT_DATE, 'Capital preservation', 3, 50000.00);
-
--- Insert assets
-INSERT INTO asset (asset_id, name, value, portfolio_id)
-VALUES
-  (UUID(), 'Apple Inc.', 150.25, (SELECT portfolio_id FROM portfolio WHERE portfolio_name='Alice Portfolio')),
-  (UUID(), 'Alphabet Inc.', 2800.50, (SELECT portfolio_id FROM portfolio WHERE portfolio_name='Alice Portfolio')),
-  (UUID(), 'Tesla Inc.', 720.15, (SELECT portfolio_id FROM portfolio WHERE portfolio_name='Bob Portfolio'));
-
--- Insert asset price history (manual insert example)
--- Note: normally fetched automatically from AlphaVantage
-INSERT INTO asset_price_history (price_history_id, closing_price, source, trading_date, asset_id)
-VALUES
-  (UUID(), 150.25, 'Manual', '2025-09-01', (SELECT asset_id FROM asset WHERE name='Apple Inc.')),
-  (UUID(), 152.30, 'Manual', '2025-09-02', (SELECT asset_id FROM asset WHERE name='Apple Inc.')),
-  (UUID(), 2800.50, 'Manual', '2025-09-01', (SELECT asset_id FROM asset WHERE name='Alphabet Inc.')),
-  (UUID(), 720.15, 'Manual', '2025-09-01', (SELECT asset_id FROM asset WHERE name='Tesla Inc.'));

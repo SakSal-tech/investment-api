@@ -13,14 +13,14 @@ public class AssetHistoryService {
     private final AssetRepository assetRepository;
 
 
-        // (I) Use constructor injection for both repositories
+        // Used constructor injection for both repositories
         public AssetHistoryService(AssetPriceHistoryRepository priceHistoryRepository, AssetRepository assetRepository) {
             this.priceHistoryRepository = priceHistoryRepository;
             this.assetRepository = assetRepository;
         }
 
     /**
-     * (I) Refactored this method out of RiskService to reduce coupling and follow SRP.
+     * Refactored this method out of RiskService to reduce coupling and follow SRP.
      * Fetches historical daily returns for an asset using its price history.
      *
      * @param assetId The ID of the asset whose returns are to be calculated.
@@ -30,7 +30,7 @@ public class AssetHistoryService {
         List<AssetPriceHistory> priceHistory = priceHistoryRepository.findByAsset_AssetIdOrderByTradingDateAsc(assetId);
         List<Double> returns = new ArrayList<>();
         //If there are fewer than 2 price records, it now logs a warning and returns an empty list, preventing errors in downstream calculations
-        // (I) Handle missing or insufficient price data gracefully
+        // Handle missing or insufficient price data gracefully
         if (priceHistory == null || priceHistory.size() < 2) {
             // Not enough data to calculate returns (need at least 2 prices)
             System.out.println("[WARN] Not enough price history for assetId: " + assetId + ". Returning empty returns list.");
@@ -45,8 +45,8 @@ public class AssetHistoryService {
     }
     
         /**
-         * (I) Imports price data from AlphaVantageClient and saves as AssetPriceHistory entities.
-         * This method demonstrates how to map API data to your JPA entity and persist it.
+         * Imports price data from AlphaVantageClient and saves as AssetPriceHistory entities.
+         * This method demonstrates how to map API data to JPA entity and persist it.
          *
          * @param assetId The ID of the asset to associate with the price history
          * @param priceData List of AlphaVantagePrice DTOs containing date and price (from AlphaVantageClient)
