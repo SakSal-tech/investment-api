@@ -94,6 +94,9 @@ mvn spring-boot:run
 
 ## Usage
 
+### Database Backup
+A full database backup is available in [`docs/investment_dump.sql`](docs/investment_dump.sql) for restoring or migrating your investment data.
+
 ### For Clients
 
 - Use the REST API endpoints to manage portfolios, assets, users, and risk data.
