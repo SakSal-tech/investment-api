@@ -1,6 +1,6 @@
 # Investment Portfolio Asset & Risk Management
 
-*Empowering sustainable investing with robust risk analysis, asset tracking, and secure client management.*
+_Empowering sustainable investing with robust risk analysis, asset tracking, and secure client management._
 
 The **Risk Analysis API** is a backend solution designed to help investors and portfolio managers monitor and evaluate the financial risk exposure of their investments. Built using **Java 17+, Spring Boot, and Spring Data JPA**, this API supports:
 
@@ -11,7 +11,7 @@ The **Risk Analysis API** is a backend solution designed to help investors and p
 - **Asset Management:** Each portfolio can contain one or more assets. Advanced asset queries by value, name, and risk.
 - **Risk Analysis and Summaries:** Includes Value at Risk (VaR) and StressTest calculations for assets, using historic price data.
 - **ESG Scoring & Compliance Tracking:** Sustainable portfolios support ESG scoring and compliance status for responsible investing.
-- **External API Integration:** Historic stock market data is fetched from external APIs for risk calculations.
+- **External API Integration:** Historic stock market data is fetched from external APIs Alpha Vantage https://www.alphavantage.co/ for risk calculations.
 - **DTO-based API Responses:** Clean, secure data contracts for all endpoints.
 - **Postman & HTTP Files:** Easy API testing for clients and developers.
 - **Legacy Support:** Backward compatibility for older portfolio and asset structures.
@@ -34,7 +34,6 @@ The **Risk Analysis API** is a backend solution designed to help investors and p
 - [Tests](#tests)
 - [Contributing](#contributing)
 - [License](#license)
-- [FAQ](#faq)
 - [Roadmap](#roadmap)
 - [Known Issues](#known-issues)
 - [API Documentation (Swagger)](#api-documentation-swagger)
@@ -65,7 +64,7 @@ See [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) for full folder and
 
 ## UML Diagram
 
-See [`docs/UML.md`](docs/UML.md) and [`docs/uml-diagram.png`](docs/uml-diagram.png) for class relationships and inheritance.
+See [`docs/UML.md`](docs/UML.md) and [`docs/uml-diagram.png`](docs/UMLDiagram.png) for class relationships and inheritance.
 
 ---
 
@@ -75,9 +74,9 @@ See [`docs/entity-relational-diagram.png`](docs/entity-relational-diagram.png) f
 
 ---
 
-
-
 ## Installation
+
+External API: You ned to generate a free API key from https://www.alphavantage.co/
 
 ```bash
 git clone https://github.com/SakSal-tech/investment-api
@@ -95,6 +94,7 @@ mvn spring-boot:run
 ## Usage
 
 ### Database Backup
+
 A full database backup is available in [`docs/investment_dump.sql`](docs/investment_dump.sql) for restoring or migrating your investment data.
 
 ### For Clients
@@ -103,7 +103,7 @@ A full database backup is available in [`docs/investment_dump.sql`](docs/investm
 - All available endpoints and usage examples are documented in [`docs/user-api.http`](docs/user-api.http).
 - For sustainable investing, explore the sustainable portfolio endpoints and ESG scoring features.
 - **Note:** A client can have multiple portfolios (basic or sustainable), and each portfolio can have multiple assets.
-- **Login:** Use username and `rawPassword` (plain text) for login; the system will encode and hash  password automatically.
+- **Login:** Use username and `rawPassword` (plain text) for login; the system will encode and hash password automatically.
 
 ### For Developers
 
@@ -114,10 +114,10 @@ A full database backup is available in [`docs/investment_dump.sql`](docs/investm
 - Integrate with external APIs for historic price data in risk calculations.
 - For further development, you may need to fetch real ESG data for sustainable portfolios from external APIs.
 - See [Project Structure](#project-structure) for file organization.
-> **Note:**  
-> All API endpoints that use path variables (such as IDs, usernames, etc.) must use curly braces `{}` in the URL path.  
-> For example: `/api/clients/{clientId}` or `/api/users/{username}`.  
-> Make sure your Postman collection and any API clients use this format to match the Spring Boot controller mappings.
+  > **Note:**  
+  > All API endpoints that use path variables (such as IDs, usernames, etc.) must use curly braces `{}` in the URL path.  
+  > For example: `/api/clients/{clientId}` or `/api/users/{username}`.  
+  > Make sure your Postman collection and any API clients use this format to match the Spring Boot controller mappings.
 
 ---
 
@@ -126,6 +126,7 @@ A full database backup is available in [`docs/investment_dump.sql`](docs/investm
 Ready-to-use dummy data is provided in [`docs/data.sql`](docs/data.sql) for quick setup and testing.
 
 - **Instructions:**
+
   1. Import `data.sql` into your MySQL database before running the application.
   2. This will create sample clients, portfolios, assets, and price history for instant testing.
 
@@ -135,7 +136,7 @@ Ready-to-use dummy data is provided in [`docs/data.sql`](docs/data.sql) for quic
 
 ## Risk Calculations
 
-- VaR and StressTest explained in [`docs/RISK.md`](docs/RISK.md).
+- VaR and StressTest explained in [`docs/RISK.md`](docs/Risk.md).
 - Historic prices: last 7 days for testing, extendable via external APIs.
 
 ---
@@ -180,18 +181,11 @@ See [`LICENSE`](LICENSE).
 
 ---
 
-## FAQ
-
-See [`docs/FAQ.md`](docs/FAQ.md).
-
----
-
 ## Roadmap
 
 See [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ---
-
 
 ## Known Issues
 
@@ -203,14 +197,15 @@ See [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md).
 
 - Full OpenAPI documentation is available in [`swagger.yaml`](swagger.yaml) in the project root.
 - You can view and interact with the API using [Swagger UI](https://swagger.io/tools/swagger-ui/) or import the file into Postman.
-- To enable live Swagger UI in your Spring Boot app, see [`docs/SWAGGER.md`](docs/SWAGGER.md) for setup instructions.
+- To enable live Swagger UI in your Spring Boot app, see [`SWAGGER.md`](swagger.yaml) for setup instructions.
 
 ---
+
 ## Configuration
 
 - **application.properties:**  
   Located in `src/main/resources/`.  
-  Contains database connection settings, server port, and other Spring Boot configuration options. 
+  Contains database connection settings, server port, and other Spring Boot configuration options.
 - Set DB connection in `application.properties`
 - Environment variables for secrets (see `.env.example`)
 - API keys for external integrations (if needed)
@@ -237,13 +232,12 @@ A reusable validation class is provided in the `util` folder and is used by diff
   Centralizes validation logic for fields such as email, date of birth, and other formats.
 - **Usage:**  
   Service classes call these utility methods to validate user input before saving or updating entities.
-- **Examples:**  
+- **Examples:**
   - Email format validation
   - Date validation (e.g., checking valid date of birth)
   - Password strength checks
 
-This approach helps maintain consistent validation across the project and prevents invalid data from being persisted.
---
+## This approach helps maintain consistent validation across the project and prevents invalid data from being persisted.
 
 ## Technical Notes: JSON Data Storage
 
@@ -252,7 +246,6 @@ Currently, manual serialization is used (with Jackson’s ObjectMapper) because 
 JPA AttributeConverters (such as `MapToJsonConverter` and `ListToJsonConverter`) are included for future improvements, allowing automatic mapping of Java collections to JSON columns if you migrate to a database with native JSON support (e.g., PostgreSQL).
 
 This approach ensures flexibility for storing detailed calculation results and supports future enhancements.
-
 
 ## Useful Learning Links
 
